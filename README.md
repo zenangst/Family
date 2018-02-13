@@ -17,8 +17,6 @@
 Family is a child view controller framework that makes setting up your parent controllers as easy as pie.
 With a simple yet powerful public API, you can build complex layout without losing maintainability. Leaving you to focus on what matters, making your applications pop and your business logic shine.
 
-## Why
-
 This framework was built to make it easier to build and maintain parent controllers, or made famous by other in the industry as flow controllers. Using child view controllers can make your code more modular, flexible and testable. There are just some shortcoming with the vanilla approach when dealing with child view controllers.
 
 How do you get a continuous scrolling experience while keeping dequeuing intact?
