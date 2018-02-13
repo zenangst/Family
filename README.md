@@ -1,4 +1,5 @@
-# Family
+![Family logo](https://raw.githubusercontent.com/zenangst/Family/master/Images/Family-header.png)
+<div align="center">
 
 [![CI Status](https://img.shields.io/circleci/project/github/zenangst/Family.svg)](https://circleci.com/gh/zenangst/Family)
 [![Version](https://img.shields.io/cocoapods/v/Family.svg?style=flat)](http://cocoadocs.org/docsets/Family)
@@ -9,10 +10,14 @@
 
 ## Description
 
+<img src="https://raw.githubusercontent.com/zenangst/Family/master/Images/Family-icon.png" alt="Family Icon" align="right" />
+
 Family is a child view controller framework that makes setting up your parent controllers as easy as pie.
 With a simple yet powerful public API, you can build complex layout without losing maintainability. Leaving you to focus on what matters, making your applications pop and your business logic shine.
 
 ## Why
+
+<img src="https://raw.githubusercontent.com/zenangst/Family/master/Images/Family-illustration.jpg" alt="Family Illustration" align="right" />
 
 This framework was built to make it easier to build and maintain parent controllers, or made famous by other in the industry as flow controllers. Using child view controllers can make your code more modular, flexible and testable. There are just some shortcoming with the vanilla approach when dealing with child view controllers.
 
@@ -87,6 +92,12 @@ Christoffer Winterkvist, christoffer@winterkvist.com
 ## Contributing
 
 We would love you to contribute to **Family**, check the [CONTRIBUTING](https://github.com/zenangst/Family/blob/master/CONTRIBUTING.md) file for more info.
+
+## Credits
+
+- [hyperoslo's Spots](https://github.com/hyperoslo/Spots) uses the same kind of implementation in order to render its component.
+- [Ole Begemanns](https://github.com/ole/) implementation of [OLEContainerScrollView](https://github.com/ole/OLEContainerScrollView) is the basis for `SpotsScrollView`, we salute you.
+Reference: http://oleb.net/blog/2014/05/scrollviews-inside-scrollviews/
 
 ## License
 
