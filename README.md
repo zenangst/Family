@@ -8,6 +8,8 @@
 [![Platform](https://img.shields.io/cocoapods/p/Family.svg?style=flat)](http://cocoadocs.org/docsets/Family)
 ![Swift](https://img.shields.io/badge/%20in-swift%204.0-orange.svg)
 
+</div>
+
 ## Description
 
 <img src="https://github.com/zenangst/Family/blob/master/Images/Family-icon.png?raw=true" alt="Family Icon" align="right" />
