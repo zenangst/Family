@@ -1,0 +1,16 @@
+PODS:
+  - Family (0.1.0)
+
+DEPENDENCIES:
+  - Family (from `../../`)
+
+EXTERNAL SOURCES:
+  Family:
+    :path: ../../
+
+SPEC CHECKSUMS:
+  Family: f3119f0ae4147f07b38152d9d4252506c1fd7767
+
+PODFILE CHECKSUM: ea1cf231165085455498ab2cfdabed6954efbee7
+
+COCOAPODS: 1.4.0
