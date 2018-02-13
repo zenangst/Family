@@ -1,4 +1,4 @@
-![Family logo](https://raw.githubusercontent.com/zenangst/Family/master/Images/Family-header.png)
+![Family logo](https://github.com/zenangst/Family/blob/master/Images/Family-header.png?raw=true)
 <div align="center">
 
 [![CI Status](https://img.shields.io/circleci/project/github/zenangst/Family.svg)](https://circleci.com/gh/zenangst/Family)
@@ -10,14 +10,12 @@
 
 ## Description
 
-<img src="https://raw.githubusercontent.com/zenangst/Family/master/Images/Family-icon.png" alt="Family Icon" align="right" />
+<img src="https://github.com/zenangst/Family/blob/master/Images/Family-icon.png?raw=true" alt="Family Icon" align="right" />
 
 Family is a child view controller framework that makes setting up your parent controllers as easy as pie.
 With a simple yet powerful public API, you can build complex layout without losing maintainability. Leaving you to focus on what matters, making your applications pop and your business logic shine.
 
 ## Why
-
-<img src="https://raw.githubusercontent.com/zenangst/Family/master/Images/Family-illustration.jpg" alt="Family Illustration" align="right" />
 
 This framework was built to make it easier to build and maintain parent controllers, or made famous by other in the industry as flow controllers. Using child view controllers can make your code more modular, flexible and testable. There are just some shortcoming with the vanilla approach when dealing with child view controllers.
 
