@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BD2236E32034B12A00C465E4 /* NSScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2236E22034B12A00C465E4 /* NSScrollView.swift */; };
+		BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */; };
+		BD4C7FE020349AA10037D3E5 /* FamilyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */; };
+		BD4C7FE220349ACE0037D3E5 /* FamilyScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */; };
+		BD4C7FE420349B030037D3E5 /* FamilyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FE320349B030037D3E5 /* FamilyContentView.swift */; };
 		BD5A803C2030A9D9006A5EBB /* FamilyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80362030A9D9006A5EBB /* FamilyContentView.swift */; };
 		BD5A803D2030A9D9006A5EBB /* FamilyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80362030A9D9006A5EBB /* FamilyContentView.swift */; };
 		BD5A803E2030A9D9006A5EBB /* FamilyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80372030A9D9006A5EBB /* FamilyViewController.swift */; };
@@ -26,6 +31,12 @@
 		BD5A80522030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */; };
 		BD5A80532030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */; };
 		BD5A80542030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */; };
+		BD7629BA20349C2500C917BB /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629B920349C2500C917BB /* TypeAlias.swift */; };
+		BD7629BB20349C2C00C917BB /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629B920349C2500C917BB /* TypeAlias.swift */; };
+		BD7629BC20349C2C00C917BB /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629B920349C2500C917BB /* TypeAlias.swift */; };
+		BD7629BE20349CA300C917BB /* FamilyFriendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629BD20349CA300C917BB /* FamilyFriendly.swift */; };
+		BD7629BF20349CA300C917BB /* FamilyFriendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629BD20349CA300C917BB /* FamilyFriendly.swift */; };
+		BD7629C020349CA300C917BB /* FamilyFriendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629BD20349CA300C917BB /* FamilyFriendly.swift */; };
 		D284B1051F79038B00D94AF3 /* Family.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D284B0FC1F79038B00D94AF3 /* Family.framework */; };
 		D284B1381F7906DB00D94AF3 /* Info-iOS-Tests.plist in Resources */ = {isa = PBXBuildFile; fileRef = D284B12F1F7906DA00D94AF3 /* Info-iOS-Tests.plist */; };
 		D284B1391F7906DB00D94AF3 /* Info-tvOS-Tests.plist in Resources */ = {isa = PBXBuildFile; fileRef = D284B1301F7906DA00D94AF3 /* Info-tvOS-Tests.plist */; };
@@ -62,6 +73,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BD2236E22034B12A00C465E4 /* NSScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSScrollView.swift; sourceTree = "<group>"; };
+		BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyWrapperView.swift; sourceTree = "<group>"; };
+		BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
+		BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollView.swift; sourceTree = "<group>"; };
+		BD4C7FE320349B030037D3E5 /* FamilyContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyContentView.swift; sourceTree = "<group>"; };
 		BD5A80362030A9D9006A5EBB /* FamilyContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyContentView.swift; sourceTree = "<group>"; };
 		BD5A80372030A9D9006A5EBB /* FamilyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
 		BD5A80382030A9D9006A5EBB /* FamilyWrapperView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyWrapperView.swift; sourceTree = "<group>"; };
@@ -71,6 +87,8 @@
 		BD5A804B2030AC9F006A5EBB /* FamilyWrapperViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyWrapperViewTests.swift; sourceTree = "<group>"; };
 		BD5A804E2030ACBA006A5EBB /* FamilyScrollViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollViewTests.swift; sourceTree = "<group>"; };
 		BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CALayerExtensionTests.swift; sourceTree = "<group>"; };
+		BD7629B920349C2500C917BB /* TypeAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeAlias.swift; sourceTree = "<group>"; };
+		BD7629BD20349CA300C917BB /* FamilyFriendly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyFriendly.swift; sourceTree = "<group>"; };
 		D284B0FC1F79038B00D94AF3 /* Family.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Family.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D284B1041F79038B00D94AF3 /* Family-tvOS-Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Family-tvOS-Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D284B1181F79039F00D94AF3 /* Family.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Family.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -148,6 +166,43 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BD2236DD2034A81500C465E4 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				BD7629B920349C2500C917BB /* TypeAlias.swift */,
+				BD7629BD20349CA300C917BB /* FamilyFriendly.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		BD2236E02034B10F00C465E4 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */,
+				BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */,
+				BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */,
+				BD4C7FE320349B030037D3E5 /* FamilyContentView.swift */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		BD2236E12034B11A00C465E4 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				BD2236E22034B12A00C465E4 /* NSScrollView.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		BD4C7FDE20349A950037D3E5 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				BD2236E12034B11A00C465E4 /* Extensions */,
+				BD2236E02034B10F00C465E4 /* Classes */,
+			);
+			path = macOS;
+			sourceTree = "<group>";
+		};
 		BD5A80342030A9D9006A5EBB /* iOS+tvOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -251,6 +306,8 @@
 		D5C629691C3A809D007F7B7C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				BD2236DD2034A81500C465E4 /* Shared */,
+				BD4C7FDE20349A950037D3E5 /* macOS */,
 				BD5A80342030A9D9006A5EBB /* iOS+tvOS */,
 			);
 			path = Sources;
@@ -465,6 +522,7 @@
 					};
 					D5C6293F1C3A7FAA007F7B7C = {
 						CreatedOnToolsVersion = 7.2;
+						LastSwiftMigration = 0920;
 					};
 					D5C629481C3A7FAA007F7B7C = {
 						CreatedOnToolsVersion = 7.2;
@@ -554,11 +612,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD7629BC20349C2C00C917BB /* TypeAlias.swift in Sources */,
 				BD5A80412030A9D9006A5EBB /* FamilyWrapperView.swift in Sources */,
 				BD5A80432030A9D9006A5EBB /* FamilyScrollView.swift in Sources */,
 				BD5A803F2030A9D9006A5EBB /* FamilyViewController.swift in Sources */,
 				BD5A803D2030A9D9006A5EBB /* FamilyContentView.swift in Sources */,
 				BD5A80452030A9D9006A5EBB /* CALayer+Extensions.swift in Sources */,
+				BD7629C020349CA300C917BB /* FamilyFriendly.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -585,11 +645,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD7629BA20349C2500C917BB /* TypeAlias.swift in Sources */,
 				BD5A80402030A9D9006A5EBB /* FamilyWrapperView.swift in Sources */,
 				BD5A80422030A9D9006A5EBB /* FamilyScrollView.swift in Sources */,
 				BD5A803E2030A9D9006A5EBB /* FamilyViewController.swift in Sources */,
 				BD5A803C2030A9D9006A5EBB /* FamilyContentView.swift in Sources */,
 				BD5A80442030A9D9006A5EBB /* CALayer+Extensions.swift in Sources */,
+				BD7629BE20349CA300C917BB /* FamilyFriendly.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -609,6 +671,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD2236E32034B12A00C465E4 /* NSScrollView.swift in Sources */,
+				BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */,
+				BD7629BF20349CA300C917BB /* FamilyFriendly.swift in Sources */,
+				BD4C7FE420349B030037D3E5 /* FamilyContentView.swift in Sources */,
+				BD4C7FE020349AA10037D3E5 /* FamilyViewController.swift in Sources */,
+				BD7629BB20349C2C00C917BB /* TypeAlias.swift in Sources */,
+				BD4C7FE220349ACE0037D3E5 /* FamilyScrollView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1011,11 +1080,13 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.zenangst.Family-macOS";
 				PRODUCT_NAME = Family;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -1038,12 +1109,14 @@
 				PRODUCT_NAME = Family;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
 		D5C629551C3A7FAA007F7B7C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1062,6 +1135,7 @@
 		D5C629561C3A7FAA007F7B7C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (

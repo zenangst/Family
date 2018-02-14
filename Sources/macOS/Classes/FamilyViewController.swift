@@ -1,0 +1,51 @@
+import Cocoa
+
+public class FamilyViewController: NSViewController, FamilyFriendly {
+  public lazy var scrollView: FamilyScrollView = .init()
+
+  public override func loadView() {
+    let view: NSView
+    view = NSView()
+    view.autoresizingMask = [.width]
+    view.autoresizesSubviews = true
+    self.view = view
+  }
+
+  override public func viewDidLoad() {
+    super.viewDidLoad()
+    view.addSubview(scrollView)
+    scrollView.frame = view.bounds
+    configureConstraints()
+  }
+
+  private func configureConstraints() {
+    scrollView.translatesAutoresizingMaskIntoConstraints = false
+    if #available(OSX 10.11, *) {
+      scrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+      scrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+      scrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+      scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+  }
+
+  override open func addChildViewController(_ childController: ViewController) {
+    super.addChildViewController(childController)
+    scrollView.familyContentView.addSubview(childController.view)
+  }
+
+  public func addChildViewController(_ childController: ViewController, height: CGFloat) {
+    addChildViewController(childController)
+    childController.view.translatesAutoresizingMaskIntoConstraints = true
+    childController.view.autoresizingMask = [.width]
+    childController.view.frame.size.height = height
+  }
+
+  public func addChildViewController<T>(_ childController: T, view closure: (T) -> View) where T : ViewController {
+    super.addChildViewController(childController)
+    let childView = closure(childController)
+    childView.frame = view.bounds
+    view.addSubview(childController.view)
+    childController.view.isHidden = true
+    scrollView.familyContentView.addSubview(childView)
+  }
+}
