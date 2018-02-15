@@ -14,7 +14,7 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
   override public func viewDidLoad() {
     super.viewDidLoad()
     view.addSubview(scrollView)
-    scrollView.frame = view.bounds
+    scrollView.autoresizingMask = [.width]
     configureConstraints()
   }
 
