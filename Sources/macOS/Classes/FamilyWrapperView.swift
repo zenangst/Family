@@ -7,10 +7,21 @@ class FamilyClipView: NSClipView {
 }
 
 class FamilyWrapperView: NSScrollView {
+  var containerView: NSView = .init()
+  var view: NSView
+  var observer: NSKeyValueObservation?
+
   required init(frame frameRect: NSRect, documentView: NSView) {
+    self.view = documentView
     super.init(frame: frameRect)
     self.contentView = FamilyClipView()
-    self.documentView = documentView
+    self.documentView = containerView
+    self.containerView.addSubview(view)
+    self.observer = view.observe(\.frame, options: [.initial, .new, .old]) { [weak self] _, value in
+      if value.newValue != value.oldValue, let rect = value.newValue {
+        self?.setWrapperFrameSize(rect)
+      }
+    }
   }
 
   required init?(coder: NSCoder) {
@@ -22,6 +33,12 @@ class FamilyWrapperView: NSScrollView {
       super.scrollWheel(with: event)
     } else if event.scrollingDeltaY != 0.0 {
       nextResponder?.scrollWheel(with: event)
+    }
+  }
+
+  private func setWrapperFrameSize(_ rect: CGRect) {
+    if rect.size != documentView?.frame.size {
+      documentView?.frame.size = rect.size
     }
   }
 }
