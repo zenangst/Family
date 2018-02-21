@@ -1,26 +1,34 @@
 import Cocoa
 
-class FamilyClipView: NSClipView {
-  override func scroll(_ point: NSPoint) {
-    enclosingScrollView?.documentView?.scroll(point)
-  }
-}
-
 class FamilyWrapperView: NSScrollView {
-  var containerView: NSView = .init()
-  var view: NSView
+  var wrappedView: NSView
   var observer: NSKeyValueObservation?
+  var animationsObserver: NSKeyValueObservation?
+  var viewContentSize: CGSize = .zero
 
-  required init(frame frameRect: NSRect, documentView: NSView) {
-    self.view = documentView
+  open override var verticalScroller: NSScroller? {
+    get { return nil }
+    set {}
+  }
+
+  required init(frame frameRect: NSRect, wrappedView: NSView) {
+    self.wrappedView = wrappedView
     super.init(frame: frameRect)
-    self.contentView = FamilyClipView()
-    self.documentView = containerView
-    self.containerView.addSubview(view)
-    self.observer = view.observe(\.frame, options: [.initial, .new, .old]) { [weak self] _, value in
+    self.contentView = NSClipView()
+    self.documentView = wrappedView
+    self.hasHorizontalScroller = true
+    self.hasVerticalScroller = false
+
+    self.observer = wrappedView.observe(\.frame, options: [.initial, .new, .old]) { [weak self] view, value in
       if value.newValue != value.oldValue, let rect = value.newValue {
-        self?.setWrapperFrameSize(rect)
+        self?.notifyFamilyScrollView()
       }
+    }
+  }
+
+  func notifyFamilyScrollView() {
+    if let familyScrollView = enclosingScrollView as? FamilyScrollView {
+      familyScrollView.layoutViews()
     }
   }
 
@@ -29,16 +37,10 @@ class FamilyWrapperView: NSScrollView {
   }
 
   override func scrollWheel(with event: NSEvent) {
-    if event.scrollingDeltaX != 0.0 {
+    if event.scrollingDeltaX != 0.0 && wrappedView.frame.size.width > frame.size.width {
       super.scrollWheel(with: event)
     } else if event.scrollingDeltaY != 0.0 {
       nextResponder?.scrollWheel(with: event)
-    }
-  }
-
-  private func setWrapperFrameSize(_ rect: CGRect) {
-    if rect.size != documentView?.frame.size {
-      documentView?.frame.size = rect.size
     }
   }
 }

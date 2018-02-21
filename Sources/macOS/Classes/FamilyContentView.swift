@@ -15,7 +15,7 @@ public class FamilyContentView: NSView {
       subview = scrollView
     default:
       let wrapper = FamilyWrapperView(frame: view.frame,
-                                      documentView: view)
+                                      wrappedView: view)
       subview = wrapper
     }
     super.addSubview(subview)
