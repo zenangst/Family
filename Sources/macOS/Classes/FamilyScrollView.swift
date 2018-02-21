@@ -1,6 +1,7 @@
 import Cocoa
 
 public class FamilyScrollView: NSScrollView {
+  public override var isFlipped: Bool { return true }
   public lazy var familyContentView: FamilyContentView = .init()
   public var spacingBetweenViews: CGFloat = 0
   private var observers = [Observer]()
@@ -29,8 +30,23 @@ public class FamilyScrollView: NSScrollView {
       object: contentView
     )
 
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(windowDidResize(_:)),
+      name: NSWindow.didResizeNotification,
+      object: nil
+    )
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(windowDidEndLiveResize(_:)),
+      name: NSWindow.didEndLiveResizeNotification,
+      object: nil
+    )
+
     contentView.postsBoundsChangedNotifications = true
     familyContentView.autoresizingMask = [.width]
+    NSAnimationContext.current.duration = 0.0
   }
 
   required public init?(coder: NSCoder) {
@@ -45,24 +61,61 @@ public class FamilyScrollView: NSScrollView {
 
   // MARK: - Observers
 
-  @objc func didLiveScroll(_ notification: NSNotification) {}
-
   @objc func contentViewBoundsDidChange(_ notification: NSNotification) {
-    guard (notification.object as? NSClipView) === contentView else {
-      return
+    if (notification.object as? NSClipView) === contentView,
+      let window = window,
+      !window.inLiveResize {
+      layoutViews()
     }
+  }
 
-    guard let window = window, !window.inLiveResize else {
-      return
+  @objc open func windowDidResize(_ notification: Notification) {
+    var offset = 0
+    for case let familyView as FamilyWrapperView in subviewsInLayoutOrder {
+      if let collectionView = familyView.wrappedView as? NSCollectionView,
+        let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
+
+        let visibleOnScreen = documentVisibleRect.intersects(familyView.frame)
+        if visibleOnScreen {
+          collectionView.frame.size.width = self.frame.size.width
+          collectionView.reloadData()
+        }
+      }
     }
-    layoutViews()
+    layoutViews(excludeOffscreenViews: true)
+  }
+
+  @objc public func windowDidEndLiveResize(_ notification: Notification) {
+    layoutViews(excludeOffscreenViews: false)
+    for case let familyView as FamilyWrapperView in subviewsInLayoutOrder {
+      if let collectionView = familyView.wrappedView as? NSCollectionView,
+        let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
+        collectionView.frame.size.width = self.frame.size.width
+        collectionView.reloadData()
+      }
+    }
+    layoutViews(excludeOffscreenViews: false)
   }
 
   // MARK: - Public methods
 
-  public func layoutViews(withDuration duration: CFTimeInterval? = nil) {
-    runLayoutSubviewsAlgorithm()
+  public func layoutViews(withDuration duration: CFTimeInterval? = nil,
+                          excludeOffscreenViews: Bool = true) {
+
+    if NSAnimationContext.current.duration == 0.25 {
+      NSAnimationContext.current.duration = 0.0
+    }
+
+    runLayoutSubviewsAlgorithm(
+      withDuration: NSAnimationContext.current.duration,
+      excludeOffscreenViews: excludeOffscreenViews
+    )
     computeContentSize()
+
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + NSAnimationContext.current.duration) {
+      NSAnimationContext.current.duration = 0.0
+    }
   }
 
   func didAddScrollViewToContainer(_ scrollView: NSScrollView) {
@@ -76,13 +129,11 @@ public class FamilyScrollView: NSScrollView {
     for scrollView in familyContentView.scrollViews {
       subviewsInLayoutOrder.append(scrollView)
     }
-
-    observeView(view: scrollView)
   }
 
   public override func layout() {
-    super.layout()
     layoutViews()
+    super.layout()
   }
 
   // MARK: - Private methods
@@ -93,56 +144,22 @@ public class FamilyScrollView: NSScrollView {
     subviewsInLayoutOrder = filteredSubviews
   }
 
-  private func observeView(view: NSScrollView) {
-    guard view.superview == familyContentView else { return }
-
-    let contentSizeObserver = view.observe(\.contentSize, options: [.initial, .new, .old], changeHandler: { [weak self] (scrollView, value) in
-      guard let strongSelf = self,
-        let newValue = value.newValue,
-        let oldValue = value.oldValue else {
-          return
-      }
-
-      if newValue != oldValue {
-        strongSelf.computeContentSize()
-        strongSelf.layoutViews()
-      }
-    })
-
-    observers.append(Observer(view: view, keyValueObservation: contentSizeObserver))
-
-    let boundsObserver = view.observe(\.bounds, options: [.new, .old], changeHandler: { [weak self] (_, value) in
-      guard let newValue = value.newValue, let oldValue = value.oldValue else {
-        return
-      }
-
-      if newValue.origin.y != oldValue.origin.y {
-        self?.layoutViews()
-      }
-    })
-
-    observers.append(Observer(view: view, keyValueObservation: boundsObserver))
-  }
-
-  private func computeContentSize() {
-    let computedHeight = subviewsInLayoutOrder.reduce(0, { $0 + $1.documentView!.frame.size.height + spacingBetweenViews })
-    let minimumContentHeight = bounds.height
-    let height = fmax(computedHeight, minimumContentHeight)
-    documentView?.frame.size = CGSize(width: bounds.size.width, height: height)
-  }
-
-  private func runLayoutSubviewsAlgorithm() {
+  private func runLayoutSubviewsAlgorithm(withDuration duration: CFTimeInterval? = nil,
+                                          excludeOffscreenViews: Bool = true) {
+    let isResizing = window?.inLiveResize ?? false
     let multipleComponents = subviewsInLayoutOrder.count > 1
     var yOffsetOfCurrentSubview: CGFloat = 0.0
-
-    for (offset, scrollView) in subviewsInLayoutOrder.enumerated() {
-      guard let documentView: View = scrollView.documentView else {
+    var offset = 0
+    for case let familyWrapper as FamilyWrapperView in subviewsInLayoutOrder {
+      guard let documentView: View = familyWrapper.documentView else {
         return
       }
 
-      var contentSize: CGSize = documentView.frame.size
-      var frame = scrollView.frame
-      var contentOffset = scrollView.contentOffset
+      var shouldResize: Bool = true
+      var shouldScroll: Bool = true
+      var contentSize: CGSize = contentSizeForView(documentView, shouldResize: &shouldResize)
+      var frame = familyWrapper.frame
+      var contentOffset = familyWrapper.contentOffset
 
       if self.contentOffset.y < yOffsetOfCurrentSubview {
         contentOffset.y = 0
@@ -155,29 +172,92 @@ public class FamilyScrollView: NSScrollView {
       let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
       let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
       var newHeight: CGFloat = fmin(remainingBoundsHeight, remainingContentHeight)
+      let shouldModifyContentOffset = contentOffset.y - contentInsets.top <= familyWrapper.contentSize.height + (contentInsets.top * 2) ||
+        self.contentOffset.y != frame.minY
 
-      switch multipleComponents {
-      case true:
-        let shouldModifyContentOffset = contentOffset.y - contentInsets.top <= scrollView.contentSize.height + (contentInsets.top * 2) ||
-          self.contentOffset.y != frame.minY
-
-        if shouldModifyContentOffset {
-          scrollView.contentView.scroll(contentOffset)
+      if newHeight == 0 {
+        newHeight = fmin(contentView.frame.height, familyWrapper.contentSize.height)
+        if shouldModifyContentOffset && shouldResize {
+          familyWrapper.contentOffset.y = contentOffset.y
         } else {
           frame.origin.y = yOffsetOfCurrentSubview
         }
-      case false:
-        newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
       }
 
       frame.size.height = round(newHeight)
       frame.size.width = round(self.frame.size.width)
 
-      documentView.frame.size.width = self.frame.width
-      documentView.frame.size.height = contentSize.height
-      scrollView.frame = frame
+      setFrame(
+        frame,
+        withDuration: duration,
+        contentSize: contentSize,
+        shouldResize: shouldResize,
+        currentYOffset: yOffsetOfCurrentSubview,
+        to: familyWrapper
+      )
 
+      familyWrapper.contentView.scroll(contentOffset)
       yOffsetOfCurrentSubview += contentSize.height + spacingBetweenViews
+      offset += 1
+    }
+  }
+
+  private func contentSizeForView(_ view: NSView, shouldResize: inout Bool) -> CGSize {
+    var contentSize: CGSize = .zero
+    switch view {
+    case let collectionView as NSCollectionView:
+      if let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
+        shouldResize = flowLayout.scrollDirection == .vertical
+        contentSize = flowLayout.collectionViewContentSize
+      }
+    default:
+      contentSize = view.frame.size
+    }
+
+    return contentSize
+  }
+
+  private func setFrame(_ frame: NSRect,
+                        withDuration duration: CFTimeInterval? = nil,
+                        contentSize: CGSize,
+                        shouldResize: Bool,
+                        currentYOffset: CGFloat,
+                        to wrapperView: FamilyWrapperView) {
+
+
+
+    let instance: FamilyWrapperView
+    if let duration = duration {
+      instance = wrapperView.animator()
+    } else {
+      instance = wrapperView
+    }
+
+    if shouldResize {
+      instance.frame = frame
+      instance.documentView?.frame.size.width = self.frame.width
+      instance.documentView?.frame.size.height = contentSize.height
+    } else {
+      instance.documentView?.frame.size = contentSize
+      instance.frame.size.width = self.frame.width
+      instance.frame.origin.y = currentYOffset
+    }
+  }
+
+  private func computeContentSize() {
+    let computedHeight = subviewsInLayoutOrder.reduce(0, { $0 + $1.documentView!.frame.size.height + spacingBetweenViews })
+    let minimumContentHeight = bounds.height
+    let height = fmax(computedHeight, minimumContentHeight)
+    documentView?.frame.size = CGSize(width: bounds.size.width, height: height)
+  }
+
+  private func determineSizeForView(_ view: NSView) -> CGSize {
+    switch view {
+    case let collectionView as NSCollectionView:
+      let layout = collectionView.collectionViewLayout!
+      return layout.collectionViewContentSize
+    default:
+      return CGSize(width: self.frame.size.width, height: view.frame.size.height)
     }
   }
 }
