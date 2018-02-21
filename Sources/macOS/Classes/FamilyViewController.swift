@@ -30,7 +30,9 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
 
   override open func addChildViewController(_ childController: ViewController) {
     super.addChildViewController(childController)
+    childController.view.frame.size.width = view.bounds.width
     scrollView.familyContentView.addSubview(childController.view)
+    scrollView.frame = view.bounds
   }
 
   public func addChildViewController(_ childController: ViewController, height: CGFloat) {
@@ -38,6 +40,8 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
     childController.view.translatesAutoresizingMaskIntoConstraints = true
     childController.view.autoresizingMask = [.width]
     childController.view.frame.size.height = height
+    childController.view.frame.size.width = view.bounds.width
+    scrollView.frame = view.bounds
   }
 
   public func addChildViewController<T>(_ childController: T, view closure: (T) -> View) where T : ViewController {
@@ -46,6 +50,8 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
     childView.frame = view.bounds
     view.addSubview(childController.view)
     childController.view.isHidden = true
+    childController.view.frame.size.width = view.bounds.width
     scrollView.familyContentView.addSubview(childView)
+    scrollView.frame = view.bounds
   }
 }
