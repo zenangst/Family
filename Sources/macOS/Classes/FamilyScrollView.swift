@@ -224,8 +224,6 @@ public class FamilyScrollView: NSScrollView {
                         currentYOffset: CGFloat,
                         to wrapperView: FamilyWrapperView) {
 
-
-
     let instance: FamilyWrapperView
     if let duration = duration {
       instance = wrapperView.animator()
