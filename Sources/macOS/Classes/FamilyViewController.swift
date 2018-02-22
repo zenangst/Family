@@ -4,8 +4,7 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
   public lazy var scrollView: FamilyScrollView = .init()
 
   public override func loadView() {
-    let view: NSView
-    view = NSView()
+    let view = NSView()
     view.autoresizingMask = [.width]
     view.autoresizesSubviews = true
     self.view = view
