@@ -24,6 +24,7 @@ public class FamilyScrollView: NSScrollView {
     self.drawsBackground = false
 
     configureObservers()
+    hasVerticalScroller = true
 
     contentView.postsBoundsChangedNotifications = true
     familyContentView.autoresizingMask = [.width]
