@@ -73,30 +73,29 @@ public class FamilyScrollView: NSScrollView {
     }
   }
 
-  @objc open func windowDidResize(_ notification: Notification) {
+  fileprivate func processNewWindowSize(excludeOffscreenViews: Bool) {
     for case let familyView as FamilyWrapperView in subviewsInLayoutOrder {
       if let collectionView = familyView.wrappedView as? NSCollectionView,
         let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
 
         let visibleOnScreen = documentVisibleRect.intersects(familyView.frame)
-        if visibleOnScreen {
-          collectionView.frame.size.width = self.frame.size.width
-          collectionView.reloadData()
+        if excludeOffscreenViews && !visibleOnScreen {
+          continue
         }
-      }
-    }
-    layoutViews(excludeOffscreenViews: true)
-  }
 
-  @objc public func windowDidEndLiveResize(_ notification: Notification) {
-    layoutViews(excludeOffscreenViews: false)
-    for case let familyView as FamilyWrapperView in subviewsInLayoutOrder {
-      if let collectionView = familyView.wrappedView as? NSCollectionView,
-        let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
         collectionView.frame.size.width = self.frame.size.width
         collectionView.reloadData()
       }
     }
+    layoutViews(excludeOffscreenViews: false)
+  }
+
+  @objc open func windowDidResize(_ notification: Notification) {
+    processNewWindowSize(excludeOffscreenViews: true)
+  }
+
+  @objc public func windowDidEndLiveResize(_ notification: Notification) {
+    processNewWindowSize(excludeOffscreenViews: false)
   }
 
   // MARK: - Public methods
