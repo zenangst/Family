@@ -113,7 +113,6 @@ public class FamilyScrollView: NSScrollView {
     )
     computeContentSize()
 
-
     DispatchQueue.main.asyncAfter(deadline: .now() + NSAnimationContext.current.duration) {
       NSAnimationContext.current.duration = 0.0
     }
