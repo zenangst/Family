@@ -74,7 +74,6 @@ public class FamilyScrollView: NSScrollView {
   }
 
   @objc open func windowDidResize(_ notification: Notification) {
-    var offset = 0
     for case let familyView as FamilyWrapperView in subviewsInLayoutOrder {
       if let collectionView = familyView.wrappedView as? NSCollectionView,
         let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
