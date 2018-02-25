@@ -97,7 +97,6 @@ public class FamilyScrollView: NSScrollView {
         collectionView.reloadData()
       }
     }
-    layoutViews(excludeOffscreenViews: false)
   }
 
   // MARK: - Public methods
