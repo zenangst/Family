@@ -23,6 +23,17 @@ public class FamilyScrollView: NSScrollView {
     self.documentView = familyContentView
     self.drawsBackground = false
 
+    configureObservers()
+
+    contentView.postsBoundsChangedNotifications = true
+    familyContentView.autoresizingMask = [.width]
+  }
+
+  required public init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  private func configureObservers() {
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(contentViewBoundsDidChange(_:)),
@@ -43,14 +54,6 @@ public class FamilyScrollView: NSScrollView {
       name: NSWindow.didEndLiveResizeNotification,
       object: nil
     )
-
-    contentView.postsBoundsChangedNotifications = true
-    familyContentView.autoresizingMask = [.width]
-    NSAnimationContext.current.duration = 0.0
-  }
-
-  required public init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
   }
 
   deinit {
