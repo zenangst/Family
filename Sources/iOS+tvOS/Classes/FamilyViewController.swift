@@ -25,11 +25,11 @@ open class FamilyViewController: UIViewController {
   /// Configure constraints for the scroll view.
   private func configureConstraints() {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
-    if #available(iOS 11.0, *) {
+    if #available(iOS 11.0, tvOS 11.0, *) {
       scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
       scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-      scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
-      scrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
+      scrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+      scrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
     } else {
       if #available(iOS 9.0, *) {
         scrollView.topAnchor.constraint(equalTo: topLayoutGuide.topAnchor).isActive = true
@@ -46,7 +46,19 @@ open class FamilyViewController: UIViewController {
   override open func addChildViewController(_ childController: UIViewController) {
     childController.willMove(toParentViewController: self)
     super.addChildViewController(childController)
-    scrollView.contentView.addSubview(childController.view)
+
+    let view: UIView
+    switch childController {
+    case let collectionViewController as UICollectionViewController:
+      if let collectionView = collectionViewController.collectionView {
+        scrollView.contentView.addSubview(collectionView)
+      } else {
+        assertionFailure("Unable to resolve collection view from controller.")
+      }
+    default:
+      scrollView.contentView.addSubview(childController.view)
+    }
+
     childController.didMove(toParentViewController: self)
   }
 

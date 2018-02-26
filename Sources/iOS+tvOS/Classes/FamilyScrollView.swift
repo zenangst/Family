@@ -51,7 +51,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   public required override init(frame: CGRect) {
     super.init(frame: frame)
     contentView.autoresizingMask = self.autoresizingMask
-    if #available(iOS 11.0, *) {
+    if #available(iOS 11.0, tvOS 11.0, *) {
       contentInsetAdjustmentBehavior = .never
     }
     addSubview(contentView)
@@ -143,7 +143,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     #else
       if amountOfScrollView > 1 {
         for case let scrollView as UIScrollView in subviewsInLayoutOrder {
-          scrollView.isScrollEnabled = (scrollView as? UICollectionView)?.flowLayout?.scrollDirection == .horizontal
+          scrollView.isScrollEnabled = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
         }
       } else {
         scrollView.isScrollEnabled = true
@@ -203,15 +203,8 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   private func computeContentSize() {
     let computedHeight = subviewsInLayoutOrder.reduce(0, { $0 + $1.contentSize.height + spacingBetweenViews })
 
-    #if os(tvOS)
-      let multipleComponents = subviewsInLayoutOrder.count > 1
-      let height = multipleComponents
-        ? computedHeight
-        : frame.size.height
-    #else
-      let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
-      let height = fmax(computedHeight, minimumContentHeight)
-    #endif
+    let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
+    let height = fmax(computedHeight, minimumContentHeight)
 
     contentSize = CGSize(width: bounds.size.width, height: height)
   }
