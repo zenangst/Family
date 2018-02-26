@@ -1,7 +1,7 @@
 import Cocoa
 
 class FamilyWrapperView: NSScrollView {
-  var wrappedView: NSView
+  var view: NSView
   var observer: NSKeyValueObservation?
   var animationsObserver: NSKeyValueObservation?
   var viewContentSize: CGSize = .zero
@@ -12,7 +12,7 @@ class FamilyWrapperView: NSScrollView {
   }
 
   required init(frame frameRect: NSRect, wrappedView: NSView) {
-    self.wrappedView = wrappedView
+    self.view = wrappedView
     super.init(frame: frameRect)
     self.contentView = NSClipView()
     self.documentView = wrappedView
@@ -20,7 +20,7 @@ class FamilyWrapperView: NSScrollView {
     self.hasVerticalScroller = false
 
     self.observer = wrappedView.observe(\.frame, options: [.initial, .new, .old]) { [weak self] view, value in
-      if value.newValue != value.oldValue, let rect = value.newValue {
+      if value.newValue != value.oldValue {
         self?.notifyFamilyScrollView()
       }
     }
@@ -37,7 +37,7 @@ class FamilyWrapperView: NSScrollView {
   }
 
   override func scrollWheel(with event: NSEvent) {
-    if event.scrollingDeltaX != 0.0 && wrappedView.frame.size.width > frame.size.width {
+    if event.scrollingDeltaX != 0.0 && view.frame.size.width > frame.size.width {
       super.scrollWheel(with: event)
     } else if event.scrollingDeltaY != 0.0 {
       nextResponder?.scrollWheel(with: event)

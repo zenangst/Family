@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BD2236E32034B12A00C465E4 /* NSScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2236E22034B12A00C465E4 /* NSScrollView.swift */; };
+		BD2236E32034B12A00C465E4 /* NSScrollView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2236E22034B12A00C465E4 /* NSScrollView+Extensions.swift */; };
 		BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */; };
 		BD4C7FE020349AA10037D3E5 /* FamilyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */; };
 		BD4C7FE220349ACE0037D3E5 /* FamilyScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */; };
@@ -22,28 +22,31 @@
 		BD5A80432030A9D9006A5EBB /* FamilyScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80392030A9D9006A5EBB /* FamilyScrollView.swift */; };
 		BD5A80442030A9D9006A5EBB /* CALayer+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A803B2030A9D9006A5EBB /* CALayer+Extensions.swift */; };
 		BD5A80452030A9D9006A5EBB /* CALayer+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A803B2030A9D9006A5EBB /* CALayer+Extensions.swift */; };
-		BD5A80492030AC83006A5EBB /* FamilyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80462030AC7D006A5EBB /* FamilyViewController.swift */; };
-		BD5A804A2030AC84006A5EBB /* FamilyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80462030AC7D006A5EBB /* FamilyViewController.swift */; };
+		BD5A80492030AC83006A5EBB /* FamilyViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80462030AC7D006A5EBB /* FamilyViewControllerTests.swift */; };
+		BD5A804A2030AC84006A5EBB /* FamilyViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80462030AC7D006A5EBB /* FamilyViewControllerTests.swift */; };
 		BD5A804C2030AC9F006A5EBB /* FamilyWrapperViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A804B2030AC9F006A5EBB /* FamilyWrapperViewTests.swift */; };
 		BD5A804D2030AC9F006A5EBB /* FamilyWrapperViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A804B2030AC9F006A5EBB /* FamilyWrapperViewTests.swift */; };
 		BD5A804F2030ACBA006A5EBB /* FamilyScrollViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A804E2030ACBA006A5EBB /* FamilyScrollViewTests.swift */; };
 		BD5A80502030ACBA006A5EBB /* FamilyScrollViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A804E2030ACBA006A5EBB /* FamilyScrollViewTests.swift */; };
 		BD5A80522030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */; };
-		BD5A80532030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */; };
 		BD5A80542030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */; };
+		BD7055E72043FB9600C2C5CB /* FamilyViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7055E62043FB9600C2C5CB /* FamilyViewControllerTests.swift */; };
+		BD7055E92044007300C2C5CB /* NSScrollViewExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7055E82044007300C2C5CB /* NSScrollViewExtensionsTests.swift */; };
 		BD7629BA20349C2500C917BB /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629B920349C2500C917BB /* TypeAlias.swift */; };
 		BD7629BB20349C2C00C917BB /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629B920349C2500C917BB /* TypeAlias.swift */; };
 		BD7629BC20349C2C00C917BB /* TypeAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629B920349C2500C917BB /* TypeAlias.swift */; };
 		BD7629BE20349CA300C917BB /* FamilyFriendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629BD20349CA300C917BB /* FamilyFriendly.swift */; };
 		BD7629BF20349CA300C917BB /* FamilyFriendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629BD20349CA300C917BB /* FamilyFriendly.swift */; };
 		BD7629C020349CA300C917BB /* FamilyFriendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629BD20349CA300C917BB /* FamilyFriendly.swift */; };
+		BDEE36352043394E00120E35 /* FamilyWrapperViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEE36342043394E00120E35 /* FamilyWrapperViewTests.swift */; };
+		BDEE3637204369F200120E35 /* FamilyContentViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEE3636204369F200120E35 /* FamilyContentViewTests.swift */; };
+		BDEE363920436B1100120E35 /* FamilyScrollViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEE363820436B1100120E35 /* FamilyScrollViewTests.swift */; };
 		D284B1051F79038B00D94AF3 /* Family.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D284B0FC1F79038B00D94AF3 /* Family.framework */; };
 		D284B1381F7906DB00D94AF3 /* Info-iOS-Tests.plist in Resources */ = {isa = PBXBuildFile; fileRef = D284B12F1F7906DA00D94AF3 /* Info-iOS-Tests.plist */; };
 		D284B1391F7906DB00D94AF3 /* Info-tvOS-Tests.plist in Resources */ = {isa = PBXBuildFile; fileRef = D284B1301F7906DA00D94AF3 /* Info-tvOS-Tests.plist */; };
 		D284B13B1F7906DB00D94AF3 /* Info-macOS-Tests.plist in Resources */ = {isa = PBXBuildFile; fileRef = D284B1331F7906DA00D94AF3 /* Info-macOS-Tests.plist */; };
 		D284B13E1F7907AD00D94AF3 /* tvOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D284B13D1F7907AD00D94AF3 /* tvOSTests.swift */; };
 		D284B1471F7908B800D94AF3 /* FamilyContentViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D284B1361F7906DA00D94AF3 /* FamilyContentViewTests.swift */; };
-		D284B1481F7908BB00D94AF3 /* macOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D284B12E1F7906DA00D94AF3 /* macOSTests.swift */; };
 		D5B2E8AA1C3A780C00C0327D /* Family.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5B2E89F1C3A780C00C0327D /* Family.framework */; };
 		D5C6294A1C3A7FAA007F7B7C /* Family.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5C629401C3A7FAA007F7B7C /* Family.framework */; };
 /* End PBXBuildFile section */
@@ -73,7 +76,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		BD2236E22034B12A00C465E4 /* NSScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSScrollView.swift; sourceTree = "<group>"; };
+		BD2236E22034B12A00C465E4 /* NSScrollView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSScrollView+Extensions.swift"; sourceTree = "<group>"; };
 		BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyWrapperView.swift; sourceTree = "<group>"; };
 		BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
 		BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollView.swift; sourceTree = "<group>"; };
@@ -83,16 +86,20 @@
 		BD5A80382030A9D9006A5EBB /* FamilyWrapperView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyWrapperView.swift; sourceTree = "<group>"; };
 		BD5A80392030A9D9006A5EBB /* FamilyScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyScrollView.swift; sourceTree = "<group>"; };
 		BD5A803B2030A9D9006A5EBB /* CALayer+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+Extensions.swift"; sourceTree = "<group>"; };
-		BD5A80462030AC7D006A5EBB /* FamilyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
+		BD5A80462030AC7D006A5EBB /* FamilyViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewControllerTests.swift; sourceTree = "<group>"; };
 		BD5A804B2030AC9F006A5EBB /* FamilyWrapperViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyWrapperViewTests.swift; sourceTree = "<group>"; };
 		BD5A804E2030ACBA006A5EBB /* FamilyScrollViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollViewTests.swift; sourceTree = "<group>"; };
 		BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CALayerExtensionTests.swift; sourceTree = "<group>"; };
+		BD7055E62043FB9600C2C5CB /* FamilyViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewControllerTests.swift; sourceTree = "<group>"; };
+		BD7055E82044007300C2C5CB /* NSScrollViewExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSScrollViewExtensionsTests.swift; sourceTree = "<group>"; };
 		BD7629B920349C2500C917BB /* TypeAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeAlias.swift; sourceTree = "<group>"; };
 		BD7629BD20349CA300C917BB /* FamilyFriendly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyFriendly.swift; sourceTree = "<group>"; };
+		BDEE36342043394E00120E35 /* FamilyWrapperViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyWrapperViewTests.swift; sourceTree = "<group>"; };
+		BDEE3636204369F200120E35 /* FamilyContentViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyContentViewTests.swift; sourceTree = "<group>"; };
+		BDEE363820436B1100120E35 /* FamilyScrollViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollViewTests.swift; sourceTree = "<group>"; };
 		D284B0FC1F79038B00D94AF3 /* Family.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Family.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D284B1041F79038B00D94AF3 /* Family-tvOS-Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Family-tvOS-Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D284B1181F79039F00D94AF3 /* Family.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Family.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D284B12E1F7906DA00D94AF3 /* macOSTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = macOSTests.swift; sourceTree = "<group>"; };
 		D284B12F1F7906DA00D94AF3 /* Info-iOS-Tests.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-iOS-Tests.plist"; sourceTree = "<group>"; };
 		D284B1301F7906DA00D94AF3 /* Info-tvOS-Tests.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-tvOS-Tests.plist"; sourceTree = "<group>"; };
 		D284B1331F7906DA00D94AF3 /* Info-macOS-Tests.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-macOS-Tests.plist"; sourceTree = "<group>"; };
@@ -189,7 +196,7 @@
 		BD2236E12034B11A00C465E4 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				BD2236E22034B12A00C465E4 /* NSScrollView.swift */,
+				BD2236E22034B12A00C465E4 /* NSScrollView+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -234,7 +241,11 @@
 		D284B12D1F7906DA00D94AF3 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
-				D284B12E1F7906DA00D94AF3 /* macOSTests.swift */,
+				BDEE36342043394E00120E35 /* FamilyWrapperViewTests.swift */,
+				BDEE3636204369F200120E35 /* FamilyContentViewTests.swift */,
+				BDEE363820436B1100120E35 /* FamilyScrollViewTests.swift */,
+				BD7055E62043FB9600C2C5CB /* FamilyViewControllerTests.swift */,
+				BD7055E82044007300C2C5CB /* NSScrollViewExtensionsTests.swift */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
@@ -259,7 +270,7 @@
 			isa = PBXGroup;
 			children = (
 				D284B1361F7906DA00D94AF3 /* FamilyContentViewTests.swift */,
-				BD5A80462030AC7D006A5EBB /* FamilyViewController.swift */,
+				BD5A80462030AC7D006A5EBB /* FamilyViewControllerTests.swift */,
 				BD5A804B2030AC9F006A5EBB /* FamilyWrapperViewTests.swift */,
 				BD5A804E2030ACBA006A5EBB /* FamilyScrollViewTests.swift */,
 			);
@@ -627,7 +638,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD5A804D2030AC9F006A5EBB /* FamilyWrapperViewTests.swift in Sources */,
-				BD5A804A2030AC84006A5EBB /* FamilyViewController.swift in Sources */,
+				BD5A804A2030AC84006A5EBB /* FamilyViewControllerTests.swift in Sources */,
 				BD5A80502030ACBA006A5EBB /* FamilyScrollViewTests.swift in Sources */,
 				D284B13E1F7907AD00D94AF3 /* tvOSTests.swift in Sources */,
 				BD5A80542030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */,
@@ -660,7 +671,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD5A804C2030AC9F006A5EBB /* FamilyWrapperViewTests.swift in Sources */,
-				BD5A80492030AC83006A5EBB /* FamilyViewController.swift in Sources */,
+				BD5A80492030AC83006A5EBB /* FamilyViewControllerTests.swift in Sources */,
 				BD5A804F2030ACBA006A5EBB /* FamilyScrollViewTests.swift in Sources */,
 				D284B1471F7908B800D94AF3 /* FamilyContentViewTests.swift in Sources */,
 				BD5A80522030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */,
@@ -671,7 +682,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD2236E32034B12A00C465E4 /* NSScrollView.swift in Sources */,
+				BD2236E32034B12A00C465E4 /* NSScrollView+Extensions.swift in Sources */,
 				BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */,
 				BD7629BF20349CA300C917BB /* FamilyFriendly.swift in Sources */,
 				BD4C7FE420349B030037D3E5 /* FamilyContentView.swift in Sources */,
@@ -685,8 +696,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D284B1481F7908BB00D94AF3 /* macOSTests.swift in Sources */,
-				BD5A80532030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */,
+				BDEE363920436B1100120E35 /* FamilyScrollViewTests.swift in Sources */,
+				BD7055E92044007300C2C5CB /* NSScrollViewExtensionsTests.swift in Sources */,
+				BDEE3637204369F200120E35 /* FamilyContentViewTests.swift in Sources */,
+				BD7055E72043FB9600C2C5CB /* FamilyViewControllerTests.swift in Sources */,
+				BDEE36352043394E00120E35 /* FamilyWrapperViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -84,4 +84,3 @@ class FamilyViewControllerTests: XCTestCase {
                    familyViewController.scrollView.scrollIndicatorInsets.bottom)
   }
 }
-

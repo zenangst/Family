@@ -53,4 +53,10 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.familyContentView.addSubview(childView)
     scrollView.frame = view.bounds
   }
+
+  public func addChildViewControllers(_ childControllers: NSViewController ...) {
+    for childController in childControllers {
+      addChildViewController(childController)
+    }
+  }
 }
