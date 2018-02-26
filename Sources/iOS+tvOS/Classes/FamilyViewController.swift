@@ -46,7 +46,19 @@ open class FamilyViewController: UIViewController {
   override open func addChildViewController(_ childController: UIViewController) {
     childController.willMove(toParentViewController: self)
     super.addChildViewController(childController)
-    scrollView.contentView.addSubview(childController.view)
+
+    let view: UIView
+    switch childController {
+    case let collectionViewController as UICollectionViewController:
+      if let collectionView = collectionViewController.collectionView {
+        scrollView.contentView.addSubview(collectionView)
+      } else {
+        assertionFailure("Unable to resolve collection view from controller.")
+      }
+    default:
+      scrollView.contentView.addSubview(childController.view)
+    }
+
     childController.didMove(toParentViewController: self)
   }
 
