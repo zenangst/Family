@@ -29,13 +29,13 @@ If you are interested in the origin story behind Family, then you can read this 
 
 ## Features
 
-- [x] Animation support.
-- [x] Continuous scrolling with multiple scroll views.
-- [x] Margins between child view controllers.
-- [x] Table view and collection view dequeuing.
-- [x] iOS support.
-- [x] macOS support (beta).
-- [x] tvOS support (beta).
+- [x] 🍩Animation support.
+- [x] 🤳🏻Continuous scrolling with multiple scroll views.
+- [x] 📏Margins between child view controllers.
+- [x] 🌀Table view and collection view dequeuing.
+- [x] 📱iOS support.
+- [x] 💻macOS support.
+- [x] 📺tvOS support.
 
 ## Usage
 
