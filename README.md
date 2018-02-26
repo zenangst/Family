@@ -31,8 +31,8 @@ The algorithm also modifies the views frames on the fly, constraining the height
 - [x] Margins between child view controllers.
 - [x] Table view and collection view dequeuing.
 - [x] iOS support.
-- [ ] tvOS support (beta).
-- [ ] macOS support (coming).
+- [x] macOS support (beta).
+- [x] tvOS support (beta).
 
 ## Usage
 
