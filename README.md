@@ -1,7 +1,7 @@
 ![Family logo](https://github.com/zenangst/Family/blob/master/Images/Family-header.png?raw=true)
 <div align="center">
 
-[![CI Status](https://img.shields.io/circleci/project/github/zenangst/Family.svg)](https://circleci.com/gh/zenangst/Family)
+[![CI Status](https://travis-ci.org/zenangst/Family.svg?branch=master)](https://travis-ci.org/zenangst/Family)
 [![Version](https://img.shields.io/cocoapods/v/Family.svg?style=flat)](http://cocoadocs.org/docsets/Family)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![License](https://img.shields.io/cocoapods/l/Family.svg?style=flat)](http://cocoadocs.org/docsets/Family)
