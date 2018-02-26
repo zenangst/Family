@@ -24,6 +24,9 @@ How do you get a continuous scrolling experience while keeping dequeuing intact?
 This is where Family framework comes in, with the help of its layout algorithm, all your regular- and scroll views get stacked in the same linear vertical order you add them to the hierarchy. To achieve a continuous, your scroll-views no longer scroll themselves but get their new content offset passed to them by the parent scroll view that is handled for you internally in the framework.
 The algorithm also modifies the views frames on the fly, constraining the height to the window.
 
+## The story behind Family
+If you are interested in the origin story behind Family, then you can read this [Medium article](https://medium.com/hyperoslo/why-i-wrote-family-framework-d1c3cb062c85).
+
 ## Features
 
 - [x] Animation support.
