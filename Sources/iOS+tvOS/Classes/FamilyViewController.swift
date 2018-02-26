@@ -28,8 +28,8 @@ open class FamilyViewController: UIViewController {
     if #available(iOS 11.0, tvOS 11.0, *) {
       scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
       scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-      scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
-      scrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
+      scrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+      scrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
     } else {
       if #available(iOS 9.0, *) {
         scrollView.topAnchor.constraint(equalTo: topLayoutGuide.topAnchor).isActive = true
