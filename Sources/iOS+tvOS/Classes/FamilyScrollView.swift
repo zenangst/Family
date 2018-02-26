@@ -284,6 +284,8 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       case true:
         if scrollView is FamilyWrapperView {
           newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+        } else {
+          newHeight = fmin(contentView.frame.height, newHeight)
         }
 
         let shouldModifyContentOffset = contentOffset.y <= scrollView.contentSize.height ||
