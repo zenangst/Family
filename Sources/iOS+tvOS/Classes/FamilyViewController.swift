@@ -47,7 +47,6 @@ open class FamilyViewController: UIViewController {
     childController.willMove(toParentViewController: self)
     super.addChildViewController(childController)
 
-    let view: UIView
     switch childController {
     case let collectionViewController as UICollectionViewController:
       if let collectionView = collectionViewController.collectionView {
