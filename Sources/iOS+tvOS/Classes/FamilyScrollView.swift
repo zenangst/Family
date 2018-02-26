@@ -143,7 +143,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     #else
       if amountOfScrollView > 1 {
         for case let scrollView as UIScrollView in subviewsInLayoutOrder {
-          scrollView.isScrollEnabled = (scrollView as? UICollectionView)?.flowLayout?.scrollDirection == .horizontal
+          scrollView.isScrollEnabled = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
         }
       } else {
         scrollView.isScrollEnabled = true
