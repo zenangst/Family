@@ -203,15 +203,8 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   private func computeContentSize() {
     let computedHeight = subviewsInLayoutOrder.reduce(0, { $0 + $1.contentSize.height + spacingBetweenViews })
 
-    #if os(tvOS)
-      let multipleComponents = subviewsInLayoutOrder.count > 1
-      let height = multipleComponents
-        ? computedHeight
-        : frame.size.height
-    #else
-      let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
-      let height = fmax(computedHeight, minimumContentHeight)
-    #endif
+    let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
+    let height = fmax(computedHeight, minimumContentHeight)
 
     contentSize = CGSize(width: bounds.size.width, height: height)
   }
