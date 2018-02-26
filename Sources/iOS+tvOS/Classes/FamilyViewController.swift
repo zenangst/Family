@@ -25,7 +25,7 @@ open class FamilyViewController: UIViewController {
   /// Configure constraints for the scroll view.
   private func configureConstraints() {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
-    if #available(iOS 11.0, *) {
+    if #available(iOS 11.0, tvOS 11.0, *) {
       scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
       scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
       scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true

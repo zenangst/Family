@@ -51,7 +51,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   public required override init(frame: CGRect) {
     super.init(frame: frame)
     contentView.autoresizingMask = self.autoresizingMask
-    if #available(iOS 11.0, *) {
+    if #available(iOS 11.0, tvOS 11.0, *) {
       contentInsetAdjustmentBehavior = .never
     }
     addSubview(contentView)
