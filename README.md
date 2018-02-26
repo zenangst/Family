@@ -4,6 +4,7 @@
 [![CI Status](https://travis-ci.org/zenangst/Family.svg?branch=master)](https://travis-ci.org/zenangst/Family)
 [![Version](https://img.shields.io/cocoapods/v/Family.svg?style=flat)](http://cocoadocs.org/docsets/Family)
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![Code Coverage](https://codecov.io/github/zenangst/Family/coverage.svg?branch=master)
 [![License](https://img.shields.io/cocoapods/l/Family.svg?style=flat)](http://cocoadocs.org/docsets/Family)
 [![Platform](https://img.shields.io/cocoapods/p/Family.svg?style=flat)](http://cocoadocs.org/docsets/Family)
 ![Swift](https://img.shields.io/badge/%20in-swift%204.0-orange.svg)
