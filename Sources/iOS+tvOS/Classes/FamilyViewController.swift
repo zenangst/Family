@@ -99,6 +99,13 @@ open class FamilyViewController: UIViewController {
   ///
   /// - Parameter childControllers: The view controllers to be added as children.
   public func addChildViewControllers(_ childControllers: UIViewController ...) {
+    addChildViewControllers(childControllers)
+  }
+
+  /// Adds a collection of view controllers as children of the current view controller.
+  ///
+  /// - Parameter childControllers: The view controllers to be added as children.
+  public func addChildViewControllers(_ childControllers: [UIViewController]) {
     for childController in childControllers {
       addChildViewController(childController)
     }
