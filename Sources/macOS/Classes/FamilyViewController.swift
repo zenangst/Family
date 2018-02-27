@@ -55,6 +55,10 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
   }
 
   public func addChildViewControllers(_ childControllers: NSViewController ...) {
+    addChildViewControllers(childControllers)
+  }
+
+  public func addChildViewControllers(_ childControllers: [NSViewController]) {
     for childController in childControllers {
       addChildViewController(childController)
     }
