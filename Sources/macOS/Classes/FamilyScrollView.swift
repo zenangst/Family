@@ -221,6 +221,7 @@ public class FamilyScrollView: NSScrollView {
       instance.documentView?.frame.size.height = contentSize.height
     } else {
       instance.documentView?.frame.size = contentSize
+      instance.frame.size.height = contentSize.height
       instance.frame.size.width = self.frame.width
       instance.frame.origin.y = currentYOffset
     }
