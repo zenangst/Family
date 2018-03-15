@@ -55,13 +55,12 @@ class FamilyWrapperView: NSScrollView {
     }
 
     if NSAnimationContext.current.duration > 0.0 && !familyScrollView.layoutIsRunning {
-      switch view {
-      case let collectionView as NSCollectionView:
+      if view is NSCollectionView {
         let delay = NSAnimationContext.current.duration
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
           familyScrollView.layoutViews(withDuration: delay)
         }
-      default:
+      } else {
         familyScrollView.layoutViews(withDuration: NSAnimationContext.current.duration)
       }
     } else {
