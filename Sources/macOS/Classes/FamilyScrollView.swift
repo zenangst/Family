@@ -4,6 +4,8 @@ public class FamilyScrollView: NSScrollView {
   public override var isFlipped: Bool { return true }
   public lazy var familyContentView: FamilyContentView = .init()
   public var spacingBetweenViews: CGFloat = 0
+  var layoutIsRunning: Bool = false
+  var isScrolling: Bool = false
   private var subviewsInLayoutOrder = [NSScrollView]()
 
   override init(frame frameRect: NSRect) {
@@ -33,20 +35,22 @@ public class FamilyScrollView: NSScrollView {
 
   public func layoutViews(withDuration duration: CFTimeInterval? = nil,
                           excludeOffscreenViews: Bool = true) {
-
-    if NSAnimationContext.current.duration == 0.25 {
-      NSAnimationContext.current.duration = 0.0
+    defer { computeContentSize() }
+    if layoutIsRunning {
+      return
     }
 
-    runLayoutSubviewsAlgorithm(
-      withDuration: NSAnimationContext.current.duration,
-      excludeOffscreenViews: excludeOffscreenViews
-    )
-    computeContentSize()
-
-    DispatchQueue.main.asyncAfter(deadline: .now() + NSAnimationContext.current.duration) {
+    if let duration = duration, duration > 0 {
+      NSAnimationContext.current.duration = duration
+      NSAnimationContext.current.allowsImplicitAnimation = true
+    } else if isScrolling {
       NSAnimationContext.current.duration = 0.0
+      NSAnimationContext.current.allowsImplicitAnimation = false
     }
+
+    layoutIsRunning = true
+    runLayoutSubviewsAlgorithm(excludeOffscreenViews: excludeOffscreenViews)
+    layoutIsRunning = false
   }
 
   // MARK: - Observers
@@ -78,7 +82,7 @@ public class FamilyScrollView: NSScrollView {
     if (notification.object as? NSClipView) === contentView,
       let window = window,
       !window.inLiveResize {
-      layoutViews()
+      layoutViews(withDuration: 0.0)
     }
   }
 
@@ -132,6 +136,15 @@ public class FamilyScrollView: NSScrollView {
     super.layout()
   }
 
+  public override func scrollWheel(with event: NSEvent) {
+    super.scrollWheel(with: event)
+
+    isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
+      !(event.phase == .ended || event.momentumPhase == .ended)
+
+    layoutViews(withDuration: 0.0, excludeOffscreenViews: false)
+  }
+
   // MARK: - Private methods
 
   private func rebuildSubviewsInLayoutOrder(exceptSubview: View? = nil) {
@@ -140,8 +153,7 @@ public class FamilyScrollView: NSScrollView {
     subviewsInLayoutOrder = filteredSubviews
   }
 
-  private func runLayoutSubviewsAlgorithm(withDuration duration: CFTimeInterval? = nil,
-                                          excludeOffscreenViews: Bool = true) {
+  private func runLayoutSubviewsAlgorithm(excludeOffscreenViews: Bool = true) {
     var yOffsetOfCurrentSubview: CGFloat = 0.0
     var offset = 0
     for scrollView in subviewsInLayoutOrder where scrollView.documentView != nil {
@@ -178,7 +190,6 @@ public class FamilyScrollView: NSScrollView {
 
       setFrame(
         frame,
-        withDuration: duration,
         contentSize: contentSize,
         shouldResize: shouldResize,
         currentYOffset: yOffsetOfCurrentSubview,
@@ -186,6 +197,7 @@ public class FamilyScrollView: NSScrollView {
       )
 
       scrollView.contentView.scroll(contentOffset)
+
       yOffsetOfCurrentSubview += contentSize.height + spacingBetweenViews
       offset += 1
     }
@@ -207,30 +219,31 @@ public class FamilyScrollView: NSScrollView {
   }
 
   private func setFrame(_ frame: NSRect,
-                        withDuration duration: CFTimeInterval? = nil,
                         contentSize: CGSize,
                         shouldResize: Bool,
                         currentYOffset: CGFloat,
                         to wrapperView: NSScrollView) {
-
-    let instance: NSScrollView = wrapperView.animator()
-
     if shouldResize {
-      instance.frame = frame
-      instance.documentView?.frame.size.width = self.frame.width
-      instance.documentView?.frame.size.height = contentSize.height
+      wrapperView.frame = frame
+      wrapperView.documentView?.frame.size.width = self.frame.width
+      wrapperView.documentView?.frame.size.height = contentSize.height
     } else {
-      instance.documentView?.frame.size = contentSize
-      instance.frame.size.height = contentSize.height
-      instance.frame.size.width = self.frame.width
-      instance.frame.origin.y = currentYOffset
+      wrapperView.documentView?.frame.size = contentSize
+      wrapperView.frame.size.height = contentSize.height
+      wrapperView.frame.size.width = self.frame.width
+      wrapperView.frame.origin.y = currentYOffset
     }
   }
 
-  private func computeContentSize() {
+  private func computeContentSize(file: StaticString = #file, function: StaticString = #function, line: UInt = #line) {
     let computedHeight = subviewsInLayoutOrder.reduce(0, { $0 + ($1.documentView?.frame.size.height ?? 0) + spacingBetweenViews })
     let minimumContentHeight = bounds.height
-    let height = fmax(computedHeight, minimumContentHeight)
+    var height = fmax(computedHeight, minimumContentHeight)
+
+    if computedHeight < minimumContentHeight {
+      height -= contentInsets.top
+    }
+
     documentView?.frame.size = CGSize(width: bounds.size.width, height: height)
   }
 }

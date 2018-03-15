@@ -1,10 +1,9 @@
 import Cocoa
 
 class FamilyWrapperView: NSScrollView {
+  var isScrolling: Bool = false
   var view: NSView
-  var observer: NSKeyValueObservation?
-  var animationsObserver: NSKeyValueObservation?
-  var viewContentSize: CGSize = .zero
+  private var observer: NSKeyValueObservation?
 
   open override var verticalScroller: NSScroller? {
     get { return nil }
@@ -19,22 +18,22 @@ class FamilyWrapperView: NSScrollView {
     self.hasHorizontalScroller = true
     self.hasVerticalScroller = false
     self.postsBoundsChangedNotifications = true
+    self.verticalScrollElasticity = .none
 
-    self.observer = wrappedView.observe(\.frame, options: [.initial, .new, .old]) { [weak self] view, value in
+    self.observer = wrappedView.observe(\.frame, options: [.new, .old], changeHandler: { (_, value) in
       if value.newValue != value.oldValue {
-        self?.notifyFamilyScrollView()
+        self.layoutViews()
       }
-    }
-  }
-
-  func notifyFamilyScrollView() {
-    if let familyScrollView = enclosingScrollView as? FamilyScrollView {
-      familyScrollView.layoutViews()
-    }
+    })
   }
 
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+
+  override func layout() {
+    super.layout()
+    layoutViews()
   }
 
   override func scrollWheel(with event: NSEvent) {
@@ -42,6 +41,31 @@ class FamilyWrapperView: NSScrollView {
       super.scrollWheel(with: event)
     } else if event.scrollingDeltaY != 0.0 {
       nextResponder?.scrollWheel(with: event)
+    }
+
+    isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
+      !(event.phase == .ended || event.momentumPhase == .ended)
+  }
+
+  func layoutViews() {
+    guard window?.inLiveResize != true,
+      !isScrolling,
+      let familyScrollView = enclosingScrollView as? FamilyScrollView else {
+        return
+    }
+
+    if NSAnimationContext.current.duration > 0.0 && !familyScrollView.layoutIsRunning {
+      switch view {
+      case let collectionView as NSCollectionView:
+        let delay = NSAnimationContext.current.duration
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+          familyScrollView.layoutViews(withDuration: delay)
+        }
+      default:
+        familyScrollView.layoutViews(withDuration: NSAnimationContext.current.duration)
+      }
+    } else {
+      (enclosingScrollView as? FamilyScrollView)?.layoutViews()
     }
   }
 }
