@@ -96,7 +96,9 @@ public class FamilyScrollView: NSScrollView {
           continue
         }
 
-        collectionView.frame.size.width = self.frame.size.width
+        if (collectionView.collectionViewLayout as? NSCollectionViewFlowLayout)?.scrollDirection == .vertical {
+          collectionView.frame.size.width = self.frame.size.width
+        }
         collectionView.reloadData()
       }
     }
