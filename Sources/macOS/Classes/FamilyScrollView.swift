@@ -12,6 +12,7 @@ public class FamilyScrollView: NSScrollView {
     super.init(frame: frameRect)
     self.documentView = familyContentView
     self.drawsBackground = false
+    self.familyContentView.familyScrollView = self
 
     configureObservers()
     hasVerticalScroller = true
@@ -88,20 +89,7 @@ public class FamilyScrollView: NSScrollView {
 
   // MARK: - Window resizing
 
-  fileprivate func processNewWindowSize(excludeOffscreenViews: Bool) {
-    for case let familyView in subviewsInLayoutOrder {
-      if let collectionView = familyView.documentView as? NSCollectionView {
-        let visibleOnScreen = documentVisibleRect.intersects(familyView.frame)
-        if excludeOffscreenViews && !visibleOnScreen {
-          continue
-        }
-
-        if (collectionView.collectionViewLayout as? NSCollectionViewFlowLayout)?.scrollDirection == .vertical {
-          collectionView.frame.size.width = self.frame.size.width
-        }
-        collectionView.reloadData()
-      }
-    }
+  private func processNewWindowSize(excludeOffscreenViews: Bool) {
     layoutViews(excludeOffscreenViews: false)
   }
 
@@ -158,7 +146,7 @@ public class FamilyScrollView: NSScrollView {
   private func runLayoutSubviewsAlgorithm(excludeOffscreenViews: Bool = true) {
     var yOffsetOfCurrentSubview: CGFloat = 0.0
     var offset = 0
-    for scrollView in subviewsInLayoutOrder where scrollView.documentView != nil {
+    for scrollView in subviewsInLayoutOrder where scrollView.documentView != nil && scrollView.documentView?.isHidden == false {
       var shouldResize: Bool = true
       let contentSize: CGSize = contentSizeForView(scrollView.documentView!, shouldResize: &shouldResize)
       var frame = scrollView.frame
@@ -237,8 +225,10 @@ public class FamilyScrollView: NSScrollView {
     }
   }
 
-  private func computeContentSize(file: StaticString = #file, function: StaticString = #function, line: UInt = #line) {
-    let computedHeight = subviewsInLayoutOrder.reduce(0, { $0 + ($1.documentView?.frame.size.height ?? 0) + spacingBetweenViews })
+  private func computeContentSize() {
+    let computedHeight = subviewsInLayoutOrder
+      .filter({ $0.documentView?.isHidden == false })
+      .reduce(0, { $0 + ($1.documentView?.frame.size.height ?? 0) + spacingBetweenViews })
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
 

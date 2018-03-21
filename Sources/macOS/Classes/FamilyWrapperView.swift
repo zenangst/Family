@@ -1,9 +1,11 @@
 import Cocoa
 
 class FamilyWrapperView: NSScrollView {
+  weak var parentContentView: FamilyContentView?
   var isScrolling: Bool = false
   var view: NSView
-  private var observer: NSKeyValueObservation?
+  private var frameObserver: NSKeyValueObservation?
+  private var hiddenObserver: NSKeyValueObservation?
 
   open override var verticalScroller: NSScroller? {
     get { return nil }
@@ -20,11 +22,18 @@ class FamilyWrapperView: NSScrollView {
     self.postsBoundsChangedNotifications = true
     self.verticalScrollElasticity = .none
 
-    self.observer = wrappedView.observe(\.frame, options: [.new, .old], changeHandler: { (_, value) in
+    self.frameObserver = wrappedView.observe(\.frame, options: [.new, .old], changeHandler: { (_, value) in
       if value.newValue != value.oldValue {
         self.layoutViews()
       }
     })
+
+    self.hiddenObserver = view.observe(\.isHidden, options: [.initial, .new, .old]) { [weak self] (_, value) in
+      if value.newValue != value.oldValue, let newValue = value.newValue {
+        self?.isHidden = newValue
+        self?.layoutViews()
+      }
+    }
   }
 
   required init?(coder: NSCoder) {
@@ -50,7 +59,7 @@ class FamilyWrapperView: NSScrollView {
   func layoutViews() {
     guard window?.inLiveResize != true,
       !isScrolling,
-      let familyScrollView = enclosingScrollView as? FamilyScrollView else {
+      let familyScrollView = parentContentView?.familyScrollView else {
         return
     }
 
