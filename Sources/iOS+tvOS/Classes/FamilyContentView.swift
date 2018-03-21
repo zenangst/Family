@@ -6,6 +6,8 @@ import UIKit
 /// only needs to take `UIScrollView` based views into account when performing
 /// its layout algorithm.
 final public class FamilyContentView: UIView {
+  weak var familyScrollView: FamilyScrollView?
+
   /// Convenience methods to return all subviews as scroll view.
   var scrollViews: [UIScrollView] {
     return subviews.flatMap { $0 as? UIScrollView }
@@ -27,6 +29,7 @@ final public class FamilyContentView: UIView {
     default:
       let wrapper = FamilyWrapperView(frame: view.frame,
                                       view: view)
+      wrapper.parentContentView = self
       subview = wrapper
     }
 
@@ -40,10 +43,8 @@ final public class FamilyContentView: UIView {
   ///
   /// - Parameter subview: The view that got added as a subview.
   override open func didAddSubview(_ subview: UIView) {
-    resolveFamilyScrollView {
-      if let scrollView = subview as? UIScrollView {
-        $0.didAddScrollViewToContainer(scrollView)
-      }
+    if let scrollView = subview as? UIScrollView {
+      familyScrollView?.didAddScrollViewToContainer(scrollView)
     }
   }
 
@@ -54,23 +55,13 @@ final public class FamilyContentView: UIView {
   /// - Parameter subview: The subview that will be removed.
   override open func willRemoveSubview(_ subview: UIView) {
     super.willRemoveSubview(subview)
-    resolveFamilyScrollView { $0.willRemoveSubview(subview) }
+    familyScrollView?.willRemoveSubview(subview)
   }
 
   /// Lays out subviews.
   open override func layoutSubviews() {
     super.layoutSubviews()
-    resolveFamilyScrollView { $0.setNeedsLayout() }
-  }
-
-  /// Resolves the super view as `FamilyScrollView`.
-  ///
-  /// - Parameter closure: A closure that will be called when the `.superview`
-  ///                      has been resolved as a `FamilyScrollView`.
-  private func resolveFamilyScrollView(closure: (FamilyScrollView) -> Void) {
-    if let familyScrollView = superview as? FamilyScrollView {
-      closure(familyScrollView)
-    }
+    familyScrollView?.setNeedsLayout()
   }
 }
 

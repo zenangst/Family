@@ -38,6 +38,11 @@ class FamilyViewControllerTests: XCTestCase {
     let firstViewController = UIViewController()
     let secondViewController = UIViewController()
     let thirdViewController = UIViewController()
+
+    firstViewController.view.frame.size.height = 500
+    secondViewController.view.frame.size.height = 500
+    thirdViewController.view.frame.size.height = 500
+
     familyViewController.addChildViewControllers(firstViewController,
                                                  secondViewController,
                                                  thirdViewController)
@@ -52,6 +57,16 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(wrapperView, secondViewController.view.superview)
     wrapperView = (familyViewController.scrollView.contentView.subviews[2] as? FamilyWrapperView)
     XCTAssertEqual(wrapperView, thirdViewController.view.superview)
+
+    XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1500)
+    secondViewController.view.isHidden = true
+
+    #if os(iOS)
+      XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1000)
+    #else
+      XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1080)
+    #endif
+
   }
 
   func testAddingCustomViewFromController() {

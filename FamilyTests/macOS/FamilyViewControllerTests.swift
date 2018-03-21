@@ -32,6 +32,7 @@ class FamilyViewControllerTests: XCTestCase {
     super.setUp()
     familyViewController = FamilyViewController()
     familyViewController.prepareViewController()
+    NSAnimationContext.current.duration = 0.0
   }
 
   func testAddingChildViewController() {
@@ -45,6 +46,11 @@ class FamilyViewControllerTests: XCTestCase {
     let firstViewController = MockViewController()
     let secondViewController = MockViewController()
     let thirdViewController = MockViewController()
+
+    firstViewController.view.frame.size.height = 500
+    secondViewController.view.frame.size.height = 500
+    thirdViewController.view.frame.size.height = 500
+
     familyViewController.addChildViewControllers(firstViewController,
                                                  secondViewController,
                                                  thirdViewController)
@@ -61,6 +67,11 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(wrapperView?.documentView, secondViewController.view)
     wrapperView = (subviews[2] as? FamilyWrapperView)
     XCTAssertEqual(wrapperView?.documentView, thirdViewController.view)
+
+    familyViewController.scrollView.layoutViews(withDuration: 0)
+    XCTAssertEqual(familyViewController.scrollView.documentView?.frame.size.height, 1500)
+    secondViewController.view.isHidden = true
+    XCTAssertEqual(familyViewController.scrollView.documentView?.frame.size.height, 1000)
   }
 
   func testAddingCustomViewFromController() {

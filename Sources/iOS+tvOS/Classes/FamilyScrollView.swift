@@ -50,6 +50,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// - Parameter frame: The frame rectangle for the view, measured in points.
   public required override init(frame: CGRect) {
     super.init(frame: frame)
+    contentView.familyScrollView = self
     contentView.autoresizingMask = self.autoresizingMask
     if #available(iOS 11.0, tvOS 11.0, *) {
       contentInsetAdjustmentBehavior = .never
@@ -196,12 +197,25 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     })
 
     observers.append(Observer(view: view, keyValueObservation: boundsObserver))
+
+    let hiddenObserver = view.observe(\.isHidden, options: [.new, .old], changeHandler: { [weak self] (_, value) in
+      guard let newValue = value.newValue, let oldValue = value.oldValue else {
+        return
+      }
+
+      if newValue != oldValue {
+        self?.layoutViews()
+      }
+    })
+    observers.append(Observer(view: view, keyValueObservation: hiddenObserver))
   }
 
   /// Computes the content size for the collection view based on
   /// combined content size of all the underlaying scroll views.
   private func computeContentSize() {
-    let computedHeight = subviewsInLayoutOrder.reduce(0, { $0 + $1.contentSize.height + spacingBetweenViews })
+    let computedHeight = subviewsInLayoutOrder
+      .filter({ $0.isHidden == false || ($0 as? FamilyWrapperView)?.view.isHidden == false })
+      .reduce(0, { $0 + $1.contentSize.height + spacingBetweenViews })
 
     let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
     let height = fmax(computedHeight, minimumContentHeight)
@@ -257,7 +271,11 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   private func runLayoutSubviewsAlgorithm() {
     let multipleComponents = subviewsInLayoutOrder.count > 1
     var yOffsetOfCurrentSubview: CGFloat = 0.0
-    for scrollView in subviewsInLayoutOrder {
+    for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
+      if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
+        continue
+      }
+
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
 

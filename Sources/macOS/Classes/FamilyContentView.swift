@@ -3,6 +3,8 @@ import Cocoa
 public class FamilyContentView: NSView {
   public override var isFlipped: Bool { return true }
 
+  weak var familyScrollView: FamilyScrollView?
+
   var scrollViews: [NSScrollView] {
     return subviews.flatMap { $0 as? NSScrollView }
   }
@@ -16,6 +18,7 @@ public class FamilyContentView: NSView {
     default:
       let wrapper = FamilyWrapperView(frame: view.frame,
                                       wrappedView: view)
+      wrapper.parentContentView = self
       subview = wrapper
     }
     super.addSubview(subview)
@@ -23,25 +26,17 @@ public class FamilyContentView: NSView {
 
   override public func didAddSubview(_ subview: NSView) {
     super.didAddSubview(subview)
-    resolveFamilyScrollView {
-      if let scrollView = subview as? NSScrollView {
-        $0.didAddScrollViewToContainer(scrollView)
-      }
+    if let scrollView = subview as? NSScrollView {
+      familyScrollView?.didAddScrollViewToContainer(scrollView)
     }
   }
 
   override public func willRemoveSubview(_ subview: NSView) {
-    resolveFamilyScrollView { $0.willRemoveSubview(subview) }
+    familyScrollView?.willRemoveSubview(subview)
   }
 
   override public func scroll(_ point: NSPoint) {
     super.scroll(point)
-    resolveFamilyScrollView { $0.layoutViews() }
-  }
-
-  private func resolveFamilyScrollView(closure: (FamilyScrollView) -> Void) {
-    if let familyScrollView = enclosingScrollView as? FamilyScrollView {
-      closure(familyScrollView)
-    }
+    familyScrollView?.layoutViews()
   }
 }
