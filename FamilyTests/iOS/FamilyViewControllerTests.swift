@@ -60,7 +60,13 @@ class FamilyViewControllerTests: XCTestCase {
 
     XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1500)
     secondViewController.view.isHidden = true
-    XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1000)
+
+    #if os(iOS)
+      XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1000)
+    #else
+      XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1080)
+    #endif
+
   }
 
   func testAddingCustomViewFromController() {
