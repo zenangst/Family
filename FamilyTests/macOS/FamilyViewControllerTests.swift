@@ -75,12 +75,22 @@ class FamilyViewControllerTests: XCTestCase {
   }
 
   func testAddingCustomViewFromController() {
-    let mockedViewController = MockScrollViewController()
-    familyViewController.addChildViewController(mockedViewController, view: { $0.scrollView })
-
-    XCTAssertEqual(mockedViewController.parent, familyViewController)
-    XCTAssertEqual(familyViewController.childViewControllers.count, 1)
-    XCTAssertEqual(familyViewController.scrollView.documentView, mockedViewController.scrollView.superview)
+    let mockedViewController1 = MockScrollViewController()
+    let mockedViewController2 = MockScrollViewController()
+    familyViewController.addChildViewController(mockedViewController1, view: { $0.scrollView })
+    familyViewController.addChildViewController(mockedViewController2, view: { $0.scrollView })
+    
+    XCTAssertEqual(mockedViewController1.parent, familyViewController)
+    XCTAssertEqual(mockedViewController2.parent, familyViewController)
+    XCTAssertEqual(familyViewController.childViewControllers.count, 2)
+    XCTAssertEqual(familyViewController.scrollView.documentView, mockedViewController1.scrollView.superview)
+    XCTAssertEqual(familyViewController.scrollView.documentView, mockedViewController2.scrollView.superview)
+    
+    XCTAssertEqual(familyViewController.registry.count, 2)
+    mockedViewController1.removeFromParentViewController()
+    XCTAssertEqual(familyViewController.registry.count, 1)
+    mockedViewController2.removeFromParentViewController()
+    XCTAssertEqual(familyViewController.registry.count, 0)
   }
 
   func testAddingChildViewControllerWithConstraintedHeight() {

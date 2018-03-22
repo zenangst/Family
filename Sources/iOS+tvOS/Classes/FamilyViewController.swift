@@ -5,10 +5,18 @@ import UIKit
 /// invoke the approriate child view controller related methods in sequence and
 /// adds the controllers view or custom view to view heirarcy inside the
 /// content view of the `FamilyScrollView`.
-open class FamilyViewController: UIViewController {
+open class FamilyViewController: UIViewController, FamilyFriendly {
+  var observers = [NSKeyValueObservation]()
+  var registry = [ViewController : View]()
+
   /// A custom implementation of a `UIScrollView` that handles continious scrolling
   /// when using scroll views inside of scroll view.
   public lazy var scrollView: FamilyScrollView = FamilyScrollView()
+
+  deinit {
+    childViewControllers.forEach { $0.removeFromParentViewController() }
+    purgeRemovedViews()
+  }
 
   /// Called after the controller's view is loaded into memory.
   open override func viewDidLoad() {
@@ -20,6 +28,25 @@ open class FamilyViewController: UIViewController {
     scrollView.clipsToBounds = true
 
     configureConstraints()
+  }
+
+  /// Notifies the view controller that its view is about to be added to a view hierarchy.
+  ///
+  /// - Parameter animated: If true, the view is being added to the window using an animation.
+  open override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+
+    if let tabBarController = self.tabBarController, tabBarController.tabBar.isTranslucent {
+      scrollView.contentInset.bottom = tabBarController.tabBar.frame.size.height
+      scrollView.scrollIndicatorInsets.bottom = scrollView.contentInset.bottom
+    }
+  }
+
+  /// Called to notify the view controller that its view is about to layout its subviews.
+  override open func viewWillLayoutSubviews() {
+    super.viewWillLayoutSubviews()
+    scrollView.frame = view.bounds
+    scrollView.contentView.frame = scrollView.bounds
   }
 
   /// Configure constraints for the scroll view.
@@ -59,6 +86,7 @@ open class FamilyViewController: UIViewController {
     }
 
     childController.didMove(toParentViewController: self)
+    registry[childController] = childController.view
   }
 
   /// Adds the specified view controller as a child of the current view controller.
@@ -74,6 +102,7 @@ open class FamilyViewController: UIViewController {
     childController.view.translatesAutoresizingMaskIntoConstraints = true
     childController.view.autoresizingMask = []
     childController.view.frame.size.height = height
+    registry[childController] = childController.view
   }
 
   /// Adds the specified view controller as a child of the current view controller.
@@ -93,6 +122,12 @@ open class FamilyViewController: UIViewController {
     childController.view.alpha = 0
     scrollView.contentView.addSubview(childView)
     childController.didMove(toParentViewController: self)
+    registry[childController] = childView
+
+    let observer = childController.observe(\.parent, options: [.new, .old]) { [weak self] (_, value) in
+      self?.purgeRemovedViews()
+    }
+    observers.append(observer)
   }
 
   /// Adds a collection of view controllers as children of the current view controller.
@@ -111,22 +146,11 @@ open class FamilyViewController: UIViewController {
     }
   }
 
-  /// Notifies the view controller that its view is about to be added to a view hierarchy.
-  ///
-  /// - Parameter animated: If true, the view is being added to the window using an animation.
-  open override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-
-    if let tabBarController = self.tabBarController, tabBarController.tabBar.isTranslucent {
-      scrollView.contentInset.bottom = tabBarController.tabBar.frame.size.height
-      scrollView.scrollIndicatorInsets.bottom = scrollView.contentInset.bottom
+  /// Remove stray views from view hierarcy.
+  func purgeRemovedViews() {
+    for (controller, view) in registry where controller.parent == nil {
+      view.removeFromSuperview()
+      registry.removeValue(forKey: controller)
     }
-  }
-
-  /// Called to notify the view controller that its view is about to layout its subviews.
-  override open func viewWillLayoutSubviews() {
-    super.viewWillLayoutSubviews()
-    scrollView.frame = view.bounds
-    scrollView.contentView.frame = scrollView.bounds
   }
 }
