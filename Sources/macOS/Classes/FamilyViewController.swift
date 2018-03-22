@@ -1,16 +1,28 @@
 import Cocoa
 
-public class FamilyViewController: NSViewController, FamilyFriendly {
+open class FamilyViewController: NSViewController, FamilyFriendly {
   public lazy var scrollView: FamilyScrollView = .init()
+  var registry = [ViewController: View]()
+  var observer: NSKeyValueObservation?
+  var topAnchorConstraint: NSLayoutConstraint?
 
-  public override func loadView() {
+  deinit {
+    childViewControllers.forEach { $0.removeFromParentViewController() }
+    purgeRemovedViews()
+  }
+
+  open override func loadView() {
     let view = NSView()
     view.autoresizingMask = [.width]
     view.autoresizesSubviews = true
     self.view = view
+
+    observer = observe(\.childViewControllers, options: [.new, .old], changeHandler: { (controller, _) in
+      controller.purgeRemovedViews()
+    })
   }
 
-  override public func viewDidLoad() {
+  override open func viewDidLoad() {
     super.viewDidLoad()
     view.addSubview(scrollView)
     scrollView.autoresizingMask = [.width]
@@ -32,6 +44,7 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
     childController.view.frame.size.width = view.bounds.width
     scrollView.familyContentView.addSubview(childController.view)
     scrollView.frame = view.bounds
+    registry[childController] = childController.view
   }
 
   public func addChildViewController(_ childController: ViewController, height: CGFloat) {
@@ -43,7 +56,7 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.frame = view.bounds
   }
 
-  public func addChildViewController<T>(_ childController: T, view closure: (T) -> View) where T : ViewController {
+  public func addChildViewController<T: ViewController>(_ childController: T, view closure: (T) -> View) where T : ViewController {
     super.addChildViewController(childController)
     let childView = closure(childController)
     childView.frame = view.bounds
@@ -52,6 +65,7 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
     childController.view.frame.size.width = view.bounds.width
     scrollView.familyContentView.addSubview(childView)
     scrollView.frame = view.bounds
+    registry[childController] = childView
   }
 
   public func addChildViewControllers(_ childControllers: NSViewController ...) {
@@ -63,4 +77,12 @@ public class FamilyViewController: NSViewController, FamilyFriendly {
       addChildViewController(childController)
     }
   }
+
+  func purgeRemovedViews() {
+    for (controller, view) in registry where controller.parent == nil {
+      view.enclosingScrollView?.removeFromSuperview()
+      registry.removeValue(forKey: controller)
+    }
+  }
+
 }
