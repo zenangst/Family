@@ -218,7 +218,8 @@ public class FamilyScrollView: NSScrollView {
       wrapperView.documentView?.frame.size.width = self.frame.width
       wrapperView.documentView?.frame.size.height = contentSize.height
     } else {
-      wrapperView.documentView?.frame.size = contentSize
+      wrapperView.documentView?.frame.size.width = max(contentSize.width, self.frame.width)
+      wrapperView.documentView?.frame.size.height = contentSize.height
       wrapperView.frame.size.height = contentSize.height
       wrapperView.frame.size.width = self.frame.width
       wrapperView.frame.origin.y = currentYOffset
