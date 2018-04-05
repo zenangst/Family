@@ -309,6 +309,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
         }
       case false:
         newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+        scrollView.contentOffset.y = contentOffset.y
       }
 
       frame.size.height = newHeight
