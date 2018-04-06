@@ -213,15 +213,16 @@ public class FamilyScrollView: NSScrollView {
                         shouldResize: Bool,
                         currentYOffset: CGFloat,
                         to wrapperView: NSScrollView) {
+
     if shouldResize {
-      wrapperView.frame = frame
-      wrapperView.documentView?.frame.size.width = self.frame.width
+      wrapperView.documentView?.frame.size.width = frame.width
       wrapperView.documentView?.frame.size.height = contentSize.height
+      wrapperView.frame = frame
     } else {
-      wrapperView.documentView?.frame.size.width = max(contentSize.width, self.frame.width)
+      wrapperView.documentView?.frame.size.width = max(contentSize.width, frame.width)
       wrapperView.documentView?.frame.size.height = contentSize.height
       wrapperView.frame.size.height = contentSize.height
-      wrapperView.frame.size.width = self.frame.width
+      wrapperView.frame.size.width = frame.width
       wrapperView.frame.origin.y = currentYOffset
     }
   }
