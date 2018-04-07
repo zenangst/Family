@@ -98,28 +98,44 @@ class FamilyScrollViewTests: XCTestCase {
     XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250), size: size))
     XCTAssertEqual(mockedScrollView3.frame, CGRect(origin: CGPoint(x: 0, y: 500), size: size))
     XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750), size: size))
+    XCTAssertEqual(scrollView.contentSize.height, 1000)
 
     // Check that layout algorithm takes spacing between views into account.
 
-    scrollView.spacingBetweenViews = 10
-    scrollView.layoutViews()
+    scrollView.spacing = 10
+    scrollView.layoutSubviews()
 
     XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: .zero, size: size))
-    XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250 + scrollView.spacingBetweenViews), size: size))
-    XCTAssertEqual(mockedScrollView3.frame, CGRect(origin: CGPoint(x: 0, y: 500 + scrollView.spacingBetweenViews * 2), size: size))
-    XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750 + scrollView.spacingBetweenViews * 3),
-                                                   size: CGSize(width: size.width, height: size.height - scrollView.spacingBetweenViews * 3)))
+    XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250 + scrollView.spacing), size: size))
+    XCTAssertEqual(mockedScrollView3.frame, CGRect(origin: CGPoint(x: 0, y: 500 + scrollView.spacing * 2), size: size))
+    XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750 + scrollView.spacing * 3),
+                                                   size: CGSize(width: size.width, height: size.height - scrollView.spacing * 3)))
 
-    scrollView.spacingBetweenViews = 0
-    scrollView.layoutViews()
+    XCTAssertEqual(scrollView.contentSize.height, 1040)
+
+    scrollView.spacing = 0
+    scrollView.setCustomSpacing(10, after: mockedScrollView1)
+    scrollView.setCustomSpacing(10, after: mockedScrollView3)
+    scrollView.layoutSubviews()
+
+    XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: .zero, size: size))
+    XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250 + 10), size: size))
+    XCTAssertEqual(mockedScrollView3.frame, CGRect(origin: CGPoint(x: 0, y: 500 + 10), size: size))
+    XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750 + 20),
+                                                   size: CGSize(width: size.width, height: size.height - 20)))
+    XCTAssertEqual(scrollView.contentSize.height, 1020)
+
+    scrollView.setCustomSpacing(0, after: mockedScrollView1)
+    scrollView.setCustomSpacing(0, after: mockedScrollView3)
 
     scrollView.setContentOffset(CGPoint(x: 0, y: 250), animated: false)
-    scrollView.layoutViews()
+    scrollView.layoutSubviews()
 
     XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: CGPoint(x: 0, y: 250), size: CGSize(width: size.width, height: 0)))
     XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250), size: size))
     XCTAssertEqual(mockedScrollView3.frame, CGRect(origin: CGPoint(x: 0, y: 500), size: size))
     XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750), size: size))
+    XCTAssertEqual(scrollView.contentSize.height, 1000)
 
     scrollView.setContentOffset(CGPoint(x: 0, y: 500), animated: false)
     scrollView.layoutViews()

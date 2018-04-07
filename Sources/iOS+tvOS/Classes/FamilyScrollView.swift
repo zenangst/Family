@@ -2,7 +2,10 @@ import UIKit
 
 public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// The amount of spacing that should be inserted inbetween views.
-  public var spacingBetweenViews: CGFloat = 0
+  public var spacing: CGFloat {
+    get { return spaceManager.spacing }
+    set { spaceManager.spacing = newValue }
+  }
   /// A collection of scroll views that is used to order the views on screen.
   /// This collection is used by the layout algorithm that render the views and
   /// the order that they should appear.
@@ -24,6 +27,8 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// properties that get observed.
   private var observers = [Observer]()
 
+  private lazy var spaceManager = FamilySpaceManager()
+
   /// The custom distance that the content view is inset from the safe area or scroll view edges.
   open override var contentInset: UIEdgeInsets {
     willSet {
@@ -43,6 +48,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   deinit {
     subviewsInLayoutOrder.removeAll()
     observers.removeAll()
+    spaceManager.removeAll()
   }
 
   /// Initializes and returns a newly allocated view object with the specified frame rectangle.
@@ -123,6 +129,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     computeContentSize()
     setNeedsLayout()
     layoutSubviews()
+    spaceManager.removeView(subview)
   }
 
   /// Configures all scroll view in view heirarcy if they are allowed to scroll or not.
@@ -215,7 +222,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   private func computeContentSize() {
     let computedHeight = subviewsInLayoutOrder
       .filter({ $0.isHidden == false || ($0 as? FamilyWrapperView)?.view.isHidden == false })
-      .reduce(0, { $0 + $1.contentSize.height + spacingBetweenViews })
+      .reduce(0, { $0 + $1.contentSize.height + spaceManager.customSpacing(after: $1) })
 
     let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
     let height = fmax(computedHeight, minimumContentHeight)
@@ -232,6 +239,10 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     super.layoutSubviews()
     layoutViews()
     computeContentSize()
+  }
+
+  public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
+    spaceManager.setCustomSpacing(spacing, after: view)
   }
 
   /// This methods decides if the layout algoritm should be performed with
@@ -318,7 +329,8 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
         scrollView.frame = frame
       }
 
-      yOffsetOfCurrentSubview += scrollView.contentSize.height + spacingBetweenViews
+      let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+      yOffsetOfCurrentSubview += scrollView.contentSize.height + spaceManager.customSpacing(after: view)
     }
   }
 }

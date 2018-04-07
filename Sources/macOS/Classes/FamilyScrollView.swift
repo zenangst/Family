@@ -3,10 +3,14 @@ import Cocoa
 public class FamilyScrollView: NSScrollView {
   public override var isFlipped: Bool { return true }
   public lazy var familyContentView: FamilyContentView = .init()
-  public var spacingBetweenViews: CGFloat = 0
+  public var spacing: CGFloat {
+    get { return spaceManager.spacing }
+    set { spaceManager.spacing = newValue }
+  }
   var layoutIsRunning: Bool = false
   var isScrolling: Bool = false
   private var subviewsInLayoutOrder = [NSScrollView]()
+  private lazy var spaceManager = FamilySpaceManager()
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -126,6 +130,10 @@ public class FamilyScrollView: NSScrollView {
     super.layout()
   }
 
+  public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
+    spaceManager.setCustomSpacing(spacing, after: view)
+  }
+
   public override func scrollWheel(with event: NSEvent) {
     super.scrollWheel(with: event)
 
@@ -188,7 +196,8 @@ public class FamilyScrollView: NSScrollView {
 
       scrollView.contentView.scroll(contentOffset)
 
-      yOffsetOfCurrentSubview += contentSize.height + spacingBetweenViews
+      let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+      yOffsetOfCurrentSubview += contentSize.height + spaceManager.customSpacing(after: view)
       offset += 1
     }
   }
@@ -230,7 +239,7 @@ public class FamilyScrollView: NSScrollView {
   private func computeContentSize() {
     let computedHeight = subviewsInLayoutOrder
       .filter({ $0.documentView?.isHidden == false })
-      .reduce(0, { $0 + ($1.documentView?.frame.size.height ?? 0) + spacingBetweenViews })
+      .reduce(0, { $0 + ($1.documentView?.frame.size.height ?? 0) + spaceManager.customSpacing(after: ($1 as? FamilyWrapperView)?.view ?? $1) })
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
 
