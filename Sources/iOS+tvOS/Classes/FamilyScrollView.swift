@@ -252,7 +252,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     contentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
 
     let animationDuration: TimeInterval? = subviewsInLayoutOrder
-      .flatMap({ $0.layer.resolveAnimationDuration }).first ?? duration
+      .compactMap({ $0.layer.resolveAnimationDuration }).first ?? duration
 
     if let duration = animationDuration {
       let options: UIViewAnimationOptions = [.allowUserInteraction, .beginFromCurrentState]
