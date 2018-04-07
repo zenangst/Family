@@ -6,7 +6,7 @@ public class FamilyContentView: NSView {
   weak var familyScrollView: FamilyScrollView?
 
   var scrollViews: [NSScrollView] {
-    return subviews.flatMap { $0 as? NSScrollView }
+    return subviews.compactMap { $0 as? NSScrollView }
   }
 
   public override func addSubview(_ view: NSView) {

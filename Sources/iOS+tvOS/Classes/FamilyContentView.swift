@@ -10,7 +10,7 @@ final public class FamilyContentView: UIView {
 
   /// Convenience methods to return all subviews as scroll view.
   var scrollViews: [UIScrollView] {
-    return subviews.flatMap { $0 as? UIScrollView }
+    return subviews.compactMap { $0 as? UIScrollView }
   }
 
   /// Adds a view to the end of the receiver’s list of subviews.
