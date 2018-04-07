@@ -81,6 +81,7 @@
 		BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
 		BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollView.swift; sourceTree = "<group>"; };
 		BD4C7FE320349B030037D3E5 /* FamilyContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyContentView.swift; sourceTree = "<group>"; };
+		BD535E142078DEFC00AA2EC4 /* Family.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Family.podspec; sourceTree = "<group>"; };
 		BD5A80362030A9D9006A5EBB /* FamilyContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyContentView.swift; sourceTree = "<group>"; };
 		BD5A80372030A9D9006A5EBB /* FamilyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
 		BD5A80382030A9D9006A5EBB /* FamilyWrapperView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyWrapperView.swift; sourceTree = "<group>"; };
@@ -291,6 +292,7 @@
 		D5B2E8951C3A780C00C0327D = {
 			isa = PBXGroup;
 			children = (
+				BD535E142078DEFC00AA2EC4 /* Family.podspec */,
 				D500FD111C3AABED00782D78 /* Playground-iOS.playground */,
 				D500FD121C3AAC8E00782D78 /* Playground-macOS.playground */,
 				D284B13F1F79081F00D94AF3 /* Info */,
