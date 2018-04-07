@@ -56,7 +56,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.frame = view.bounds
   }
 
-  public func addChildViewController<T: ViewController>(_ childController: T, view closure: (T) -> View) where T : ViewController {
+  public func addChildViewController<T: ViewController>(_ childController: T, view closure: (T) -> View) {
     super.addChildViewController(childController)
     let childView = closure(childController)
     childView.frame = view.bounds
