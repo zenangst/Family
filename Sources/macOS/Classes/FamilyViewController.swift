@@ -78,11 +78,16 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 
+  public func addView(_ subview: View) {
+    subview.frame = view.bounds
+    scrollView.familyContentView.addSubview(subview)
+    scrollView.frame = view.bounds
+  }
+
   func purgeRemovedViews() {
     for (controller, view) in registry where controller.parent == nil {
       view.enclosingScrollView?.removeFromSuperview()
       registry.removeValue(forKey: controller)
     }
   }
-
 }

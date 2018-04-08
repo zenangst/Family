@@ -146,6 +146,12 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
+  public func addView(_ subview: View) {
+    subview.frame = view.bounds
+    scrollView.contentView.addSubview(subview)
+    scrollView.frame = view.bounds
+  }
+
   /// Remove stray views from view hierarcy.
   func purgeRemovedViews() {
     for (controller, view) in registry where controller.parent == nil {
