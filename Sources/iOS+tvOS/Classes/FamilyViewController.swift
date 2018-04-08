@@ -150,6 +150,14 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     scrollView.frame = view.bounds
   }
 
+  public func customSpacing(after view: View) -> CGFloat {
+    return scrollView.customSpacing(after: view)
+  }
+
+  public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
+    scrollView.setCustomSpacing(spacing, after: view)
+  }
+
   /// Remove stray views from view hierarcy.
   func purgeRemovedViews() {
     for (controller, view) in registry where controller.parent == nil {

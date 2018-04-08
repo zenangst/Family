@@ -80,6 +80,14 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.frame = view.bounds
   }
 
+  public func customSpacing(after view: View) -> CGFloat {
+    return scrollView.customSpacing(after: view)
+  }
+
+  public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
+    scrollView.setCustomSpacing(spacing, after: view)
+  }
+
   func purgeRemovedViews() {
     for (controller, view) in registry where controller.parent == nil {
       view.enclosingScrollView?.removeFromSuperview()
