@@ -58,13 +58,9 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
 
   public func addChildViewController<T: ViewController>(_ childController: T, view closure: (T) -> View) {
     super.addChildViewController(childController)
+    childController.view.removeFromSuperview()
     let childView = closure(childController)
-    childView.frame = view.bounds
-    view.addSubview(childController.view)
-    childController.view.isHidden = true
-    childController.view.frame.size.width = view.bounds.width
-    scrollView.familyContentView.addSubview(childView)
-    scrollView.frame = view.bounds
+    addView(childView)
     registry[childController] = childView
   }
 
@@ -78,11 +74,16 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 
+  public func addView(_ subview: View) {
+    subview.frame = view.bounds
+    scrollView.familyContentView.addSubview(subview)
+    scrollView.frame = view.bounds
+  }
+
   func purgeRemovedViews() {
     for (controller, view) in registry where controller.parent == nil {
       view.enclosingScrollView?.removeFromSuperview()
       registry.removeValue(forKey: controller)
     }
   }
-
 }

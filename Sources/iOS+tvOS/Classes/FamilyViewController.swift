@@ -116,11 +116,9 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   public func addChildViewController<T: UIViewController>(_ childController: T, view closure: (T) -> UIView) {
     childController.willMove(toParentViewController: self)
     super.addChildViewController(childController)
+    childController.view.removeFromSuperview()
     let childView = closure(childController)
-    childView.frame = view.bounds
-    view.addSubview(childController.view)
-    childController.view.alpha = 0
-    scrollView.contentView.addSubview(childView)
+    addView(childView)
     childController.didMove(toParentViewController: self)
     registry[childController] = childView
 
@@ -144,6 +142,12 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     for childController in childControllers {
       addChildViewController(childController)
     }
+  }
+
+  public func addView(_ subview: View) {
+    subview.frame = view.bounds
+    scrollView.contentView.addSubview(subview)
+    scrollView.frame = view.bounds
   }
 
   /// Remove stray views from view hierarcy.
