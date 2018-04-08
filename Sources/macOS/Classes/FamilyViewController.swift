@@ -47,20 +47,24 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     registry[childController] = childController.view
   }
 
-  public func addChildViewController(_ childController: ViewController, height: CGFloat) {
+  public func addChildViewController(_ childController: ViewController, customSpacing spacing: CGFloat? = nil, height: CGFloat) {
     addChildViewController(childController)
     childController.view.translatesAutoresizingMaskIntoConstraints = true
     childController.view.autoresizingMask = [.width]
     childController.view.frame.size.height = height
     childController.view.frame.size.width = view.bounds.width
     scrollView.frame = view.bounds
+
+    if let spacing = spacing {
+      setCustomSpacing(spacing, after: view)
+    }
   }
 
-  public func addChildViewController<T: ViewController>(_ childController: T, view closure: (T) -> View) {
+  public func addChildViewController<T: ViewController>(_ childController: T, customSpacing spacing: CGFloat? = nil, view closure: (T) -> View) {
     super.addChildViewController(childController)
     childController.view.removeFromSuperview()
     let childView = closure(childController)
-    addView(childView)
+    addView(childView, customSpacing: spacing)
     registry[childController] = childView
   }
 
@@ -74,7 +78,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 
-  public func addView(_ subview: View, withHeight height: CGFloat? = nil) {
+  public func addView(_ subview: View, customSpacing spacing: CGFloat? = nil, withHeight height: CGFloat? = nil) {
     if let height = height {
       subview.frame.size.width = view.bounds.size.width
       subview.frame.size.height = height
@@ -83,6 +87,10 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
     scrollView.familyContentView.addSubview(subview)
     scrollView.frame = view.bounds
+
+    if let spacing = spacing {
+      setCustomSpacing(spacing, after: view)
+    }
   }
 
   public func customSpacing(after view: View) -> CGFloat {

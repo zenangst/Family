@@ -94,7 +94,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameters:
   ///   - childController: The view controller to be added as a child.
   ///   - height: The height that the child controllers should be constrained to.
-  open func addChildViewController(_ childController: UIViewController, height: CGFloat) {
+  open func addChildViewController(_ childController: UIViewController, customSpacing: CGFloat? = nil, height: CGFloat) {
     childController.willMove(toParentViewController: self)
     super.addChildViewController(childController)
     scrollView.contentView.addSubview(childController.view)
@@ -103,6 +103,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     childController.view.autoresizingMask = []
     childController.view.frame.size.height = height
     registry[childController] = childController.view
+
+    if let customSpacing = customSpacing {
+      setCustomSpacing(customSpacing, after: view)
+    }
   }
 
   /// Adds the specified view controller as a child of the current view controller.
@@ -113,12 +117,12 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - childController: The view controller to be added as a child.
   ///   - closure: A closure used to resolve a view other than `.view` on controller used
   ///              to render the view controller.
-  public func addChildViewController<T: UIViewController>(_ childController: T, view closure: (T) -> UIView) {
+  public func addChildViewController<T: UIViewController>(_ childController: T, customSpacing spacing: CGFloat? = nil, view closure: (T) -> UIView) {
     childController.willMove(toParentViewController: self)
     super.addChildViewController(childController)
     childController.view.removeFromSuperview()
     let childView = closure(childController)
-    addView(childView)
+    addView(childView, customSpacing: spacing)
     childController.didMove(toParentViewController: self)
     registry[childController] = childView
 
@@ -144,7 +148,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
-  public func addView(_ subview: View, withHeight height: CGFloat? = nil) {
+  public func addView(_ subview: View, withHeight height: CGFloat? = nil, customSpacing spacing: CGFloat? = nil) {
     if let height = height {
       subview.frame.size.width = view.bounds.size.width
       subview.frame.size.height = height
@@ -154,6 +158,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
     scrollView.contentView.addSubview(subview)
     scrollView.frame = view.bounds
+
+    if let spacing = spacing {
+      setCustomSpacing(spacing, after: subview)
+    }
   }
 
   public func customSpacing(after view: View) -> CGFloat {
