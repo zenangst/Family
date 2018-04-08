@@ -74,8 +74,13 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 
-  public func addView(_ subview: View) {
-    subview.frame = view.bounds
+  public func addView(_ subview: View, withHeight height: CGFloat? = nil) {
+    if let height = height {
+      subview.frame.size.width = view.bounds.size.width
+      subview.frame.size.height = height
+    } else {
+      subview.frame.size.width = view.bounds.width
+    }
     scrollView.familyContentView.addSubview(subview)
     scrollView.frame = view.bounds
   }
