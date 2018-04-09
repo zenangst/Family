@@ -241,6 +241,10 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     computeContentSize()
   }
 
+  public func customSpacing(after view: View) -> CGFloat {
+    return spaceManager.customSpacing(after: view)
+  }
+
   public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
     spaceManager.setCustomSpacing(spacing, after: view)
   }
