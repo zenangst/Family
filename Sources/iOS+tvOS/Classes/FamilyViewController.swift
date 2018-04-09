@@ -120,7 +120,9 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   public func addChildViewController<T: UIViewController>(_ childController: T, customSpacing spacing: CGFloat? = nil, view closure: (T) -> UIView) {
     childController.willMove(toParentViewController: self)
     super.addChildViewController(childController)
-    childController.view.removeFromSuperview()
+    view.addSubview(childController.view)
+    childController.view.frame.size = .zero
+    childController.view.isHidden = true
     let childView = closure(childController)
     addView(childView, customSpacing: spacing)
     childController.didMove(toParentViewController: self)
