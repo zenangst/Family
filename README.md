@@ -34,6 +34,7 @@ If you are interested in the origin story behind Family, then you can read this 
 - [x] 🤳🏻Continuous scrolling with multiple scroll views.
 - [x] 📏Margins between child view controllers.
 - [x] 🌀Table view and collection view dequeuing.
+- [x] 🍭Supports custom spacing between views.
 - [x] 📱iOS support.
 - [x] 💻macOS support.
 - [x] 📺tvOS support.
