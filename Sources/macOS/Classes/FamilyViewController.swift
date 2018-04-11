@@ -56,7 +56,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.frame = view.bounds
 
     if let spacing = spacing {
-      setCustomSpacing(spacing, after: view)
+      setCustomSpacing(spacing, after: childController.view)
     }
   }
 
