@@ -105,7 +105,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     registry[childController] = childController.view
 
     if let customSpacing = customSpacing {
-      setCustomSpacing(customSpacing, after: view)
+      setCustomSpacing(customSpacing, after: childController.view)
     }
   }
 
