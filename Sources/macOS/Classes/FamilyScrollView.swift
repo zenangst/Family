@@ -166,10 +166,10 @@ public class FamilyScrollView: NSScrollView {
 
       if self.contentOffset.y < yOffsetOfCurrentSubview {
         contentOffset.y = 0
-        frame.origin.y = yOffsetOfCurrentSubview
+        frame.origin.y = ceil(yOffsetOfCurrentSubview)
       } else {
         contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
-        frame.origin.y = self.contentOffset.y
+        frame.origin.y = ceil(self.contentOffset.y)
       }
 
       let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
