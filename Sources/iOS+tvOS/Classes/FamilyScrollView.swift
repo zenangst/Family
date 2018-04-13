@@ -296,10 +296,10 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
       if self.contentOffset.y < yOffsetOfCurrentSubview {
         contentOffset.y = 0.0
-        frame.origin.y = yOffsetOfCurrentSubview
+        frame.origin.y = ceil(yOffsetOfCurrentSubview)
       } else {
         contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
-        frame.origin.y = self.contentOffset.y
+        frame.origin.y = ceil(self.contentOffset.y)
       }
 
       let remainingBoundsHeight = fmax(bounds.maxY - yOffsetOfCurrentSubview, 0.0)

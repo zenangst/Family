@@ -210,8 +210,8 @@
 		BD4C7FDE20349A950037D3E5 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
-				BD2236E12034B11A00C465E4 /* Extensions */,
 				BD2236E02034B10F00C465E4 /* Classes */,
+				BD2236E12034B11A00C465E4 /* Extensions */,
 			);
 			path = macOS;
 			sourceTree = "<group>";
