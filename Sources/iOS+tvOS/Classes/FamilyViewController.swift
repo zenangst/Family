@@ -6,8 +6,8 @@ import UIKit
 /// adds the controllers view or custom view to view heirarcy inside the
 /// content view of the `FamilyScrollView`.
 open class FamilyViewController: UIViewController, FamilyFriendly {
-  var observers = [NSKeyValueObservation]()
-  var registry = [ViewController : View]()
+//  var observers = [NSKeyValueObservation]()
+  var registry = [ViewController : (view: View, observer: NSKeyValueObservation)]()
 
   /// A custom implementation of a `UIScrollView` that handles continious scrolling
   /// when using scroll views inside of scroll view.
@@ -71,6 +71,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///
   /// - Parameter childController: The view controller to be added as a child.
   override open func addChildViewController(_ childController: UIViewController) {
+    purgeRemovedViews()
     childController.willMove(toParentViewController: self)
     super.addChildViewController(childController)
 
@@ -86,7 +87,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
 
     childController.didMove(toParentViewController: self)
-    registry[childController] = childController.view
+    registry[childController] = (childController.view, observe(childController))
   }
 
   /// Adds the specified view controller as a child of the current view controller.
@@ -102,7 +103,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     childController.view.translatesAutoresizingMaskIntoConstraints = true
     childController.view.autoresizingMask = []
     childController.view.frame.size.height = height
-    registry[childController] = childController.view
+    registry[childController] = (childController.view, observe(childController))
 
     if let customSpacing = customSpacing {
       setCustomSpacing(customSpacing, after: childController.view)
@@ -126,12 +127,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     let childView = closure(childController)
     addView(childView, customSpacing: spacing)
     childController.didMove(toParentViewController: self)
-    registry[childController] = childView
-
-    let observer = childController.observe(\.parent, options: [.new, .old]) { [weak self] (_, value) in
-      self?.purgeRemovedViews()
-    }
-    observers.append(observer)
+    registry[childController] = (childView, observe(childController))
   }
 
   /// Adds a collection of view controllers as children of the current view controller.
@@ -176,9 +172,21 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
   /// Remove stray views from view hierarcy.
   func purgeRemovedViews() {
-    for (controller, view) in registry where controller.parent == nil {
-      view.removeFromSuperview()
+    for (controller, container) in registry where controller.parent == nil {
+      if container.view.superview is FamilyWrapperView {
+        container.view.superview?.removeFromSuperview()
+      }
+
+      container.view.removeFromSuperview()
+      container.observer.invalidate()
       registry.removeValue(forKey: controller)
     }
+  }
+
+  private func observe(_ childController: UIViewController) -> NSKeyValueObservation {
+    let observer = childController.observe(\.parent, options: [.new, .old]) { [weak self] (_, value) in
+      self?.purgeRemovedViews()
+    }
+    return observer
   }
 }
