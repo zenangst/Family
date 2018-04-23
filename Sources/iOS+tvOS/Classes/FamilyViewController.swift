@@ -12,6 +12,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// A custom implementation of a `UIScrollView` that handles continious scrolling
   /// when using scroll views inside of scroll view.
   public lazy var scrollView: FamilyScrollView = FamilyScrollView()
+  /// The scroll view constraints.
   public var constraints = [NSLayoutConstraint]()
 
   deinit {
