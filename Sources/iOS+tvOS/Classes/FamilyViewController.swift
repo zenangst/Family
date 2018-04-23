@@ -7,11 +7,12 @@ import UIKit
 /// content view of the `FamilyScrollView`.
 open class FamilyViewController: UIViewController, FamilyFriendly {
 //  var observers = [NSKeyValueObservation]()
-  var registry = [ViewController : (view: View, observer: NSKeyValueObservation)]()
+  var registry = [ViewController: (view: View, observer: NSKeyValueObservation)]()
 
   /// A custom implementation of a `UIScrollView` that handles continious scrolling
   /// when using scroll views inside of scroll view.
   public lazy var scrollView: FamilyScrollView = FamilyScrollView()
+  public var constraints = [NSLayoutConstraint]()
 
   deinit {
     childViewControllers.forEach { $0.removeFromParentViewController() }
@@ -43,7 +44,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   }
 
   /// Called to notify the view controller that its view is about to layout its subviews.
-  override open func viewWillLayoutSubviews() {
+  open override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
     scrollView.frame = view.bounds
     scrollView.contentView.frame = scrollView.bounds
@@ -53,24 +54,30 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   private func configureConstraints() {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
     if #available(iOS 11.0, tvOS 11.0, *) {
-      scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-      scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-      scrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-      scrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+      constraints.append(contentsOf: [
+        scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+        scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        scrollView.leftAnchor.constraint(equalTo: view.leftAnchor),
+        scrollView.rightAnchor.constraint(equalTo: view.rightAnchor)
+      ])
     } else {
       if #available(iOS 9.0, *) {
-        scrollView.topAnchor.constraint(equalTo: topLayoutGuide.topAnchor).isActive = true
-        scrollView.bottomAnchor.constraint(equalTo: bottomLayoutGuide.topAnchor).isActive = true
-        scrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        scrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        constraints.append(contentsOf: [
+          scrollView.topAnchor.constraint(equalTo: topLayoutGuide.topAnchor),
+          scrollView.bottomAnchor.constraint(equalTo: bottomLayoutGuide.topAnchor),
+          scrollView.leftAnchor.constraint(equalTo: view.leftAnchor),
+          scrollView.rightAnchor.constraint(equalTo: view.rightAnchor)
+        ])
       }
     }
+
+    NSLayoutConstraint.activate(constraints)
   }
 
   /// Adds the specified view controller as a child of the current view controller.
   ///
   /// - Parameter childController: The view controller to be added as a child.
-  override open func addChildViewController(_ childController: UIViewController) {
+  open override func addChildViewController(_ childController: UIViewController) {
     purgeRemovedViews()
     childController.willMove(toParentViewController: self)
     super.addChildViewController(childController)
@@ -184,7 +191,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   }
 
   private func observe(_ childController: UIViewController) -> NSKeyValueObservation {
-    let observer = childController.observe(\.parent, options: [.new, .old]) { [weak self] (_, value) in
+    let observer = childController.observe(\.parent, options: [.new, .old]) { [weak self] _, _ in
       self?.purgeRemovedViews()
     }
     return observer
