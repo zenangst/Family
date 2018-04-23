@@ -2,9 +2,10 @@ import Cocoa
 
 open class FamilyViewController: NSViewController, FamilyFriendly {
   public lazy var scrollView: FamilyScrollView = .init()
+  /// The scroll view constraints.
+  public var constraints = [NSLayoutConstraint]()
   var registry = [ViewController: View]()
   var observer: NSKeyValueObservation?
-  var topAnchorConstraint: NSLayoutConstraint?
 
   deinit {
     childViewControllers.forEach { $0.removeFromParentViewController() }
@@ -17,12 +18,12 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     view.autoresizesSubviews = true
     self.view = view
 
-    observer = observe(\.childViewControllers, options: [.new, .old], changeHandler: { (controller, _) in
+    observer = observe(\.childViewControllers, options: [.new, .old], changeHandler: { controller, _ in
       controller.purgeRemovedViews()
     })
   }
 
-  override open func viewDidLoad() {
+  open override func viewDidLoad() {
     super.viewDidLoad()
     view.addSubview(scrollView)
     scrollView.autoresizingMask = [.width]
@@ -32,14 +33,17 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   private func configureConstraints() {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
     if #available(OSX 10.11, *) {
-      scrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-      scrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-      scrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-      scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+      constraints.append(contentsOf: [
+        scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+        scrollView.leftAnchor.constraint(equalTo: view.leftAnchor),
+        scrollView.rightAnchor.constraint(equalTo: view.rightAnchor),
+        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+      ])
+      NSLayoutConstraint.activate(constraints)
     }
   }
 
-  override open func addChildViewController(_ childController: ViewController) {
+  open override func addChildViewController(_ childController: ViewController) {
     super.addChildViewController(childController)
     childController.view.frame.size.width = view.bounds.width
     scrollView.familyContentView.addSubview(childController.view)
