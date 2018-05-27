@@ -306,6 +306,8 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
       var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
 
+      frame.size.width = max(frame.size.width, self.frame.size.width)
+
       switch multipleComponents {
       case true:
         if scrollView is FamilyWrapperView {
