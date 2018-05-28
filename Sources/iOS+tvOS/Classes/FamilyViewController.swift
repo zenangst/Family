@@ -6,7 +6,7 @@ import UIKit
 /// adds the controllers view or custom view to view heirarcy inside the
 /// content view of the `FamilyScrollView`.
 open class FamilyViewController: UIViewController, FamilyFriendly {
-//  var observers = [NSKeyValueObservation]()
+  var observers = [NSKeyValueObservation]()
   var registry = [ViewController: (view: View, observer: NSKeyValueObservation)]()
 
   /// A custom implementation of a `UIScrollView` that handles continious scrolling
@@ -30,6 +30,19 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     scrollView.clipsToBounds = true
 
     configureConstraints()
+
+    #if targetEnvironment(simulator)
+      NotificationCenter.default.addObserver(self,
+                                             selector: #selector(familyControllerWasInjected(_:)),
+                                             name: NSNotification.Name.init("INJECTION_BUNDLE_NOTIFICATION"),
+                                             object: nil)
+    #endif
+  }
+
+  @objc private func familyControllerWasInjected(_ notification: Notification) {
+    childViewControllers.forEach { $0.removeFromParentViewController() }
+    purgeRemovedViews()
+    viewDidLoad()
   }
 
   /// Notifies the view controller that its view is about to be added to a view hierarchy.

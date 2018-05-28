@@ -21,6 +21,17 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     observer = observe(\.childViewControllers, options: [.new, .old], changeHandler: { controller, _ in
       controller.purgeRemovedViews()
     })
+
+    NotificationCenter.default.addObserver(self,
+                                           selector: #selector(familyControllerWasInjected(_:)),
+                                           name: NSNotification.Name.init("INJECTION_BUNDLE_NOTIFICATION"),
+                                           object: nil)
+  }
+
+  @objc open func familyControllerWasInjected(_ notification: Notification) {
+    childViewControllers.forEach { $0.removeFromParentViewController() }
+    purgeRemovedViews()
+    viewDidLoad()
   }
 
   open override func viewDidLoad() {
