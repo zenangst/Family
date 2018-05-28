@@ -31,6 +31,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   @objc open func familyControllerWasInjected(_ notification: Notification) {
     childViewControllers.forEach { $0.removeFromParentViewController() }
     purgeRemovedViews()
+    NSLayoutConstraint.deactivate(constraints)
     viewDidLoad()
   }
 
