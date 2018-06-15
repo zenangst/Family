@@ -20,6 +20,10 @@ class FamilySpaceManager {
     }
   }
 
+  func negativeSpace() -> CGFloat {
+    return registry.filter({ $0.value < 0 }).compactMap({ $0.value }).reduce(0, { $0 + $1 })
+  }
+
   /// Set custom spacing after view.
   ///
   /// - Parameters:
