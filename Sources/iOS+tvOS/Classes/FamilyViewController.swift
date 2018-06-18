@@ -98,6 +98,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
     childController.didMove(toParentViewController: self)
     registry[childController] = (childController.view, observe(childController))
+    purgeWrapperViews()
   }
 
   /// Adds the specified view controller as a child of the current view controller.
@@ -118,6 +119,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     if let customSpacing = customSpacing {
       setCustomSpacing(customSpacing, after: childController.view)
     }
+
+    purgeWrapperViews()
   }
 
   /// Adds the specified view controller as a child of the current view controller.
@@ -138,6 +141,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     addView(childView, customSpacing: spacing)
     childController.didMove(toParentViewController: self)
     registry[childController] = (childView, observe(childController))
+    purgeWrapperViews()
   }
 
   /// Adds a collection of view controllers as children of the current view controller.
@@ -178,6 +182,15 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
   public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
     scrollView.setCustomSpacing(spacing, after: view)
+  }
+
+  /// Remove wrapper views that don't own their underlaying views.
+  func purgeWrapperViews() {
+    for case let wrapperView as FamilyWrapperView in scrollView.contentView.subviews {
+      if wrapperView != wrapperView.view.superview {
+        wrapperView.removeFromSuperview()
+      }
+    }
   }
 
   /// Remove stray views from view hierarcy.
