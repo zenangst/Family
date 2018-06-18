@@ -102,8 +102,10 @@ class FamilyViewControllerTests: XCTestCase {
 
     familyViewController.viewWillAppear(false)
 
-    XCTAssertEqual(familyViewController.scrollView.contentInset.bottom,
-                   tabBarController.tabBar.frame.size.height)
+    if #available(iOS 11.0, *) {} else {
+      XCTAssertEqual(familyViewController.scrollView.contentInset.bottom,
+                     tabBarController.tabBar.frame.size.height)
+    }
     XCTAssertEqual(familyViewController.scrollView.contentInset.bottom,
                    familyViewController.scrollView.scrollIndicatorInsets.bottom)
   }
