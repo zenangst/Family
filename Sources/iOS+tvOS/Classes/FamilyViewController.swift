@@ -39,8 +39,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     super.viewWillAppear(animated)
 
     if let tabBarController = self.tabBarController, tabBarController.tabBar.isTranslucent {
-      scrollView.contentInset.bottom = tabBarController.tabBar.frame.size.height
-      scrollView.scrollIndicatorInsets.bottom = scrollView.contentInset.bottom
+      if #available(iOS 11.0, *) {} else {
+        scrollView.contentInset.bottom = tabBarController.tabBar.frame.size.height
+        scrollView.scrollIndicatorInsets.bottom = scrollView.contentInset.bottom
+      }
     }
   }
 
