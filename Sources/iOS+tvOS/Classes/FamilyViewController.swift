@@ -46,13 +46,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
-  /// Called to notify the view controller that its view is about to layout its subviews.
-  open override func viewWillLayoutSubviews() {
-    super.viewWillLayoutSubviews()
-    scrollView.frame = view.bounds
-    scrollView.contentView.frame = scrollView.bounds
-  }
-
   /// Configure constraints for the scroll view.
   private func configureConstraints() {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -116,7 +109,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     scrollView.contentView.addSubview(childController.view)
     childController.didMove(toParentViewController: self)
     childController.view.translatesAutoresizingMaskIntoConstraints = true
-    childController.view.autoresizingMask = []
+    childController.view.frame.size.width = view.frame.size.width
+    childController.view.autoresizingMask = [.flexibleWidth]
     childController.view.frame.size.height = height
     registry[childController] = (childController.view, observe(childController))
 

@@ -90,7 +90,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// - Parameter scrollView: The scroll view that should be configured
   ///                         and observed.
   func didAddScrollViewToContainer(_ scrollView: UIScrollView) {
-    scrollView.autoresizingMask = UIViewAutoresizing()
+    scrollView.autoresizingMask = [.flexibleWidth]
 
     guard contentView.subviews.index(of: scrollView) != nil else {
       return
@@ -352,6 +352,10 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       }
 
       frame.size.height = newHeight
+
+      if frame.size.width != self.frame.width {
+        frame.size.width = self.frame.width
+      }
 
       if scrollView.frame != frame {
         scrollView.frame = frame
