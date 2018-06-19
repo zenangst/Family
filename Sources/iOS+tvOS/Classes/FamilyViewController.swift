@@ -96,6 +96,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       scrollView.contentView.addSubview(childController.view)
     }
 
+    if #available(iOS 11.0, *) {
+      (childController.view as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
+    }
+
     childController.didMove(toParentViewController: self)
     registry[childController] = (childController.view, observe(childController))
     scrollView.purgeWrapperViews()
@@ -138,6 +142,11 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     childController.view.frame.size = .zero
     childController.view.isHidden = true
     let childView = closure(childController)
+
+    if #available(iOS 11.0, *) {
+      (childView as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
+    }
+
     addView(childView, customSpacing: spacing)
     childController.didMove(toParentViewController: self)
     registry[childController] = (childView, observe(childController))
