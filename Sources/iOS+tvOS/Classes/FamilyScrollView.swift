@@ -258,6 +258,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       }
     }
 
+    spaceManager.removeViewsWithoutSuperview()
   }
 
   /// This methods decides if the layout algoritm should be performed with

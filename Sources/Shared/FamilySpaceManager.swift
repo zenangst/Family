@@ -45,4 +45,10 @@ class FamilySpaceManager {
     registry.forEach { $0.key.removeFromSuperview() }
     registry.removeAll()
   }
+
+  func removeViewsWithoutSuperview() {
+    for (view, _) in registry where view.superview == nil {
+      removeView(view)
+    }
+  }
 }
