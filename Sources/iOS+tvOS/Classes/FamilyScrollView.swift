@@ -226,11 +226,9 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// Computes the content size for the collection view based on
   /// combined content size of all the underlaying scroll views.
   private func computeContentSize() {
-    let negativeSpace = spaceManager.negativeSpace()
-    var computedHeight = subviewsInLayoutOrder
+    let computedHeight = subviewsInLayoutOrder
       .filter({ $0.isHidden == false || ($0 as? FamilyWrapperView)?.view.isHidden == false })
-      .reduce(0, { $0 + $1.contentSize.height + spaceManager.customSpacing(after: $1) })
-    computedHeight += negativeSpace
+      .reduce(0, { $0 + $1.contentSize.height + spaceManager.customSpacing(after: ($1 as? FamilyWrapperView)?.view ?? $1) })
     let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
     let height = fmax(computedHeight, minimumContentHeight)
 

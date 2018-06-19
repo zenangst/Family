@@ -244,11 +244,9 @@ public class FamilyScrollView: NSScrollView {
   }
 
   private func computeContentSize() {
-    let negativeSpace = spaceManager.negativeSpace()
-    var computedHeight: CGFloat = subviewsInLayoutOrder
-      .filter({ $0.documentView?.isHidden == false })
-      .reduce(0, { $0 + ($1.documentView?.frame.size.height ?? 0) + spaceManager.customSpacing(after: ($1 as? FamilyWrapperView)?.view ?? $1) })
-    computedHeight += negativeSpace
+    let computedHeight: CGFloat = subviewsInLayoutOrder
+      .filter({ $0.isHidden == false || ($0 as? FamilyWrapperView)?.view.isHidden == false })
+      .reduce(0, { $0 + $1.contentSize.height + spaceManager.customSpacing(after: ($1 as? FamilyWrapperView)?.view ?? $1) })
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
 
