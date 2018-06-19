@@ -250,6 +250,16 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     spaceManager.setCustomSpacing(spacing, after: view)
   }
 
+  /// Remove wrapper views that don't own their underlaying views.
+  func purgeWrapperViews() {
+    for case let wrapperView as FamilyWrapperView in contentView.subviews {
+      if wrapperView != wrapperView.view.superview {
+        wrapperView.removeFromSuperview()
+      }
+    }
+
+  }
+
   /// This methods decides if the layout algoritm should be performed with
   /// animation. When a `duration` is based, the algorithm will use this
   /// `duration` and run the algorithm inside an animation block.
