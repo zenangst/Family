@@ -60,16 +60,16 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       constraints.append(contentsOf: [
         scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
         scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-        scrollView.leftAnchor.constraint(equalTo: view.leftAnchor),
-        scrollView.rightAnchor.constraint(equalTo: view.rightAnchor)
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
       ])
     } else {
       if #available(iOS 9.0, *) {
         constraints.append(contentsOf: [
           scrollView.topAnchor.constraint(equalTo: topLayoutGuide.topAnchor),
           scrollView.bottomAnchor.constraint(equalTo: bottomLayoutGuide.topAnchor),
-          scrollView.leftAnchor.constraint(equalTo: view.leftAnchor),
-          scrollView.rightAnchor.constraint(equalTo: view.rightAnchor)
+          scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+          scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
       }
     }
