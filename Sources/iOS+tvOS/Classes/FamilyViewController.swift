@@ -96,7 +96,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       scrollView.contentView.addSubview(childController.view)
     }
 
-    if #available(iOS 11.0, *) {
+    if #available(iOS 11.0, *, tvOS 11.0, *) {
       (childController.view as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
     }
 
@@ -143,7 +143,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     childController.view.isHidden = true
     let childView = closure(childController)
 
-    if #available(iOS 11.0, *) {
+    if #available(iOS 11.0, *, tvOS 11.0, *) {
       (childView as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
     }
 
