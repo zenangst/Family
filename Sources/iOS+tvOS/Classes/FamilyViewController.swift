@@ -46,13 +46,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
-  /// Called to notify the view controller that its view is about to layout its subviews.
-  open override func viewWillLayoutSubviews() {
-    super.viewWillLayoutSubviews()
-    scrollView.frame = view.bounds
-    scrollView.contentView.frame = scrollView.bounds
-  }
-
   /// Configure constraints for the scroll view.
   private func configureConstraints() {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -60,16 +53,16 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       constraints.append(contentsOf: [
         scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
         scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-        scrollView.leftAnchor.constraint(equalTo: view.leftAnchor),
-        scrollView.rightAnchor.constraint(equalTo: view.rightAnchor)
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
       ])
     } else {
       if #available(iOS 9.0, *) {
         constraints.append(contentsOf: [
           scrollView.topAnchor.constraint(equalTo: topLayoutGuide.topAnchor),
           scrollView.bottomAnchor.constraint(equalTo: bottomLayoutGuide.topAnchor),
-          scrollView.leftAnchor.constraint(equalTo: view.leftAnchor),
-          scrollView.rightAnchor.constraint(equalTo: view.rightAnchor)
+          scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+          scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
       }
     }
@@ -116,7 +109,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     scrollView.contentView.addSubview(childController.view)
     childController.didMove(toParentViewController: self)
     childController.view.translatesAutoresizingMaskIntoConstraints = true
-    childController.view.autoresizingMask = []
+    childController.view.frame.size.width = view.frame.size.width
+    childController.view.autoresizingMask = [.flexibleWidth]
     childController.view.frame.size.height = height
     registry[childController] = (childController.view, observe(childController))
 
