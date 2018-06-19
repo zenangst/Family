@@ -36,7 +36,6 @@ final class FamilyWrapperView: UIScrollView {
       }
     }
 
-    view.autoresizingMask = [.flexibleWidth]
     addSubview(view)
     alwaysBounceVertical = true
     clipsToBounds = true
