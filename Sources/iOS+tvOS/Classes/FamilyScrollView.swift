@@ -29,6 +29,8 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
   private lazy var spaceManager = FamilySpaceManager()
 
+  private var isScrolling: Bool { return isTracking || isDragging || isDecelerating }
+
   /// The custom distance that the content view is inset from the safe area or scroll view edges.
   open override var contentInset: UIEdgeInsets {
     willSet {
@@ -175,18 +177,20 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
           return
       }
 
-      if newValue != oldValue {
+      if self?.compare(newValue, to: oldValue) == false {
         strongSelf.computeContentSize()
         strongSelf.layoutViews()
       }
     })
 
     let contentOffsetObserver = view.observe(\.contentOffset, options: [.new, .old], changeHandler: { [weak self] (_, value) in
+      guard self?.isScrolling == false else { return }
+
       guard let newValue = value.newValue, let oldValue = value.oldValue else {
         return
       }
 
-      if newValue.y != oldValue.y {
+      if self?.compare(newValue, to: oldValue) == false {
         self?.layoutViews()
       }
     })
@@ -194,11 +198,13 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     observers.append(Observer(view: view, keyValueObservation: contentSizeObserver))
     observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
     let boundsObserver = view.observe(\.bounds, options: [.new, .old], changeHandler: { [weak self] (_, value) in
+      guard self?.isScrolling == false else { return }
+
       guard let newValue = value.newValue, let oldValue = value.oldValue else {
         return
       }
 
-      if newValue.origin.y != oldValue.origin.y {
+      if self?.compare(newValue.origin, to: oldValue.origin) == false {
         self?.layoutViews()
       }
     })
@@ -332,13 +338,17 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
           self.contentOffset.y != frame.minY
 
         if shouldModifyContentOffset {
-          scrollView.contentOffset.y = contentOffset.y
+          if !compare(scrollView.contentOffset, to: contentOffset) {
+            scrollView.contentOffset.y = contentOffset.y
+          }
         } else {
           frame.origin.y = yOffsetOfCurrentSubview
         }
       case false:
         newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
-        scrollView.contentOffset.y = contentOffset.y
+        if !compare(scrollView.contentOffset, to: contentOffset) {
+          scrollView.contentOffset.y = contentOffset.y
+        }
       }
 
       frame.size.height = newHeight
@@ -350,5 +360,13 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
       yOffsetOfCurrentSubview += scrollView.contentSize.height + spaceManager.customSpacing(after: view)
     }
+  }
+
+  private func compare(_ lhs: CGSize, to rhs: CGSize) -> Bool {
+    return (fabs(lhs.height - rhs.height) <= 0.001)
+  }
+
+  private func compare(_ lhs: CGPoint, to rhs: CGPoint) -> Bool {
+    return (fabs(lhs.y - rhs.y) <= 0.001)
   }
 }
