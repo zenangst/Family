@@ -16,7 +16,11 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   public var constraints = [NSLayoutConstraint]()
 
   deinit {
-    childViewControllers.forEach { $0.removeFromParentViewController() }
+    childViewControllers.forEach {
+      $0.willMove(toParentViewController: nil)
+      $0.removeFromParentViewController()
+      $0.view.removeFromSuperview()
+    }
     purgeRemovedViews()
   }
 
@@ -78,15 +82,23 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     childController.willMove(toParentViewController: self)
     super.addChildViewController(childController)
 
+    let childViewControllerView: UIView
+
     switch childController {
     case let collectionViewController as UICollectionViewController:
       if let collectionView = collectionViewController.collectionView {
         scrollView.contentView.addSubview(collectionView)
+        childViewControllerView = collectionView
       } else {
         assertionFailure("Unable to resolve collection view from controller.")
+        return
       }
+    case let tableViewController as UITableViewController:
+      scrollView.contentView.addSubview(tableViewController.tableView)
+      childViewControllerView = tableViewController.tableView
     default:
       scrollView.contentView.addSubview(childController.view)
+      childViewControllerView = childController.view
     }
 
     if #available(iOS 11.0, *, tvOS 11.0, *) {
@@ -94,7 +106,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
 
     childController.didMove(toParentViewController: self)
-    registry[childController] = (childController.view, observe(childController))
+
+    registry[childController] = (childViewControllerView, observe(childController))
     scrollView.purgeWrapperViews()
   }
 
