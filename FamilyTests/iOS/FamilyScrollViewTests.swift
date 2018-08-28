@@ -16,6 +16,25 @@ class FamilyScrollViewTests: XCTestCase {
     superview.subviews.forEach { $0.removeFromSuperview() }
   }
 
+  // Content observers should not trigger if there is only one scroll view.
+  func testContentSizeObserverWithSingleScrollView() {
+    scrollView.frame.size.width = FamilyScrollViewTests.mockFrame.size.width
+    superview.addSubview(scrollView)
+    var size = CGSize(width: 500, height: 250)
+    let mockedScrollView = UIScrollView(frame: CGRect(origin: .zero, size: size))
+    mockedScrollView.contentSize = size
+
+    scrollView.contentView.addSubview(mockedScrollView)
+    scrollView.layoutViews()
+
+    XCTAssertEqual(mockedScrollView.frame, CGRect(origin: .zero, size: size))
+
+    // Check that the layout algorithm is invoked if the views frame changes.
+    size.height = 1500
+    mockedScrollView.contentSize = size
+    XCTAssertNotEqual(scrollView.contentSize, size)
+  }
+
   func testContentSizeObserver() {
     scrollView.frame.size.width = FamilyScrollViewTests.mockFrame.size.width
     superview.addSubview(scrollView)
@@ -23,6 +42,7 @@ class FamilyScrollViewTests: XCTestCase {
     let mockedScrollView = UIScrollView(frame: CGRect(origin: .zero, size: size))
     mockedScrollView.contentSize = size
 
+    scrollView.contentView.addSubview(UIScrollView())
     scrollView.contentView.addSubview(mockedScrollView)
     scrollView.layoutViews()
 
