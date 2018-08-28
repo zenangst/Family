@@ -3,7 +3,7 @@ import UIKit
 /// This class is used to wrap views in `FamilyContentView` that don't inherit
 /// from `UIScrollView`. This is done to ensure that the user gets a fluid and
 /// smooth scrolling experience when scrolling in a `FamilyScrollView`.
-final class FamilyWrapperView: UIScrollView {
+class FamilyWrapperView: UIScrollView {
   weak var parentContentView: FamilyContentView?
   /// The wrapped view
   var view: UIView

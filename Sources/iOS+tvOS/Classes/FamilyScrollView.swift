@@ -1,6 +1,6 @@
 import UIKit
 
-public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
+public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestureRecognizerDelegate {
   /// The amount of spacing that should be inserted inbetween views.
   public var spacing: CGFloat {
     get { return spaceManager.spacing }
@@ -58,6 +58,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// - Parameter frame: The frame rectangle for the view, measured in points.
   public required override init(frame: CGRect) {
     super.init(frame: frame)
+    contentView.delegate = self
     contentView.familyScrollView = self
     contentView.autoresizingMask = self.autoresizingMask
     if #available(iOS 11.0, tvOS 11.0, *) {
@@ -81,6 +82,11 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     if frame.size.height != superview.frame.size.height {
       frame.size.height = superview.frame.size.height
     }
+  }
+
+  func familyContentView(_ view: FamilyContentView,
+                         didAddScrollView scrollView: UIScrollView) {
+    didAddScrollViewToContainer(scrollView)
   }
 
   /// This configures observers and configures the scroll views
@@ -159,6 +165,8 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
         scrollView.isScrollEnabled = true
       }
     #endif
+
+    self.isScrollEnabled = !(amountOfScrollView == 1)
   }
 
   /// Sets up observers for the view that gets added into the view heirarcy.
@@ -171,6 +179,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     guard view.superview == contentView else { return }
 
     let contentSizeObserver = view.observe(\.contentSize, options: [.initial, .new, .old], changeHandler: { [weak self] (scrollView, value) in
+      guard self?.isScrollEnabled == true else { return }
       guard let strongSelf = self,
         let newValue = value.newValue,
         let oldValue = value.oldValue else {
@@ -184,6 +193,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     })
 
     let contentOffsetObserver = view.observe(\.contentOffset, options: [.new, .old], changeHandler: { [weak self] (_, value) in
+      guard self?.isScrollEnabled == true else { return }
       guard self?.isScrolling == false else { return }
 
       guard let newValue = value.newValue, let oldValue = value.oldValue else {
@@ -198,6 +208,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     observers.append(Observer(view: view, keyValueObservation: contentSizeObserver))
     observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
     let boundsObserver = view.observe(\.bounds, options: [.new, .old], changeHandler: { [weak self] (_, value) in
+      guard self?.isScrollEnabled == true else { return }
       guard self?.isScrolling == false else { return }
 
       guard let newValue = value.newValue, let oldValue = value.oldValue else {
@@ -212,6 +223,7 @@ public final class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     observers.append(Observer(view: view, keyValueObservation: boundsObserver))
 
     let hiddenObserver = view.observe(\.isHidden, options: [.new, .old], changeHandler: { [weak self] (_, value) in
+      guard self?.isScrollEnabled == true else { return }
       guard let newValue = value.newValue, let oldValue = value.oldValue else {
         return
       }

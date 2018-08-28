@@ -1,11 +1,16 @@
 import UIKit
 
+protocol FamilyContentViewDelegate: class {
+  func familyContentView(_ view: FamilyContentView, didAddScrollView scrollView: UIScrollView)
+}
+
 /// This classes acts as a view container for `FamilyScrollView`.
 /// It is used to wrap views that don't inherit from `UIScrollView`
 /// in `FamilyWrapperView`'s. This is done so that the `FamilyScrollView`
 /// only needs to take `UIScrollView` based views into account when performing
 /// its layout algorithm.
-final public class FamilyContentView: UIView {
+public class FamilyContentView: UIView {
+  weak var delegate: FamilyContentViewDelegate?
   weak var familyScrollView: FamilyScrollView?
 
   /// Convenience methods to return all subviews as scroll view.
@@ -34,18 +39,10 @@ final public class FamilyContentView: UIView {
     }
 
     super.addSubview(subview)
-  }
 
-  /// Tells the view that a subview was added.
-  /// The view will be registered in `FamilyScrollView`'s hierarchy,
-  /// which in turn registers observers in order to get fluid & smooth scrolling
-  /// when using a `FamilyScrollView`.
-  ///
-  /// - Parameter subview: The view that got added as a subview.
-  override open func didAddSubview(_ subview: UIView) {
-    if let scrollView = subview as? UIScrollView {
-      familyScrollView?.didAddScrollViewToContainer(scrollView)
-    }
+    guard let scrollView = subview as? UIScrollView else { return }
+
+    delegate?.familyContentView(self, didAddScrollView: scrollView)
   }
 
   /// Tells the view that a subview is about to be removed.
