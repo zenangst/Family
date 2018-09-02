@@ -107,7 +107,7 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
     subviewsInLayoutOrder.removeAll()
     for scrollView in contentView.scrollViews {
       subviewsInLayoutOrder.append(scrollView)
-      configureScrollView(scrollView, amountOfScrollView: contentView.scrollViews.count)
+      configureScrollView(scrollView)
     }
 
     computeContentSize()
@@ -129,9 +129,8 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
       }
     }
 
-    let amountOfScrollViews = contentView.scrollViews.count - 1
     for scrollView in contentView.scrollViews {
-      configureScrollView(scrollView, amountOfScrollView: amountOfScrollViews)
+      configureScrollView(scrollView)
     }
 
     computeContentSize()
@@ -147,26 +146,20 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
   /// view heirarcy.
   ///
   /// - Parameter scrollView: The scroll view that will be configured.
-  func configureScrollView(_ scrollView: UIScrollView, amountOfScrollView: Int) {
+  func configureScrollView(_ scrollView: UIScrollView) {
     #if os(iOS)
       scrollView.scrollsToTop = false
       if let collectionView = scrollView as? UICollectionView,
-        let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout, layout.scrollDirection == .horizontal {
+        (collectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal {
         scrollView.isScrollEnabled = true
       } else {
-        scrollView.isScrollEnabled = amountOfScrollView == 1
+        scrollView.isScrollEnabled = false
       }
     #else
-      if amountOfScrollView > 1 {
-        for scrollView in subviewsInLayoutOrder {
-          scrollView.isScrollEnabled = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
-        }
-      } else {
-        scrollView.isScrollEnabled = true
+      for scrollView in subviewsInLayoutOrder {
+        scrollView.isScrollEnabled = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
       }
     #endif
-
-    self.isScrollEnabled = !(amountOfScrollView == 1)
   }
 
   /// Sets up observers for the view that gets added into the view heirarcy.
@@ -179,7 +172,6 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
     guard view.superview == contentView else { return }
 
     let contentSizeObserver = view.observe(\.contentSize, options: [.initial, .new, .old], changeHandler: { [weak self] (scrollView, value) in
-      guard self?.isScrollEnabled == true else { return }
       guard let strongSelf = self,
         let newValue = value.newValue,
         let oldValue = value.oldValue else {
@@ -193,7 +185,6 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
     })
 
     let contentOffsetObserver = view.observe(\.contentOffset, options: [.new, .old], changeHandler: { [weak self] (_, value) in
-      guard self?.isScrollEnabled == true else { return }
       guard self?.isScrolling == false else { return }
 
       guard let newValue = value.newValue, let oldValue = value.oldValue else {
@@ -208,7 +199,6 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
     observers.append(Observer(view: view, keyValueObservation: contentSizeObserver))
     observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
     let boundsObserver = view.observe(\.bounds, options: [.new, .old], changeHandler: { [weak self] (_, value) in
-      guard self?.isScrollEnabled == true else { return }
       guard self?.isScrolling == false else { return }
 
       guard let newValue = value.newValue, let oldValue = value.oldValue else {
@@ -223,7 +213,6 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
     observers.append(Observer(view: view, keyValueObservation: boundsObserver))
 
     let hiddenObserver = view.observe(\.isHidden, options: [.new, .old], changeHandler: { [weak self] (_, value) in
-      guard self?.isScrollEnabled == true else { return }
       guard let newValue = value.newValue, let oldValue = value.oldValue else {
         return
       }
@@ -312,7 +301,6 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
   /// when a view changes size or origin. It also scales the frame of scroll views
   /// in order to keep dequeuing for table and collection views.
   private func runLayoutSubviewsAlgorithm() {
-    let multipleComponents = subviewsInLayoutOrder.count > 1
     var yOffsetOfCurrentSubview: CGFloat = 0.0
     for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
       if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
@@ -336,29 +324,21 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
 
       frame.size.width = max(frame.size.width, self.frame.size.width)
 
-      switch multipleComponents {
-      case true:
-        if scrollView is FamilyWrapperView {
-          newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
-        } else {
-          newHeight = fmin(contentView.frame.height, newHeight)
-        }
-
-        let shouldModifyContentOffset = contentOffset.y <= scrollView.contentSize.height ||
-          self.contentOffset.y != frame.minY
-
-        if shouldModifyContentOffset {
-          if !compare(scrollView.contentOffset, to: contentOffset) {
-            scrollView.contentOffset.y = contentOffset.y
-          }
-        } else {
-          frame.origin.y = yOffsetOfCurrentSubview
-        }
-      case false:
+      if scrollView is FamilyWrapperView {
         newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+      } else {
+        newHeight = fmin(contentView.frame.height, newHeight)
+      }
+
+      let shouldModifyContentOffset = contentOffset.y <= scrollView.contentSize.height ||
+        self.contentOffset.y != frame.minY
+
+      if shouldModifyContentOffset {
         if !compare(scrollView.contentOffset, to: contentOffset) {
           scrollView.contentOffset.y = contentOffset.y
         }
+      } else {
+        frame.origin.y = yOffsetOfCurrentSubview
       }
 
       frame.size.height = newHeight
