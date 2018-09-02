@@ -16,25 +16,6 @@ class FamilyScrollViewTests: XCTestCase {
     superview.subviews.forEach { $0.removeFromSuperview() }
   }
 
-  // Content observers should not trigger if there is only one scroll view.
-  func testContentSizeObserverWithSingleScrollView() {
-    scrollView.frame.size.width = FamilyScrollViewTests.mockFrame.size.width
-    superview.addSubview(scrollView)
-    var size = CGSize(width: 500, height: 250)
-    let mockedScrollView = UIScrollView(frame: CGRect(origin: .zero, size: size))
-    mockedScrollView.contentSize = size
-
-    scrollView.contentView.addSubview(mockedScrollView)
-    scrollView.layoutViews()
-
-    XCTAssertEqual(mockedScrollView.frame, CGRect(origin: .zero, size: size))
-
-    // Check that the layout algorithm is invoked if the views frame changes.
-    size.height = 1500
-    mockedScrollView.contentSize = size
-    XCTAssertNotEqual(scrollView.contentSize, size)
-  }
-
   func testContentSizeObserver() {
     scrollView.frame.size.width = FamilyScrollViewTests.mockFrame.size.width
     superview.addSubview(scrollView)
@@ -61,9 +42,6 @@ class FamilyScrollViewTests: XCTestCase {
     let verticalCollectionView = UICollectionView(frame: frame, collectionViewLayout: verticalCollectionViewLayout)
     scrollView.contentView.addSubview(verticalCollectionView)
 
-    // Vertical components are allowed to be scrolled when there is only one scroll view in the view heirarcy.
-    XCTAssertTrue(verticalCollectionView.isScrollEnabled)
-
     let horizontalCollectionViewLayout = UICollectionViewFlowLayout()
     horizontalCollectionViewLayout.scrollDirection = .horizontal
     let horizontalCollectionView = UICollectionView(frame: frame, collectionViewLayout: horizontalCollectionViewLayout)
@@ -73,15 +51,13 @@ class FamilyScrollViewTests: XCTestCase {
     XCTAssertTrue(horizontalCollectionView.isScrollEnabled)
 
     horizontalCollectionView.removeFromSuperview()
-    XCTAssertTrue(verticalCollectionView.isScrollEnabled)
+    XCTAssertFalse(verticalCollectionView.isScrollEnabled)
   }
 
   func testTableViews() {
     let frame = CGRect(origin: .zero, size: CGSize(width: 500, height: 200))
     let tableView = UITableView(frame: frame)
     scrollView.contentView.addSubview(tableView)
-
-    XCTAssertTrue(tableView.isScrollEnabled)
 
     let anotherTableView = UITableView(frame: frame)
     scrollView.contentView.addSubview(anotherTableView)
@@ -90,7 +66,7 @@ class FamilyScrollViewTests: XCTestCase {
     XCTAssertFalse(anotherTableView.isScrollEnabled)
 
     anotherTableView.removeFromSuperview()
-    XCTAssertTrue(tableView.isScrollEnabled)
+    XCTAssertFalse(tableView.isScrollEnabled)
   }
 
   func testLayoutAlgorithm() {
