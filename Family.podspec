@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = "Family"
   s.summary          = "A child view controller framework that makes setting up your parent controllers as easy as pie."
-  s.version          = "0.5.17"
+  s.version          = "0.6.0"
   s.homepage         = "https://github.com/zenangst/Family"
   s.license          = 'MIT'
   s.author           = { "Christoffer Winterkvist" => "christoffer@winterkvist.com" }
@@ -20,5 +20,5 @@ Pod::Spec.new do |s|
   s.tvos.source_files = 'Sources/{iOS+tvOS,tvOS,Shared}/**/*'
   s.macos.source_files = 'Sources/{macOS,Shared}/**/*'
 
-  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '4.0' }
+  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '4.2' }
 end
