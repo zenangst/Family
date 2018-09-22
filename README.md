@@ -47,7 +47,7 @@ Adding a regular child view controller.
 let familyController = FamilyViewController()
 let viewController = UIViewController()
 
-familyController.addChildViewController(viewController)
+familyController.addChild(viewController)
 ```
 
 Adding a child view controller constrained in height.
@@ -56,7 +56,7 @@ Adding a child view controller constrained in height.
 let familyController = FamilyViewController()
 let viewController = UIViewController()
 
-familyController.addChildViewController(viewController, height: 175)
+familyController.addChild(viewController, height: 175)
 ```
 
 Adding a child view controller with a custom view on the controller.
@@ -67,7 +67,7 @@ let customController = CustomViewController()
 
 // This will add the scroll view of the custom controller
 // instead of the controllers view.
-familyController.addChildViewController(customController, view: { $0.scrollView })
+familyController.addChild(customController, view: { $0.scrollView })
 ```
 
 ## Installation
