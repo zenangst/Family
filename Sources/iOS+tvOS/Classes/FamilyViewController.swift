@@ -16,9 +16,9 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   public var constraints = [NSLayoutConstraint]()
 
   deinit {
-    childViewControllers.forEach {
-      $0.willMove(toParentViewController: nil)
-      $0.removeFromParentViewController()
+    children.forEach {
+      $0.willMove(toParent: nil)
+      $0.removeFromParent()
       $0.view.removeFromSuperview()
     }
     purgeRemovedViews()
@@ -77,10 +77,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// Adds the specified view controller as a child of the current view controller.
   ///
   /// - Parameter childController: The view controller to be added as a child.
-  open override func addChildViewController(_ childController: UIViewController) {
+  open override func addChild(_ childController: UIViewController) {
     purgeRemovedViews()
-    childController.willMove(toParentViewController: self)
-    super.addChildViewController(childController)
+    childController.willMove(toParent: self)
+    super.addChild(childController)
 
     let childViewControllerView: UIView
 
@@ -105,7 +105,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       (childController.view as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
     }
 
-    childController.didMove(toParentViewController: self)
+    childController.didMove(toParent: self)
 
     registry[childController] = (childViewControllerView, observe(childController))
     scrollView.purgeWrapperViews()
@@ -116,11 +116,11 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameters:
   ///   - childController: The view controller to be added as a child.
   ///   - height: The height that the child controllers should be constrained to.
-  open func addChildViewController(_ childController: UIViewController, customSpacing: CGFloat? = nil, height: CGFloat) {
-    childController.willMove(toParentViewController: self)
-    super.addChildViewController(childController)
+  open func addChild(_ childController: UIViewController, customSpacing: CGFloat? = nil, height: CGFloat) {
+    childController.willMove(toParent: self)
+    super.addChild(childController)
     scrollView.contentView.addSubview(childController.view)
-    childController.didMove(toParentViewController: self)
+    childController.didMove(toParent: self)
     childController.view.translatesAutoresizingMaskIntoConstraints = true
     childController.view.frame.size.width = view.frame.size.width
     childController.view.autoresizingMask = [.flexibleWidth]
@@ -142,9 +142,9 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - childController: The view controller to be added as a child.
   ///   - closure: A closure used to resolve a view other than `.view` on controller used
   ///              to render the view controller.
-  public func addChildViewController<T: UIViewController>(_ childController: T, customSpacing spacing: CGFloat? = nil, view closure: (T) -> UIView) {
-    childController.willMove(toParentViewController: self)
-    super.addChildViewController(childController)
+  public func addChild<T: UIViewController>(_ childController: T, customSpacing spacing: CGFloat? = nil, view closure: (T) -> UIView) {
+    childController.willMove(toParent: self)
+    super.addChild(childController)
     view.addSubview(childController.view)
     childController.view.frame.size = .zero
     childController.view.isHidden = true
@@ -155,7 +155,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
 
     addView(childView, customSpacing: spacing)
-    childController.didMove(toParentViewController: self)
+    childController.didMove(toParent: self)
     registry[childController] = (childView, observe(childController))
     scrollView.purgeWrapperViews()
   }
@@ -163,16 +163,16 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// Adds a collection of view controllers as children of the current view controller.
   ///
   /// - Parameter childControllers: The view controllers to be added as children.
-  public func addChildViewControllers(_ childControllers: UIViewController ...) {
-    addChildViewControllers(childControllers)
+  public func addChildren(_ childControllers: UIViewController ...) {
+    addChildren(childControllers)
   }
 
   /// Adds a collection of view controllers as children of the current view controller.
   ///
   /// - Parameter childControllers: The view controllers to be added as children.
-  public func addChildViewControllers(_ childControllers: [UIViewController]) {
+  public func addChildren(_ childControllers: [UIViewController]) {
     for childController in childControllers {
-      addChildViewController(childController)
+      addChild(childController)
     }
   }
 
