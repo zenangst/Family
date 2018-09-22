@@ -8,7 +8,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   var observer: NSKeyValueObservation?
 
   deinit {
-    childViewControllers.forEach { $0.removeFromParentViewController() }
+    children.forEach { $0.removeFromParent() }
     purgeRemovedViews()
   }
 
@@ -18,7 +18,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     view.autoresizesSubviews = true
     self.view = view
 
-    observer = observe(\.childViewControllers, options: [.new, .old], changeHandler: { controller, _ in
+    observer = observe(\.children, options: [.new, .old], changeHandler: { controller, _ in
       controller.purgeRemovedViews()
     })
   }
@@ -43,16 +43,16 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 
-  open override func addChildViewController(_ childController: ViewController) {
-    super.addChildViewController(childController)
+  open override func addChild(_ childController: ViewController) {
+    super.addChild(childController)
     childController.view.frame.size.width = view.bounds.width
     scrollView.familyContentView.addSubview(childController.view)
     scrollView.frame = view.bounds
     registry[childController] = childController.view
   }
 
-  public func addChildViewController(_ childController: ViewController, customSpacing spacing: CGFloat? = nil, height: CGFloat) {
-    addChildViewController(childController)
+  public func addChild(_ childController: ViewController, customSpacing spacing: CGFloat? = nil, height: CGFloat) {
+    addChild(childController)
     childController.view.translatesAutoresizingMaskIntoConstraints = true
     childController.view.autoresizingMask = [.width]
     childController.view.frame.size.height = height
@@ -64,8 +64,8 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 
-  public func addChildViewController<T: ViewController>(_ childController: T, customSpacing spacing: CGFloat? = nil, view closure: (T) -> View) {
-    super.addChildViewController(childController)
+  public func addChild<T: ViewController>(_ childController: T, customSpacing spacing: CGFloat? = nil, view closure: (T) -> View) {
+    super.addChild(childController)
     view.addSubview(childController.view)
     childController.view.frame.size = .zero
     childController.view.isHidden = true
@@ -74,13 +74,13 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     registry[childController] = childView
   }
 
-  public func addChildViewControllers(_ childControllers: NSViewController ...) {
-    addChildViewControllers(childControllers)
+  public func addChildren(_ childControllers: NSViewController ...) {
+    addChildren(childControllers)
   }
 
-  public func addChildViewControllers(_ childControllers: [NSViewController]) {
+  public func addChildren(_ childControllers: [NSViewController]) {
     for childController in childControllers {
-      addChildViewController(childController)
+      addChild(childController)
     }
   }
 

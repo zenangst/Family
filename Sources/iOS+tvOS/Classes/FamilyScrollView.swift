@@ -287,7 +287,7 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
       .compactMap({ $0.layer.resolveAnimationDuration }).first ?? duration
 
     if let duration = animationDuration {
-      let options: UIViewAnimationOptions = [.allowUserInteraction, .beginFromCurrentState]
+      let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState]
       UIView.animate(withDuration: duration, delay: 0.0, options: options, animations: {
         self.runLayoutSubviewsAlgorithm()
       })
@@ -357,10 +357,10 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
   }
 
   private func compare(_ lhs: CGSize, to rhs: CGSize) -> Bool {
-    return (fabs(lhs.height - rhs.height) <= 0.001)
+    return (abs(lhs.height - rhs.height) <= 0.001)
   }
 
   private func compare(_ lhs: CGPoint, to rhs: CGPoint) -> Bool {
-    return (fabs(lhs.y - rhs.y) <= 0.001)
+    return (abs(lhs.y - rhs.y) <= 0.001)
   }
 }
