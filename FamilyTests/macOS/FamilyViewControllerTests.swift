@@ -68,9 +68,11 @@ class FamilyViewControllerTests: XCTestCase {
     wrapperView = (subviews[2] as? FamilyWrapperView)
     XCTAssertEqual(wrapperView?.documentView, thirdViewController.view)
 
+    familyViewController.scrollView.layout()
     familyViewController.scrollView.layoutViews(withDuration: 0)
     XCTAssertEqual(familyViewController.scrollView.documentView?.frame.size.height, 1500)
     secondViewController.view.isHidden = true
+    familyViewController.scrollView.layout()
     XCTAssertEqual(familyViewController.scrollView.documentView?.frame.size.height, 1000)
   }
 

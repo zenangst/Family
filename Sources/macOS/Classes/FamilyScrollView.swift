@@ -40,15 +40,16 @@ public class FamilyScrollView: NSScrollView {
 
   public func layoutViews(withDuration duration: CFTimeInterval? = nil,
                           excludeOffscreenViews: Bool = true) {
-    defer { computeContentSize() }
-    if layoutIsRunning {
-      return
-    }
+    guard !layoutIsRunning else { return }
+
+    CATransaction.begin()
+    defer { CATransaction.commit() }
 
     if let duration = duration, duration > 0 {
       NSAnimationContext.current.duration = duration
       NSAnimationContext.current.allowsImplicitAnimation = true
     } else if isScrolling {
+      CATransaction.setDisableActions(true)
       NSAnimationContext.current.duration = 0.0
       NSAnimationContext.current.allowsImplicitAnimation = false
     }
@@ -128,6 +129,7 @@ public class FamilyScrollView: NSScrollView {
   public override func layout() {
     layoutViews()
     super.layout()
+    computeContentSize()
   }
 
   public func customSpacing(after view: View) -> CGFloat {
