@@ -42,10 +42,14 @@ public class FamilyScrollView: NSScrollView {
                           excludeOffscreenViews: Bool = true) {
     guard !layoutIsRunning else { return }
 
+    CATransaction.begin()
+    defer { CATransaction.commit() }
+
     if let duration = duration, duration > 0 {
       NSAnimationContext.current.duration = duration
       NSAnimationContext.current.allowsImplicitAnimation = true
     } else if isScrolling {
+      CATransaction.setDisableActions(true)
       NSAnimationContext.current.duration = 0.0
       NSAnimationContext.current.allowsImplicitAnimation = false
     }
