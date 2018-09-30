@@ -40,10 +40,7 @@ public class FamilyScrollView: NSScrollView {
 
   public func layoutViews(withDuration duration: CFTimeInterval? = nil,
                           excludeOffscreenViews: Bool = true) {
-    defer { computeContentSize() }
-    if layoutIsRunning {
-      return
-    }
+    guard !layoutIsRunning else { return }
 
     if let duration = duration, duration > 0 {
       NSAnimationContext.current.duration = duration
@@ -128,6 +125,7 @@ public class FamilyScrollView: NSScrollView {
   public override func layout() {
     layoutViews()
     super.layout()
+    computeContentSize()
   }
 
   public func customSpacing(after view: View) -> CGFloat {
