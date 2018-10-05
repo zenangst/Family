@@ -5,6 +5,7 @@ class FamilyWrapperView: NSScrollView {
   var isScrolling: Bool = false
   var view: NSView
   private var frameObserver: NSKeyValueObservation?
+  private var alphaObserver: NSKeyValueObservation?
   private var hiddenObserver: NSKeyValueObservation?
 
   open override var verticalScroller: NSScroller? {
@@ -27,6 +28,13 @@ class FamilyWrapperView: NSScrollView {
         self.layoutViews()
       }
     })
+
+    self.alphaObserver = view.observe(\.alphaValue, options: [.initial, .new, .old]) { [weak self] (_, value) in
+      if value.newValue != value.oldValue, let newValue = value.newValue {
+        self?.alphaValue = newValue
+        self?.layoutViews()
+      }
+    }
 
     self.hiddenObserver = view.observe(\.isHidden, options: [.initial, .new, .old]) { [weak self] (_, value) in
       if value.newValue != value.oldValue, let newValue = value.newValue {
@@ -67,7 +75,7 @@ class FamilyWrapperView: NSScrollView {
       if view is NSCollectionView {
         let delay = NSAnimationContext.current.duration
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-          familyScrollView.layoutViews(withDuration: delay)
+          familyScrollView.layoutViews(withDuration: 0.0)
         }
       } else {
         familyScrollView.layoutViews(withDuration: NSAnimationContext.current.duration)
