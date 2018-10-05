@@ -160,7 +160,7 @@ public class FamilyScrollView: NSScrollView {
   private func runLayoutSubviewsAlgorithm(excludeOffscreenViews: Bool = true) {
     var yOffsetOfCurrentSubview: CGFloat = 0.0
     var offset = 0
-    for scrollView in subviewsInLayoutOrder where scrollView.documentView != nil && scrollView.documentView?.isHidden == false {
+    for scrollView in subviewsInLayoutOrder where scrollView.documentView != nil && scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0) {
       var shouldResize: Bool = true
       let contentSize: CGSize = contentSizeForView(scrollView.documentView!, shouldResize: &shouldResize)
       var frame = scrollView.frame
@@ -247,7 +247,7 @@ public class FamilyScrollView: NSScrollView {
 
   private func computeContentSize() {
     let computedHeight: CGFloat = subviewsInLayoutOrder
-      .filter({ $0.documentView?.isHidden == false })
+      .filter({ $0.documentView?.isHidden == false || ($0.documentView?.alphaValue ?? 1.0) > 0.0 })
       .reduce(0, { $0 + ($1.documentView?.frame.size.height ?? 0) + spaceManager.customSpacing(after: ($1 as? FamilyWrapperView)?.view ?? $1) })
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
