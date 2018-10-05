@@ -46,8 +46,17 @@ public class FamilyScrollView: NSScrollView {
     defer { CATransaction.commit() }
 
     if let duration = duration, duration > 0 {
-      NSAnimationContext.current.duration = duration
-      NSAnimationContext.current.allowsImplicitAnimation = true
+      layoutIsRunning = true
+      NSAnimationContext.runAnimationGroup({ (context) in
+        context.duration = duration
+        context.allowsImplicitAnimation = true
+        runLayoutSubviewsAlgorithm(excludeOffscreenViews: excludeOffscreenViews)
+      }, completionHandler: { [weak self] in
+        self?.computeContentSize()
+        self?.runLayoutSubviewsAlgorithm()
+        self?.layoutIsRunning = false
+      })
+      return
     } else if isScrolling {
       CATransaction.setDisableActions(true)
       NSAnimationContext.current.duration = 0.0
@@ -157,10 +166,16 @@ public class FamilyScrollView: NSScrollView {
     subviewsInLayoutOrder = filteredSubviews
   }
 
+  private func validateScrollView(_ scrollView: NSScrollView) -> Bool {
+    guard scrollView.documentView != nil else { return false }
+
+    return scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0)
+  }
+
   private func runLayoutSubviewsAlgorithm(excludeOffscreenViews: Bool = true) {
     var yOffsetOfCurrentSubview: CGFloat = 0.0
     var offset = 0
-    for scrollView in subviewsInLayoutOrder where scrollView.documentView != nil && scrollView.documentView?.isHidden == false {
+    for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
       var shouldResize: Bool = true
       let contentSize: CGSize = contentSizeForView(scrollView.documentView!, shouldResize: &shouldResize)
       var frame = scrollView.frame
@@ -247,7 +262,7 @@ public class FamilyScrollView: NSScrollView {
 
   private func computeContentSize() {
     let computedHeight: CGFloat = subviewsInLayoutOrder
-      .filter({ $0.documentView?.isHidden == false })
+      .filter({ validateScrollView($0) })
       .reduce(0, { $0 + ($1.documentView?.frame.size.height ?? 0) + spaceManager.customSpacing(after: ($1 as? FamilyWrapperView)?.view ?? $1) })
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
