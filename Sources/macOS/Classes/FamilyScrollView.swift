@@ -46,8 +46,17 @@ public class FamilyScrollView: NSScrollView {
     defer { CATransaction.commit() }
 
     if let duration = duration, duration > 0 {
-      NSAnimationContext.current.duration = duration
-      NSAnimationContext.current.allowsImplicitAnimation = true
+      layoutIsRunning = true
+      NSAnimationContext.runAnimationGroup({ (context) in
+        context.duration = duration
+        context.allowsImplicitAnimation = true
+        runLayoutSubviewsAlgorithm(excludeOffscreenViews: excludeOffscreenViews)
+      }, completionHandler: { [weak self] in
+        self?.computeContentSize()
+        self?.runLayoutSubviewsAlgorithm()
+        self?.layoutIsRunning = false
+      })
+      return
     } else if isScrolling {
       CATransaction.setDisableActions(true)
       NSAnimationContext.current.duration = 0.0
