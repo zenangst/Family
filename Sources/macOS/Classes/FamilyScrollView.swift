@@ -158,6 +158,11 @@ public class FamilyScrollView: NSScrollView {
     layoutViews(withDuration: 0.0, excludeOffscreenViews: false)
   }
 
+  func wrapperViewDidChangeFrame() {
+    runLayoutSubviewsAlgorithm()
+    computeContentSize()
+  }
+
   // MARK: - Private methods
 
   private func rebuildSubviewsInLayoutOrder(exceptSubview: View? = nil) {

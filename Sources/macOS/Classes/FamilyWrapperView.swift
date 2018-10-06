@@ -23,24 +23,21 @@ class FamilyWrapperView: NSScrollView {
     self.postsBoundsChangedNotifications = true
     self.verticalScrollElasticity = .none
 
-    self.frameObserver = wrappedView.observe(\.frame, options: [.new, .old], changeHandler: { (_, value) in
-      if value.newValue != value.oldValue {
-        self.layoutViews()
-      }
+    self.frameObserver = wrappedView.observe(\.frame, options: [.new, .old], changeHandler: { [weak self] (_, value) in
+      guard value.newValue != value.oldValue else { return }
+      self?.layoutViews(force: true)
     })
 
     self.alphaObserver = view.observe(\.alphaValue, options: [.initial, .new, .old]) { [weak self] (_, value) in
-      if value.newValue != value.oldValue, let newValue = value.newValue {
-        self?.alphaValue = newValue
-        self?.layoutViews()
-      }
+      guard value.newValue != value.oldValue, let newValue = value.newValue else { return }
+      self?.alphaValue = newValue
+      self?.layoutViews()
     }
 
     self.hiddenObserver = view.observe(\.isHidden, options: [.initial, .new, .old]) { [weak self] (_, value) in
-      if value.newValue != value.oldValue, let newValue = value.newValue {
-        self?.isHidden = newValue
-        self?.layoutViews()
-      }
+      guard value.newValue != value.oldValue, let newValue = value.newValue else { return }
+      self?.isHidden = newValue
+      self?.layoutViews()
     }
   }
 
@@ -64,7 +61,12 @@ class FamilyWrapperView: NSScrollView {
       !(event.phase == .ended || event.momentumPhase == .ended)
   }
 
-  func layoutViews() {
+  func layoutViews(force: Bool = false) {
+    if force {
+      (enclosingScrollView as? FamilyScrollView)?.wrapperViewDidChangeFrame()
+      return
+    }
+
     guard window?.inLiveResize != true,
       !isScrolling,
       let familyScrollView = parentContentView?.familyScrollView else {
