@@ -17,6 +17,7 @@ class FamilyWrapperView: NSScrollView {
     self.view = wrappedView
     super.init(frame: frameRect)
     self.contentView = NSClipView()
+    self.contentView.translatesAutoresizingMaskIntoConstraints = false
     self.documentView = wrappedView
     self.hasHorizontalScroller = true
     self.hasVerticalScroller = false
@@ -43,11 +44,6 @@ class FamilyWrapperView: NSScrollView {
 
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
-  }
-
-  override func layout() {
-    super.layout()
-    layoutViews()
   }
 
   override func scrollWheel(with event: NSEvent) {
