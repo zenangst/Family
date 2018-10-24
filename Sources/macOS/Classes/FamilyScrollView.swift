@@ -160,7 +160,7 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func wrapperViewDidChangeFrame() {
-    runLayoutSubviewsAlgorithm()
+    layoutViews(withDuration: NSAnimationContext.current.duration)
     computeContentSize()
   }
 
