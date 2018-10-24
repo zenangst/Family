@@ -211,6 +211,9 @@ public class FamilyScrollView: NSScrollView {
         } else {
           frame.origin.y = yOffsetOfCurrentSubview
         }
+      } else if remainingContentHeight < contentSize.height {
+        frame.origin.y = self.contentOffset.y - (contentSize.height - remainingContentHeight)
+        shouldResize = false
       }
 
       frame.size.height = round(newHeight)
