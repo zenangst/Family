@@ -24,6 +24,7 @@ class FamilyContentViewTests: XCTestCase {
 
   func testAddingRegularViewToContentView() {
     let size = CGSize(width: 200, height: 200)
+    scrollView.frame.size = size
     let regularView = NSView(frame: CGRect(origin: .zero, size: size))
 
     contentView.addSubview(regularView)
@@ -65,11 +66,8 @@ class FamilyContentViewTests: XCTestCase {
   func testLayoutMethod() {
     let size = CGSize(width: 200, height: 200)
     let view = NSView(frame: CGRect(origin: .zero, size: size))
-
-    contentView.addSubview(view)
-
     XCTAssertFalse(scrollView.didLayout)
-    contentView.scroll(.zero)
+    contentView.addSubview(view)
     XCTAssertTrue(scrollView.didLayout)
   }
 }
