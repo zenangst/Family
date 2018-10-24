@@ -133,6 +133,7 @@ public class FamilyScrollView: NSScrollView {
         subviewsInLayoutOrder.append(scrollView)
       }
     }
+    layoutViews()
   }
 
   public override func layout() {
