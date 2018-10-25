@@ -63,8 +63,7 @@ class FamilyWrapperView: NSScrollView {
       return
     }
 
-    guard window?.inLiveResize != true,
-      !isScrolling,
+    guard window?.inLiveResize != true, !isScrolling,
       let familyScrollView = parentContentView?.familyScrollView else {
         return
     }
@@ -79,7 +78,7 @@ class FamilyWrapperView: NSScrollView {
         familyScrollView.layoutViews(withDuration: NSAnimationContext.current.duration)
       }
     } else {
-      (enclosingScrollView as? FamilyScrollView)?.layoutViews()
+      familyScrollView.layoutViews()
     }
   }
 }

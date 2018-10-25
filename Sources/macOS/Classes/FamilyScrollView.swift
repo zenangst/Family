@@ -40,7 +40,9 @@ public class FamilyScrollView: NSScrollView {
 
   public func layoutViews(withDuration duration: CFTimeInterval? = nil,
                           excludeOffscreenViews: Bool = true) {
-    guard !layoutIsRunning else { return }
+    guard !layoutIsRunning else {
+      return
+    }
 
     CATransaction.begin()
     defer { CATransaction.commit() }
