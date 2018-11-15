@@ -24,7 +24,7 @@ class FamilyContentViewTests: XCTestCase {
 
   override func setUp() {
     scrollView = FamilyScrollViewMock()
-    contentView = scrollView.documentView as! FamilyContentView
+    contentView = scrollView.documentView as? FamilyContentView
   }
 
   func testAddingRegularViewToContentView() {
