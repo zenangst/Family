@@ -39,8 +39,9 @@ public class FamilyScrollView: NSScrollView {
   // MARK: - Public methods
 
   public func layoutViews(withDuration duration: CFTimeInterval? = nil,
+                          force: Bool = false,
                           excludeOffscreenViews: Bool = true) {
-    guard !layoutIsRunning else {
+    guard !layoutIsRunning || !force else {
       return
     }
 
@@ -51,7 +52,7 @@ public class FamilyScrollView: NSScrollView {
       layoutIsRunning = true
       NSAnimationContext.runAnimationGroup({ (context) in
         context.duration = duration
-        context.allowsImplicitAnimation = true
+        context.allowsImplicitAnimation = !force
         runLayoutSubviewsAlgorithm(excludeOffscreenViews: excludeOffscreenViews)
       }, completionHandler: { [weak self] in
         self?.computeContentSize()
@@ -135,6 +136,7 @@ public class FamilyScrollView: NSScrollView {
         subviewsInLayoutOrder.append(scrollView)
       }
     }
+    computeContentSize()
     layoutViews()
   }
 
@@ -162,8 +164,7 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func wrapperViewDidChangeFrame() {
-    layoutViews(withDuration: NSAnimationContext.current.duration)
-    computeContentSize()
+    layoutViews(withDuration: NSAnimationContext.current.duration, force: true)
   }
 
   // MARK: - Private methods
@@ -176,7 +177,6 @@ public class FamilyScrollView: NSScrollView {
 
   private func validateScrollView(_ scrollView: NSScrollView) -> Bool {
     guard scrollView.documentView != nil else { return false }
-
     return scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0)
   }
 

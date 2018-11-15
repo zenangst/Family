@@ -4,10 +4,15 @@ import XCTest
 class FamilyContentViewTests: XCTestCase {
   class FamilyScrollViewMock: FamilyScrollView {
     var didLayout: Bool = false
+
+
+
     override func layoutViews(withDuration duration: CFTimeInterval? = nil,
+                              force: Bool = false,
                               excludeOffscreenViews: Bool = true) {
       super.layoutViews(
         withDuration: duration,
+        force: force,
         excludeOffscreenViews: excludeOffscreenViews
       )
       didLayout = true
@@ -19,7 +24,7 @@ class FamilyContentViewTests: XCTestCase {
 
   override func setUp() {
     scrollView = FamilyScrollViewMock()
-    contentView = scrollView.documentView as! FamilyContentView
+    contentView = scrollView.documentView as? FamilyContentView
   }
 
   func testAddingRegularViewToContentView() {
