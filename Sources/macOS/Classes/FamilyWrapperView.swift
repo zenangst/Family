@@ -26,7 +26,7 @@ class FamilyWrapperView: NSScrollView {
 
     self.frameObserver = wrappedView.observe(\.frame, options: [.new, .old], changeHandler: { [weak self] (_, value) in
       guard value.newValue != value.oldValue else { return }
-      self?.layoutViews(force: true)
+      self?.layoutViews(from: value.oldValue, to: value.newValue)
     })
 
     self.alphaObserver = view.observe(\.alphaValue, options: [.initial, .new, .old]) { [weak self] (_, value) in
@@ -57,9 +57,9 @@ class FamilyWrapperView: NSScrollView {
       !(event.phase == .ended || event.momentumPhase == .ended)
   }
 
-  func layoutViews(force: Bool = false) {
-    if force {
-      (enclosingScrollView as? FamilyScrollView)?.wrapperViewDidChangeFrame()
+  func layoutViews(from fromValue: CGRect? = nil, to toValue: CGRect? = nil) {
+    if let fromValue = fromValue, let toValue = toValue {
+      (enclosingScrollView as? FamilyScrollView)?.wrapperViewDidChangeFrame(from: fromValue, to: toValue)
       return
     }
 

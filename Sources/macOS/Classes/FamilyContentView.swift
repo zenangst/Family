@@ -32,7 +32,8 @@ public class FamilyContentView: NSView {
   }
 
   override public func willRemoveSubview(_ subview: NSView) {
-    familyScrollView?.willRemoveSubview(subview)
+    super.willRemoveSubview(subview)
+    familyScrollView?.didRemoveScrollViewToContainer(subview)
   }
 
   override public func scroll(_ point: NSPoint) {

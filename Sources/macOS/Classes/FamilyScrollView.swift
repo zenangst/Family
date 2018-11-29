@@ -1,5 +1,36 @@
 import Cocoa
 
+class FamilyCache: NSObject {
+  var contentSize: CGSize = .zero
+  var cache = [NSView: CacheEntry]()
+  var isEmpty: Bool { return cache.isEmpty }
+  override init() {}
+
+  func add(entry: CacheEntry) {
+    cache[entry.view] = entry
+  }
+
+  func entry(for view: NSView) -> CacheEntry? {
+    return cache[view]
+  }
+
+  func clear() {
+    cache.removeAll()
+  }
+}
+
+class CacheEntry: NSObject {
+  var view: NSView
+  var origin: CGPoint
+  var contentSize: CGSize
+
+  init(view: NSView, origin: CGPoint, contentSize: CGSize) {
+    self.view = view
+    self.origin = origin
+    self.contentSize = contentSize
+  }
+}
+
 public class FamilyScrollView: NSScrollView {
   public override var isFlipped: Bool { return true }
   public lazy var familyContentView: FamilyContentView = .init()
@@ -11,6 +42,7 @@ public class FamilyScrollView: NSScrollView {
   var isScrolling: Bool = false
   private var subviewsInLayoutOrder = [NSScrollView]()
   private lazy var spaceManager = FamilySpaceManager()
+  private lazy var cache = FamilyCache()
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -39,35 +71,29 @@ public class FamilyScrollView: NSScrollView {
   // MARK: - Public methods
 
   public func layoutViews(withDuration duration: CFTimeInterval? = nil,
-                          force: Bool = false,
-                          excludeOffscreenViews: Bool = true) {
+                          force: Bool = false) {
     guard !layoutIsRunning || !force else {
       return
     }
-
-    CATransaction.begin()
-    defer { CATransaction.commit() }
 
     if let duration = duration, duration > 0 {
       layoutIsRunning = true
       NSAnimationContext.runAnimationGroup({ (context) in
         context.duration = duration
-        context.allowsImplicitAnimation = !force
-        runLayoutSubviewsAlgorithm(excludeOffscreenViews: excludeOffscreenViews)
+        context.allowsImplicitAnimation = false
+        runLayoutSubviewsAlgorithm()
       }, completionHandler: { [weak self] in
-        self?.computeContentSize()
         self?.runLayoutSubviewsAlgorithm()
         self?.layoutIsRunning = false
       })
       return
     } else if isScrolling {
-      CATransaction.setDisableActions(true)
       NSAnimationContext.current.duration = 0.0
       NSAnimationContext.current.allowsImplicitAnimation = false
     }
 
     layoutIsRunning = true
-    runLayoutSubviewsAlgorithm(excludeOffscreenViews: excludeOffscreenViews)
+    runLayoutSubviewsAlgorithm()
     layoutIsRunning = false
   }
 
@@ -97,17 +123,18 @@ public class FamilyScrollView: NSScrollView {
   }
 
   @objc func contentViewBoundsDidChange(_ notification: NSNotification) {
-    if (notification.object as? NSClipView) === contentView,
-      let window = window,
-      !window.inLiveResize {
-      layoutViews(withDuration: 0.0)
-    }
+//    if (notification.object as? NSClipView) === contentView,
+//      let window = window,
+//      !window.inLiveResize {
+//      layoutViews(withDuration: 0.0)
+//    }
   }
 
   // MARK: - Window resizing
 
   private func processNewWindowSize(excludeOffscreenViews: Bool) {
-    layoutViews(excludeOffscreenViews: false)
+    cache.clear()
+    layoutViews(withDuration: 0.0, force: false)
   }
 
   @objc open func windowDidResize(_ notification: Notification) {
@@ -136,14 +163,12 @@ public class FamilyScrollView: NSScrollView {
         subviewsInLayoutOrder.append(scrollView)
       }
     }
-    computeContentSize()
-    layoutViews()
+    runLayoutSubviewsAlgorithm()
+    cache.clear()
   }
 
-  public override func layout() {
-    layoutViews()
-    super.layout()
-    computeContentSize()
+  func didRemoveScrollViewToContainer(_ subview: NSView) {
+    cache.clear()
   }
 
   public func customSpacing(after view: View) -> CGFloat {
@@ -160,11 +185,12 @@ public class FamilyScrollView: NSScrollView {
     isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
       !(event.phase == .ended || event.momentumPhase == .ended)
 
-    layoutViews(withDuration: 0.0, excludeOffscreenViews: false)
+    layoutViews(withDuration: 0.0)
   }
 
-  func wrapperViewDidChangeFrame() {
-    layoutViews(withDuration: NSAnimationContext.current.duration, force: true)
+  func wrapperViewDidChangeFrame(from fromValue: CGRect, to toValue: CGRect) {
+    cache.clear()
+    layoutViews(withDuration: 0.0, force: false)
   }
 
   // MARK: - Private methods
@@ -180,60 +206,69 @@ public class FamilyScrollView: NSScrollView {
     return scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0)
   }
 
-  private func runLayoutSubviewsAlgorithm(excludeOffscreenViews: Bool = true) {
-    var yOffsetOfCurrentSubview: CGFloat = 0.0
-    var offset = 0
-    for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
-      var shouldResize: Bool = true
-      let contentSize: CGSize = contentSizeForView(scrollView.documentView!, shouldResize: &shouldResize)
-      var frame = scrollView.frame
-      var contentOffset = scrollView.contentOffset
+  private func runLayoutSubviewsAlgorithm() {
+    if cache.isEmpty {
+      var yOffsetOfCurrentSubview: CGFloat = 0.0
+      var offset = 0
+      for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
+        var shouldResize: Bool = true
+        let contentSize: CGSize = contentSizeForView(scrollView.documentView!, shouldResize: &shouldResize)
+        var frame = scrollView.frame
+        var contentOffset = scrollView.contentOffset
 
-      if self.contentOffset.y < yOffsetOfCurrentSubview {
-        contentOffset.y = 0
-        frame.origin.y = floor(yOffsetOfCurrentSubview)
-      } else {
-        contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
-        frame.origin.y = floor(self.contentOffset.y)
-      }
-
-      let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
-      let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
-      var newHeight: CGFloat = fmin(remainingBoundsHeight, remainingContentHeight)
-
-      frame.size.width = max(frame.size.width, self.frame.size.width)
-
-      let shouldModifyContentOffset = contentOffset.y - contentInsets.top <= scrollView.contentSize.height + (contentInsets.top * 2) ||
-        self.contentOffset.y != frame.minY
-
-      if newHeight == 0 {
-        newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
-        if shouldModifyContentOffset && shouldResize {
-          scrollView.contentOffset.y = contentOffset.y
+        if self.contentOffset.y < yOffsetOfCurrentSubview {
+          contentOffset.y = 0
+          frame.origin.y = floor(yOffsetOfCurrentSubview)
         } else {
-          frame.origin.y = yOffsetOfCurrentSubview
+          contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
+          frame.origin.y = floor(self.contentOffset.y)
         }
-      } else if remainingContentHeight < contentSize.height {
-        frame.origin.y = self.contentOffset.y - (contentSize.height - remainingContentHeight)
-        shouldResize = false
+
+        let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
+        let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
+        var newHeight: CGFloat = fmin(remainingBoundsHeight, remainingContentHeight)
+
+        frame.size.width = max(frame.size.width, self.frame.size.width)
+
+        let shouldModifyContentOffset = contentOffset.y - contentInsets.top <= scrollView.contentSize.height + (contentInsets.top * 2) ||
+          self.contentOffset.y != frame.minY
+
+        if newHeight == 0 {
+          newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+          if shouldModifyContentOffset && shouldResize {
+            scrollView.contentOffset.y = contentOffset.y
+          } else {
+            frame.origin.y = yOffsetOfCurrentSubview
+          }
+        } else if remainingContentHeight < contentSize.height {
+          frame.origin.y = self.contentOffset.y - (contentSize.height - remainingContentHeight)
+          shouldResize = false
+        }
+
+        frame.size.height = round(newHeight)
+        frame.size.width = round(self.frame.size.width)
+
+        setFrame(
+          frame,
+          contentSize: contentSize,
+          shouldResize: shouldResize,
+          currentYOffset: yOffsetOfCurrentSubview,
+          to: scrollView
+        )
+
+        scrollView.contentView.scroll(contentOffset)
+
+        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+        yOffsetOfCurrentSubview += contentSize.height + spaceManager.customSpacing(after: view)
+        offset += 1
+        cache.add(entry: CacheEntry.init(view: scrollView.documentView!, origin: frame.origin, contentSize: contentSize))
       }
-
-      frame.size.height = round(newHeight)
-      frame.size.width = round(self.frame.size.width)
-
-      setFrame(
-        frame,
-        contentSize: contentSize,
-        shouldResize: shouldResize,
-        currentYOffset: yOffsetOfCurrentSubview,
-        to: scrollView
-      )
-
-      scrollView.contentView.scroll(contentOffset)
-
-      let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-      yOffsetOfCurrentSubview += contentSize.height + spaceManager.customSpacing(after: view)
-      offset += 1
+      computeContentSize()
+    } else {
+      for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
+        guard let entry = cache.entry(for: scrollView.documentView!) else { return }
+        scrollView.frame.size.height = entry.contentSize.height
+      }
     }
   }
 
