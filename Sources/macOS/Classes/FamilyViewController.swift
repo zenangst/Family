@@ -67,8 +67,8 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   public func addChild<T: ViewController>(_ childController: T, customSpacing spacing: CGFloat? = nil, view closure: (T) -> View) {
     super.addChild(childController)
     view.addSubview(childController.view)
-    childController.view.frame.size = .zero
-    childController.view.isHidden = true
+    childController.view.frame.size = .init(width: 1, height: 1)
+//    childController.view.isHidden = true
     let childView = closure(childController)
     addView(childView, customSpacing: spacing)
     registry[childController] = childView

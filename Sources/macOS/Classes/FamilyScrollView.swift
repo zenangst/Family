@@ -50,6 +50,8 @@ public class FamilyScrollView: NSScrollView {
     self.drawsBackground = false
     self.familyContentView.familyScrollView = self
 
+    scrollerStyle = .legacy
+
     configureObservers()
     hasVerticalScroller = true
 
@@ -123,11 +125,11 @@ public class FamilyScrollView: NSScrollView {
   }
 
   @objc func contentViewBoundsDidChange(_ notification: NSNotification) {
-//    if (notification.object as? NSClipView) === contentView,
-//      let window = window,
-//      !window.inLiveResize {
-//      layoutViews(withDuration: 0.0)
-//    }
+    if (notification.object as? NSClipView) === contentView,
+      let window = window,
+      !window.inLiveResize {
+      layoutViews(withDuration: 0.0)
+    }
   }
 
   // MARK: - Window resizing
@@ -169,6 +171,11 @@ public class FamilyScrollView: NSScrollView {
 
   func didRemoveScrollViewToContainer(_ subview: NSView) {
     cache.clear()
+  }
+
+  public override func layout() {
+    super.layout()
+    layoutViews(withDuration: 0.0, force: false)
   }
 
   public func customSpacing(after view: View) -> CGFloat {
@@ -265,12 +272,34 @@ public class FamilyScrollView: NSScrollView {
       }
       computeContentSize()
     } else {
-      for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
+      for (offset, scrollView) in subviewsInLayoutOrder.enumerated() where validateScrollView(scrollView) {
         guard let entry = cache.entry(for: scrollView.documentView!) else { return }
-        scrollView.frame.size.height = entry.contentSize.height
+
+        var frame = scrollView.frame
+
+        var contentOffset = scrollView.contentOffset
+        if self.contentOffset.y <= entry.origin.y {
+          contentOffset.y = 0
+          frame.origin.y = floor(entry.origin.y)
+        } else {
+          contentOffset.y = self.contentOffset.y - entry.origin.y
+          frame.origin.y = floor(self.contentOffset.y)
+        }
+
+        let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
+        let remainingContentHeight = fmax(entry.contentSize.height + entry.origin.y - self.contentOffset.y, 0.0)
+        let newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
+
+        if self.contentOffset.y + self.frame.size.height <= self.documentView!.frame.size.height {
+          scrollView.contentView.scroll(contentOffset)
+          scrollView.frame.origin.y = frame.origin.y
+          scrollView.frame.size.height = newHeight
+        }
       }
     }
   }
+
+  @objc func injected() {}
 
   private func contentSizeForView(_ view: NSView, shouldResize: inout Bool) -> CGSize {
     var contentSize: CGSize = .zero
