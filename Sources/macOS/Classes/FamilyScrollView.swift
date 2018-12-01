@@ -272,7 +272,7 @@ public class FamilyScrollView: NSScrollView {
       }
       computeContentSize()
     } else {
-      for (offset, scrollView) in subviewsInLayoutOrder.enumerated() where validateScrollView(scrollView) {
+      for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
         guard let entry = cache.entry(for: scrollView.documentView!) else { return }
 
         var frame = scrollView.frame
