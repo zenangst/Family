@@ -8,12 +8,10 @@ class FamilyContentViewTests: XCTestCase {
 
 
     override func layoutViews(withDuration duration: CFTimeInterval? = nil,
-                              force: Bool = false,
-                              excludeOffscreenViews: Bool = true) {
+                              force: Bool = false) {
       super.layoutViews(
         withDuration: duration,
-        force: force,
-        excludeOffscreenViews: excludeOffscreenViews
+        force: force
       )
       didLayout = true
     }
