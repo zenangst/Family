@@ -32,12 +32,14 @@ class FamilyWrapperView: NSScrollView {
     self.alphaObserver = view.observe(\.alphaValue, options: [.initial, .new, .old]) { [weak self] (_, value) in
       guard value.newValue != value.oldValue, let newValue = value.newValue else { return }
       self?.alphaValue = newValue
+      (self?.enclosingScrollView as? FamilyScrollView)?.cache.clear()
       self?.layoutViews()
     }
 
     self.hiddenObserver = view.observe(\.isHidden, options: [.initial, .new, .old]) { [weak self] (_, value) in
       guard value.newValue != value.oldValue, let newValue = value.newValue else { return }
       self?.isHidden = newValue
+      (self?.enclosingScrollView as? FamilyScrollView)?.cache.clear()
       self?.layoutViews()
     }
   }
