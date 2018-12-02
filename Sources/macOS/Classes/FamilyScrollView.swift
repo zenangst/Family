@@ -1,36 +1,5 @@
 import Cocoa
 
-class FamilyCache: NSObject {
-  var contentSize: CGSize = .zero
-  var cache = [NSView: CacheEntry]()
-  var isEmpty: Bool { return cache.isEmpty }
-  override init() {}
-
-  func add(entry: CacheEntry) {
-    cache[entry.view] = entry
-  }
-
-  func entry(for view: NSView) -> CacheEntry? {
-    return cache[view]
-  }
-
-  func clear() {
-    cache.removeAll()
-  }
-}
-
-class CacheEntry: NSObject {
-  var view: NSView
-  var origin: CGPoint
-  var contentSize: CGSize
-
-  init(view: NSView, origin: CGPoint, contentSize: CGSize) {
-    self.view = view
-    self.origin = origin
-    self.contentSize = contentSize
-  }
-}
-
 public class FamilyScrollView: NSScrollView {
   public override var isFlipped: Bool { return true }
   public lazy var familyContentView: FamilyContentView = .init()
@@ -263,7 +232,7 @@ public class FamilyScrollView: NSScrollView {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         yOffsetOfCurrentSubview += contentSize.height + spaceManager.customSpacing(after: view)
         offset += 1
-        cache.add(entry: CacheEntry.init(view: scrollView.documentView!, origin: frame.origin, contentSize: contentSize))
+        cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!, origin: frame.origin, contentSize: contentSize))
       }
       computeContentSize()
     } else {
