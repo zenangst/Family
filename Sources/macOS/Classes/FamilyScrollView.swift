@@ -269,7 +269,6 @@ public class FamilyScrollView: NSScrollView {
       for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
         let documentView = scrollView.documentView!
         guard let entry = cache.entry(for: documentView) else { return }
-        let currentOffset = self.contentOffset.y + contentView.contentInsets.top
         var frame = scrollView.frame
         var contentOffset = scrollView.contentOffset
 
@@ -286,9 +285,6 @@ public class FamilyScrollView: NSScrollView {
         let newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
         let maxOffset = self.contentOffset.y + self.frame.size.height
         let documentHeight = self.documentView!.frame.size.height
-
-        // Reached the top
-        guard currentOffset > 0 else { return }
 
         // Reached the end
         guard maxOffset <= documentHeight else { return }
