@@ -266,7 +266,7 @@ public class FamilyScrollView: NSScrollView {
           newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
         }
 
-        if contentOffset.y <= entry.contentSize.height {
+        if self.contentOffset.y <= entry.contentSize.height {
           scrollView.contentView.scroll(contentOffset)
           scrollView.frame.origin.y = frame.origin.y
           if scrollView.frame.size.height != newHeight {
