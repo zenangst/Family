@@ -288,7 +288,7 @@ public class FamilyScrollView: NSScrollView {
         let documentHeight = self.documentView!.frame.size.height
 
         // Reached the top
-        guard currentOffset >= 0 else { return }
+        guard currentOffset > 0 else { return }
 
         // Reached the end
         guard maxOffset <= documentHeight else { return }
