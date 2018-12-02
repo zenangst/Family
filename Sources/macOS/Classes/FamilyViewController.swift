@@ -1,6 +1,7 @@
 import Cocoa
 
 open class FamilyViewController: NSViewController, FamilyFriendly {
+  public lazy var baseView = NSView()
   public lazy var scrollView: FamilyScrollView = .init()
   /// The scroll view constraints.
   public var constraints = [NSLayoutConstraint]()
@@ -13,11 +14,10 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   }
 
   open override func loadView() {
-    let view = NSView()
+    let view = baseView
     view.autoresizingMask = [.width]
     view.autoresizesSubviews = true
     self.view = view
-
     observer = observe(\.children, options: [.new, .old], changeHandler: { controller, _ in
       controller.purgeRemovedViews()
     })
@@ -33,6 +33,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   private func configureConstraints() {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
     if #available(OSX 10.11, *) {
+      NSLayoutConstraint.deactivate(constraints)
       constraints.append(contentsOf: [
         scrollView.topAnchor.constraint(equalTo: view.topAnchor),
         scrollView.leftAnchor.constraint(equalTo: view.leftAnchor),
