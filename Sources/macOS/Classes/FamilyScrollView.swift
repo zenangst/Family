@@ -37,8 +37,8 @@ public class FamilyScrollView: NSScrollView {
   public var spacing: CGFloat {
     get { return spaceManager.spacing }
     set {
-      cache.clear()
       spaceManager.spacing = newValue
+      cache.clear()
     }
   }
   var layoutIsRunning: Bool = false
