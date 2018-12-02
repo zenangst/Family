@@ -12,6 +12,7 @@ public class FamilyScrollView: NSScrollView {
   }
   var layoutIsRunning: Bool = false
   var isScrolling: Bool = false
+  var isScrollingByProxy: Bool = false
   private var subviewsInLayoutOrder = [NSScrollView]()
   private lazy var spaceManager = FamilySpaceManager()
   lazy var cache = FamilyCache()
@@ -97,6 +98,27 @@ public class FamilyScrollView: NSScrollView {
       let window = window,
       !window.inLiveResize {
       layoutViews(withDuration: 0.0)
+    }
+  }
+
+  func scrollTo(_ point: CGPoint, in view: NSView) {
+    guard !isScrollingByProxy,
+      view.window?.isVisible == true,
+      let entry = cache.entry(for: view) else { return }
+    var newOffset = CGPoint(x: self.contentOffset.x,
+                            y: entry.origin.y + point.y)
+    let goingUp = newOffset.y < contentOffset.y
+    if goingUp {
+      newOffset.y -= contentView.contentInsets.top * 2
+    } else {
+      newOffset.y += contentView.contentInsets.top * 2
+    }
+
+    isScrollingByProxy = true
+    familyContentView.scroll(newOffset)
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+      self.isScrollingByProxy = false
     }
   }
 

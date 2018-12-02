@@ -1,9 +1,24 @@
 import Cocoa
 
+class FamilyClipView: NSClipView {
+  override func scroll(to newOrigin: NSPoint) {
+    super.scroll(to: newOrigin)
+    guard
+      let wrapperView = enclosingScrollView as? FamilyWrapperView,
+      let familyScrollView = wrapperView.enclosingScrollView as? FamilyScrollView,
+      !familyScrollView.isScrolling,
+      let window = window,
+      !window.inLiveResize else { return }
+
+    familyScrollView.scrollTo(newOrigin, in: documentView!)
+  }
+}
+
 class FamilyWrapperView: NSScrollView {
   weak var parentContentView: FamilyContentView?
   var isScrolling: Bool = false
   var view: NSView
+  private lazy var clipView = FamilyClipView()
   private var frameObserver: NSKeyValueObservation?
   private var alphaObserver: NSKeyValueObservation?
   private var hiddenObserver: NSKeyValueObservation?
@@ -16,7 +31,7 @@ class FamilyWrapperView: NSScrollView {
   required init(frame frameRect: NSRect, wrappedView: NSView) {
     self.view = wrappedView
     super.init(frame: frameRect)
-    self.contentView = NSClipView()
+    self.contentView = clipView
     self.contentView.translatesAutoresizingMaskIntoConstraints = false
     self.documentView = wrappedView
     self.hasHorizontalScroller = true
@@ -25,7 +40,7 @@ class FamilyWrapperView: NSScrollView {
     self.verticalScrollElasticity = .none
 
     self.frameObserver = wrappedView.observe(\.frame, options: [.new, .old], changeHandler: { [weak self] (_, value) in
-      guard value.newValue != value.oldValue else { return }
+      guard value.newValue?.size != value.oldValue?.size else { return }
       self?.layoutViews(from: value.oldValue, to: value.newValue)
     })
 
@@ -46,6 +61,15 @@ class FamilyWrapperView: NSScrollView {
 
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+
+  @objc func contentViewBoundsDidChange(_ notification: NSNotification) {
+    guard let familyScrollView = parentContentView?.familyScrollView,
+      let window = window,
+      (notification.object as? NSClipView) === contentView,
+      !window.inLiveResize else { return }
+
+    familyScrollView.scrollTo(contentOffset, in: view)
   }
 
   override func scrollWheel(with event: NSEvent) {
