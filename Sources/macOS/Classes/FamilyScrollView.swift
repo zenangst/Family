@@ -178,6 +178,7 @@ public class FamilyScrollView: NSScrollView {
 
   public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
     spaceManager.setCustomSpacing(spacing, after: view)
+    cache.clear()
   }
 
   public override func scrollWheel(with event: NSEvent) {
