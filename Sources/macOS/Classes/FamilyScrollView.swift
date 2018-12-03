@@ -91,7 +91,24 @@ public class FamilyScrollView: NSScrollView {
       name: NSWindow.didEndLiveResizeNotification,
       object: nil
     )
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(didLiveScroll),
+      name: NSScrollView.didLiveScrollNotification,
+      object: nil
+    )
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(didEndLiveScroll),
+      name: NSScrollView.didEndLiveScrollNotification,
+      object: nil
+    )
   }
+
+  @objc func didLiveScroll() { isScrolling = true }
+  @objc func didEndLiveScroll() { isScrolling = false }
 
   @objc func contentViewBoundsDidChange(_ notification: NSNotification) {
     if (notification.object as? NSClipView) === contentView,
