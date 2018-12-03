@@ -3,12 +3,15 @@ import Cocoa
 class FamilyClipView: NSClipView {
   override func scroll(to newOrigin: NSPoint) {
     super.scroll(to: newOrigin)
+
     guard
       let wrapperView = enclosingScrollView as? FamilyWrapperView,
       let familyScrollView = wrapperView.enclosingScrollView as? FamilyScrollView,
       !familyScrollView.isScrolling,
       let window = window,
-      !window.inLiveResize else { return }
+      !window.inLiveResize else {
+        return
+    }
 
     familyScrollView.scrollTo(newOrigin, in: documentView!)
   }

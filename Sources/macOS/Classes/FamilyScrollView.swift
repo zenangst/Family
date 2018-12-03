@@ -120,21 +120,23 @@ public class FamilyScrollView: NSScrollView {
 
   func scrollTo(_ point: CGPoint, in view: NSView) {
     guard !isScrollingByProxy,
+      !isScrolling,
+      !layoutIsRunning,
       view.window?.isVisible == true,
       let entry = cache.entry(for: view) else { return }
+
     var newOffset = CGPoint(x: self.contentOffset.x,
                             y: entry.origin.y + point.y)
-    let goingUp = newOffset.y < contentOffset.y
-    if goingUp {
-      newOffset.y -= contentView.contentInsets.top * 2
-    } else {
-      newOffset.y += contentView.contentInsets.top * 2
+
+    if newOffset.y < contentOffset.y {
+      newOffset.y -= contentView.contentInsets.top
     }
 
     isScrollingByProxy = true
     familyContentView.scroll(newOffset)
 
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+    let deadline: DispatchTime = DispatchTime.now() + NSAnimationContext.current.duration / 2
+    DispatchQueue.main.asyncAfter(deadline: deadline) {
       self.isScrollingByProxy = false
     }
   }
