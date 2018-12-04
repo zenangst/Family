@@ -1,7 +1,7 @@
 import Cocoa
 
 class FamilyWrapperView: NSScrollView {
-  weak var parentContentView: FamilyDocumentView?
+  weak var parentDocumentView: FamilyDocumentView?
   var isScrolling: Bool = false
   var view: NSView
   private lazy var clipView = FamilyClipView()
@@ -67,7 +67,7 @@ class FamilyWrapperView: NSScrollView {
     }
 
     guard window?.inLiveResize != true, !isScrolling,
-      let familyScrollView = parentContentView?.familyScrollView else {
+      let familyScrollView = parentDocumentView?.familyScrollView else {
         return
     }
 

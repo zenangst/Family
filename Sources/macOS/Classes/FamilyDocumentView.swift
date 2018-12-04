@@ -18,7 +18,7 @@ public class FamilyDocumentView: NSView {
     default:
       let wrapper = FamilyWrapperView(frame: view.frame,
                                       wrappedView: view)
-      wrapper.parentContentView = self
+      wrapper.parentDocumentView = self
       subview = wrapper
     }
     super.addSubview(subview)

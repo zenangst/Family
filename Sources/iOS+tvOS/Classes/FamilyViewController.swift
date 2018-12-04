@@ -87,17 +87,17 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     switch childController {
     case let collectionViewController as UICollectionViewController:
       if let collectionView = collectionViewController.collectionView {
-        scrollView.contentView.addSubview(collectionView)
+        scrollView.documentView.addSubview(collectionView)
         childViewControllerView = collectionView
       } else {
         assertionFailure("Unable to resolve collection view from controller.")
         return
       }
     case let tableViewController as UITableViewController:
-      scrollView.contentView.addSubview(tableViewController.tableView)
+      scrollView.documentView.addSubview(tableViewController.tableView)
       childViewControllerView = tableViewController.tableView
     default:
-      scrollView.contentView.addSubview(childController.view)
+      scrollView.documentView.addSubview(childController.view)
       childViewControllerView = childController.view
     }
 
@@ -119,7 +119,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   open func addChild(_ childController: UIViewController, customSpacing: CGFloat? = nil, height: CGFloat) {
     childController.willMove(toParent: self)
     super.addChild(childController)
-    scrollView.contentView.addSubview(childController.view)
+    scrollView.documentView.addSubview(childController.view)
     childController.didMove(toParent: self)
     childController.view.translatesAutoresizingMaskIntoConstraints = true
     childController.view.frame.size.width = view.frame.size.width
@@ -184,7 +184,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       subview.frame.size.width = view.bounds.width
     }
 
-    scrollView.contentView.addSubview(subview)
+    scrollView.documentView.addSubview(subview)
     scrollView.frame = view.bounds
 
     if let spacing = spacing {

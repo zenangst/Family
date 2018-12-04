@@ -1,7 +1,7 @@
 import UIKit
 
-protocol FamilyContentViewDelegate: class {
-  func familyContentView(_ view: FamilyDocumentView, didAddScrollView scrollView: UIScrollView)
+protocol FamilyDocumentViewDelegate: class {
+  func familyDocumentView(_ view: FamilyDocumentView, didAddScrollView scrollView: UIScrollView)
 }
 
 /// This classes acts as a view container for `FamilyScrollView`.
@@ -10,7 +10,7 @@ protocol FamilyContentViewDelegate: class {
 /// only needs to take `UIScrollView` based views into account when performing
 /// its layout algorithm.
 public class FamilyDocumentView: UIView {
-  weak var delegate: FamilyContentViewDelegate?
+  weak var delegate: FamilyDocumentViewDelegate?
   weak var familyScrollView: FamilyScrollView?
 
   /// Convenience methods to return all subviews as scroll view.
@@ -34,7 +34,7 @@ public class FamilyDocumentView: UIView {
     default:
       let wrapper = FamilyWrapperView(frame: view.frame,
                                       view: view)
-      wrapper.parentContentView = self
+      wrapper.parentDocumentView = self
       subview = wrapper
     }
 
@@ -42,7 +42,7 @@ public class FamilyDocumentView: UIView {
 
     guard let scrollView = subview as? UIScrollView else { return }
 
-    delegate?.familyContentView(self, didAddScrollView: scrollView)
+    delegate?.familyDocumentView(self, didAddScrollView: scrollView)
   }
 
   /// Tells the view that a subview is about to be removed.
