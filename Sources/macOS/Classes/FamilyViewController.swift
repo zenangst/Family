@@ -41,6 +41,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
     if #available(OSX 10.11, *) {
       NSLayoutConstraint.deactivate(constraints)
+      constraints.removeAll()
       constraints.append(contentsOf: [
         scrollView.topAnchor.constraint(equalTo: view.topAnchor),
         scrollView.leftAnchor.constraint(equalTo: view.leftAnchor),
