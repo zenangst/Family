@@ -1,22 +1,5 @@
 import Cocoa
 
-class FamilyClipView: NSClipView {
-  override func scroll(to newOrigin: NSPoint) {
-    super.scroll(to: newOrigin)
-
-    guard
-      let wrapperView = enclosingScrollView as? FamilyWrapperView,
-      let familyScrollView = wrapperView.enclosingScrollView as? FamilyScrollView,
-      !familyScrollView.isScrolling,
-      let window = window,
-      !window.inLiveResize else {
-        return
-    }
-
-    familyScrollView.scrollTo(newOrigin, in: documentView!)
-  }
-}
-
 class FamilyWrapperView: NSScrollView {
   weak var parentContentView: FamilyContentView?
   var isScrolling: Bool = false
@@ -64,15 +47,6 @@ class FamilyWrapperView: NSScrollView {
 
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
-  }
-
-  @objc func contentViewBoundsDidChange(_ notification: NSNotification) {
-    guard let familyScrollView = parentContentView?.familyScrollView,
-      let window = window,
-      (notification.object as? NSClipView) === contentView,
-      !window.inLiveResize else { return }
-
-    familyScrollView.scrollTo(contentOffset, in: view)
   }
 
   override func scrollWheel(with event: NSEvent) {

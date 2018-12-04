@@ -13,6 +13,7 @@
 		BD0FCCD720794AFB00D813EC /* FamilySpaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD535E152079269200AA2EC4 /* FamilySpaceManager.swift */; };
 		BD2236E32034B12A00C465E4 /* NSScrollView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2236E22034B12A00C465E4 /* NSScrollView+Extensions.swift */; };
 		BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */; };
+		BD46A25021B5D0E10042AD06 /* FamilyClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD46A24F21B5D0E10042AD06 /* FamilyClipView.swift */; };
 		BD4C7FE020349AA10037D3E5 /* FamilyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */; };
 		BD4C7FE220349ACE0037D3E5 /* FamilyScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */; };
 		BD4C7FE420349B030037D3E5 /* FamilyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FE320349B030037D3E5 /* FamilyContentView.swift */; };
@@ -85,6 +86,7 @@
 		BD02F56821B43E7F006ECE48 /* FamilyCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyCacheEntry.swift; sourceTree = "<group>"; };
 		BD2236E22034B12A00C465E4 /* NSScrollView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSScrollView+Extensions.swift"; sourceTree = "<group>"; };
 		BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyWrapperView.swift; sourceTree = "<group>"; };
+		BD46A24F21B5D0E10042AD06 /* FamilyClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyClipView.swift; sourceTree = "<group>"; };
 		BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
 		BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollView.swift; sourceTree = "<group>"; };
 		BD4C7FE320349B030037D3E5 /* FamilyContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyContentView.swift; sourceTree = "<group>"; };
@@ -201,6 +203,7 @@
 				BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */,
 				BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */,
 				BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */,
+				BD46A24F21B5D0E10042AD06 /* FamilyClipView.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -702,6 +705,7 @@
 				BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */,
 				BD7629BF20349CA300C917BB /* FamilyFriendly.swift in Sources */,
 				BD4C7FE420349B030037D3E5 /* FamilyContentView.swift in Sources */,
+				BD46A25021B5D0E10042AD06 /* FamilyClipView.swift in Sources */,
 				BD02F56721B43E5E006ECE48 /* FamilyCache.swift in Sources */,
 				BD02F56921B43E7F006ECE48 /* FamilyCacheEntry.swift in Sources */,
 				BD0FCCD620794AFA00D813EC /* FamilySpaceManager.swift in Sources */,

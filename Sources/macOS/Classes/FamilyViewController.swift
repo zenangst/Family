@@ -7,10 +7,13 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   public var constraints = [NSLayoutConstraint]()
   var registry = [ViewController: View]()
   var observer: NSKeyValueObservation?
+  var eventHandlerKeyDown: Any?
 
   deinit {
     children.forEach { $0.removeFromParent() }
     purgeRemovedViews()
+
+    if let eventHandlerKeyDown = eventHandlerKeyDown { NSEvent.removeMonitor(eventHandlerKeyDown) }
   }
 
   open override func loadView() {
@@ -28,6 +31,10 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     view.addSubview(scrollView)
     scrollView.autoresizingMask = [.width]
     configureConstraints()
+    eventHandlerKeyDown = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { (event) -> NSEvent? in
+      self.scrollView.isScrollingByProxy = true
+      return event
+    }
   }
 
   private func configureConstraints() {
