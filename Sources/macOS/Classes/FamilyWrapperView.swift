@@ -1,7 +1,7 @@
 import Cocoa
 
 class FamilyWrapperView: NSScrollView {
-  weak var parentContentView: FamilyContentView?
+  weak var parentContentView: FamilyDocumentView?
   var isScrolling: Bool = false
   var view: NSView
   private lazy var clipView = FamilyClipView()

@@ -2,7 +2,7 @@ import Cocoa
 
 public class FamilyScrollView: NSScrollView {
   public override var isFlipped: Bool { return true }
-  public lazy var familyContentView: FamilyContentView = .init()
+  public lazy var familyDocumentView: FamilyDocumentView = .init()
   public var spacing: CGFloat {
     get { return spaceManager.spacing }
     set {
@@ -19,13 +19,13 @@ public class FamilyScrollView: NSScrollView {
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
-    self.documentView = familyContentView
+    self.documentView = familyDocumentView
     self.drawsBackground = false
-    self.familyContentView.familyScrollView = self
+    self.familyDocumentView.familyScrollView = self
     configureObservers()
     hasVerticalScroller = true
     contentView.postsBoundsChangedNotifications = true
-    familyContentView.autoresizingMask = [.width]
+    familyDocumentView.autoresizingMask = [.width]
   }
 
   required public init?(coder: NSCoder) {
@@ -34,7 +34,7 @@ public class FamilyScrollView: NSScrollView {
 
   deinit {
     NotificationCenter.default.removeObserver(self)
-    familyContentView.subviews.forEach { $0.removeFromSuperview() }
+    familyDocumentView.subviews.forEach { $0.removeFromSuperview() }
     subviewsInLayoutOrder.forEach { $0.removeFromSuperview() }
     subviewsInLayoutOrder.removeAll()
   }
@@ -161,11 +161,11 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func didAddScrollViewToContainer(_ scrollView: NSScrollView) {
-    if familyContentView.scrollViews.index(of: scrollView) != nil {
+    if familyDocumentView.scrollViews.index(of: scrollView) != nil {
       rebuildSubviewsInLayoutOrder()
       subviewsInLayoutOrder.removeAll()
 
-      for scrollView in familyContentView.scrollViews {
+      for scrollView in familyDocumentView.scrollViews {
         subviewsInLayoutOrder.append(scrollView)
       }
     }
@@ -204,7 +204,7 @@ public class FamilyScrollView: NSScrollView {
 
   private func rebuildSubviewsInLayoutOrder(exceptSubview: View? = nil) {
     subviewsInLayoutOrder.removeAll()
-    let filteredSubviews = familyContentView.scrollViews.filter({ !($0 === exceptSubview) })
+    let filteredSubviews = familyDocumentView.scrollViews.filter({ !($0 === exceptSubview) })
     subviewsInLayoutOrder = filteredSubviews
   }
 

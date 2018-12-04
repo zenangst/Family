@@ -1,7 +1,7 @@
 import UIKit
 
 protocol FamilyContentViewDelegate: class {
-  func familyContentView(_ view: FamilyContentView, didAddScrollView scrollView: UIScrollView)
+  func familyContentView(_ view: FamilyDocumentView, didAddScrollView scrollView: UIScrollView)
 }
 
 /// This classes acts as a view container for `FamilyScrollView`.
@@ -9,7 +9,7 @@ protocol FamilyContentViewDelegate: class {
 /// in `FamilyWrapperView`'s. This is done so that the `FamilyScrollView`
 /// only needs to take `UIScrollView` based views into account when performing
 /// its layout algorithm.
-public class FamilyContentView: UIView {
+public class FamilyDocumentView: UIView {
   weak var delegate: FamilyContentViewDelegate?
   weak var familyScrollView: FamilyScrollView?
 

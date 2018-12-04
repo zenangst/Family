@@ -1,6 +1,6 @@
 import Cocoa
 
-public class FamilyContentView: NSView {
+public class FamilyDocumentView: NSView {
   public override var isFlipped: Bool { return true }
 
   weak var familyScrollView: FamilyScrollView?

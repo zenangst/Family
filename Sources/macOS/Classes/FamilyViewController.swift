@@ -54,7 +54,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   open override func addChild(_ childController: ViewController) {
     super.addChild(childController)
     childController.view.frame.size.width = view.bounds.width
-    scrollView.familyContentView.addSubview(childController.view)
+    scrollView.familyDocumentView.addSubview(childController.view)
     scrollView.frame = view.bounds
     registry[childController] = childController.view
   }
@@ -98,7 +98,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     } else {
       subview.frame.size.width = view.bounds.width
     }
-    scrollView.familyContentView.addSubview(subview)
+    scrollView.familyDocumentView.addSubview(subview)
     scrollView.frame = view.bounds
 
     if let spacing = spacing {

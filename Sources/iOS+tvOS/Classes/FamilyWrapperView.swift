@@ -4,7 +4,7 @@ import UIKit
 /// from `UIScrollView`. This is done to ensure that the user gets a fluid and
 /// smooth scrolling experience when scrolling in a `FamilyScrollView`.
 class FamilyWrapperView: UIScrollView {
-  weak var parentContentView: FamilyContentView?
+  weak var parentContentView: FamilyDocumentView?
   /// The wrapped view
   var view: UIView
   /// Observers the frame of the wrapped view.

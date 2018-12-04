@@ -45,7 +45,7 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
 
   /// The content view is where all views get added when a view is used
   /// in the `Family` framework.
-  public var contentView: FamilyContentView = FamilyContentView()
+  public var contentView: FamilyDocumentView = FamilyDocumentView()
 
   deinit {
     subviewsInLayoutOrder.removeAll()
@@ -84,7 +84,7 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
     }
   }
 
-  func familyContentView(_ view: FamilyContentView,
+  func familyContentView(_ view: FamilyDocumentView,
                          didAddScrollView scrollView: UIScrollView) {
     didAddScrollViewToContainer(scrollView)
   }
