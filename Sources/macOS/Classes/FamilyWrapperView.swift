@@ -1,9 +1,10 @@
 import Cocoa
 
 class FamilyWrapperView: NSScrollView {
-  weak var parentContentView: FamilyContentView?
+  weak var parentDocumentView: FamilyDocumentView?
   var isScrolling: Bool = false
   var view: NSView
+  private lazy var clipView = FamilyClipView()
   private var frameObserver: NSKeyValueObservation?
   private var alphaObserver: NSKeyValueObservation?
   private var hiddenObserver: NSKeyValueObservation?
@@ -16,7 +17,7 @@ class FamilyWrapperView: NSScrollView {
   required init(frame frameRect: NSRect, wrappedView: NSView) {
     self.view = wrappedView
     super.init(frame: frameRect)
-    self.contentView = NSClipView()
+    self.contentView = clipView
     self.contentView.translatesAutoresizingMaskIntoConstraints = false
     self.documentView = wrappedView
     self.hasHorizontalScroller = true
@@ -25,7 +26,7 @@ class FamilyWrapperView: NSScrollView {
     self.verticalScrollElasticity = .none
 
     self.frameObserver = wrappedView.observe(\.frame, options: [.new, .old], changeHandler: { [weak self] (_, value) in
-      guard value.newValue != value.oldValue else { return }
+      guard value.newValue?.size != value.oldValue?.size else { return }
       self?.layoutViews(from: value.oldValue, to: value.newValue)
     })
 
@@ -66,7 +67,7 @@ class FamilyWrapperView: NSScrollView {
     }
 
     guard window?.inLiveResize != true, !isScrolling,
-      let familyScrollView = parentContentView?.familyScrollView else {
+      let familyScrollView = parentDocumentView?.familyScrollView else {
         return
     }
 

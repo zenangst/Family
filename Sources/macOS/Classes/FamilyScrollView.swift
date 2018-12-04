@@ -2,7 +2,7 @@ import Cocoa
 
 public class FamilyScrollView: NSScrollView {
   public override var isFlipped: Bool { return true }
-  public lazy var familyContentView: FamilyContentView = .init()
+  public lazy var familyDocumentView: FamilyDocumentView = .init()
   public var spacing: CGFloat {
     get { return spaceManager.spacing }
     set {
@@ -12,19 +12,20 @@ public class FamilyScrollView: NSScrollView {
   }
   var layoutIsRunning: Bool = false
   var isScrolling: Bool = false
+  var isScrollingByProxy: Bool = false
   private var subviewsInLayoutOrder = [NSScrollView]()
   private lazy var spaceManager = FamilySpaceManager()
   lazy var cache = FamilyCache()
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
-    self.documentView = familyContentView
+    self.documentView = familyDocumentView
     self.drawsBackground = false
-    self.familyContentView.familyScrollView = self
+    self.familyDocumentView.familyScrollView = self
     configureObservers()
     hasVerticalScroller = true
     contentView.postsBoundsChangedNotifications = true
-    familyContentView.autoresizingMask = [.width]
+    familyDocumentView.autoresizingMask = [.width]
   }
 
   required public init?(coder: NSCoder) {
@@ -33,7 +34,7 @@ public class FamilyScrollView: NSScrollView {
 
   deinit {
     NotificationCenter.default.removeObserver(self)
-    familyContentView.subviews.forEach { $0.removeFromSuperview() }
+    familyDocumentView.subviews.forEach { $0.removeFromSuperview() }
     subviewsInLayoutOrder.forEach { $0.removeFromSuperview() }
     subviewsInLayoutOrder.removeAll()
   }
@@ -90,7 +91,24 @@ public class FamilyScrollView: NSScrollView {
       name: NSWindow.didEndLiveResizeNotification,
       object: nil
     )
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(didLiveScroll),
+      name: NSScrollView.didLiveScrollNotification,
+      object: nil
+    )
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(didEndLiveScroll),
+      name: NSScrollView.didEndLiveScrollNotification,
+      object: nil
+    )
   }
+
+  @objc func didLiveScroll() { isScrolling = true }
+  @objc func didEndLiveScroll() { isScrolling = false }
 
   @objc func contentViewBoundsDidChange(_ notification: NSNotification) {
     if (notification.object as? NSClipView) === contentView,
@@ -98,6 +116,24 @@ public class FamilyScrollView: NSScrollView {
       !window.inLiveResize {
       layoutViews(withDuration: 0.0)
     }
+  }
+
+  func scrollTo(_ point: CGPoint, in view: NSView) {
+    guard isScrollingByProxy,
+      !isScrolling,
+      !layoutIsRunning,
+      view.window?.isVisible == true,
+      let entry = cache.entry(for: view) else { return }
+    var newOffset = CGPoint(x: self.contentOffset.x,
+                            y: entry.origin.y + point.y)
+    if newOffset.y < contentOffset.y {
+      newOffset.y -= contentView.contentInsets.top
+    }
+
+    contentView.scroll(newOffset)
+    // This is invoked to avoid animation stutter.
+    contentView.scroll(to: newOffset)
+    isScrollingByProxy = false
   }
 
   // MARK: - Window resizing
@@ -125,11 +161,11 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func didAddScrollViewToContainer(_ scrollView: NSScrollView) {
-    if familyContentView.scrollViews.index(of: scrollView) != nil {
+    if familyDocumentView.scrollViews.index(of: scrollView) != nil {
       rebuildSubviewsInLayoutOrder()
       subviewsInLayoutOrder.removeAll()
 
-      for scrollView in familyContentView.scrollViews {
+      for scrollView in familyDocumentView.scrollViews {
         subviewsInLayoutOrder.append(scrollView)
       }
     }
@@ -168,7 +204,7 @@ public class FamilyScrollView: NSScrollView {
 
   private func rebuildSubviewsInLayoutOrder(exceptSubview: View? = nil) {
     subviewsInLayoutOrder.removeAll()
-    let filteredSubviews = familyContentView.scrollViews.filter({ !($0 === exceptSubview) })
+    let filteredSubviews = familyDocumentView.scrollViews.filter({ !($0 === exceptSubview) })
     subviewsInLayoutOrder = filteredSubviews
   }
 

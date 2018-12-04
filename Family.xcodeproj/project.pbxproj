@@ -13,12 +13,13 @@
 		BD0FCCD720794AFB00D813EC /* FamilySpaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD535E152079269200AA2EC4 /* FamilySpaceManager.swift */; };
 		BD2236E32034B12A00C465E4 /* NSScrollView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2236E22034B12A00C465E4 /* NSScrollView+Extensions.swift */; };
 		BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */; };
+		BD46A25021B5D0E10042AD06 /* FamilyClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD46A24F21B5D0E10042AD06 /* FamilyClipView.swift */; };
 		BD4C7FE020349AA10037D3E5 /* FamilyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */; };
 		BD4C7FE220349ACE0037D3E5 /* FamilyScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */; };
-		BD4C7FE420349B030037D3E5 /* FamilyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FE320349B030037D3E5 /* FamilyContentView.swift */; };
+		BD4C7FE420349B030037D3E5 /* FamilyDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FE320349B030037D3E5 /* FamilyDocumentView.swift */; };
 		BD535E162079269200AA2EC4 /* FamilySpaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD535E152079269200AA2EC4 /* FamilySpaceManager.swift */; };
-		BD5A803C2030A9D9006A5EBB /* FamilyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80362030A9D9006A5EBB /* FamilyContentView.swift */; };
-		BD5A803D2030A9D9006A5EBB /* FamilyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80362030A9D9006A5EBB /* FamilyContentView.swift */; };
+		BD5A803C2030A9D9006A5EBB /* FamilyDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80362030A9D9006A5EBB /* FamilyDocumentView.swift */; };
+		BD5A803D2030A9D9006A5EBB /* FamilyDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80362030A9D9006A5EBB /* FamilyDocumentView.swift */; };
 		BD5A803E2030A9D9006A5EBB /* FamilyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80372030A9D9006A5EBB /* FamilyViewController.swift */; };
 		BD5A803F2030A9D9006A5EBB /* FamilyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80372030A9D9006A5EBB /* FamilyViewController.swift */; };
 		BD5A80402030A9D9006A5EBB /* FamilyWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80382030A9D9006A5EBB /* FamilyWrapperView.swift */; };
@@ -85,12 +86,13 @@
 		BD02F56821B43E7F006ECE48 /* FamilyCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyCacheEntry.swift; sourceTree = "<group>"; };
 		BD2236E22034B12A00C465E4 /* NSScrollView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSScrollView+Extensions.swift"; sourceTree = "<group>"; };
 		BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyWrapperView.swift; sourceTree = "<group>"; };
+		BD46A24F21B5D0E10042AD06 /* FamilyClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyClipView.swift; sourceTree = "<group>"; };
 		BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
 		BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollView.swift; sourceTree = "<group>"; };
-		BD4C7FE320349B030037D3E5 /* FamilyContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyContentView.swift; sourceTree = "<group>"; };
+		BD4C7FE320349B030037D3E5 /* FamilyDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyDocumentView.swift; sourceTree = "<group>"; };
 		BD535E142078DEFC00AA2EC4 /* Family.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Family.podspec; sourceTree = "<group>"; };
 		BD535E152079269200AA2EC4 /* FamilySpaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySpaceManager.swift; sourceTree = "<group>"; };
-		BD5A80362030A9D9006A5EBB /* FamilyContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyContentView.swift; sourceTree = "<group>"; };
+		BD5A80362030A9D9006A5EBB /* FamilyDocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyDocumentView.swift; sourceTree = "<group>"; };
 		BD5A80372030A9D9006A5EBB /* FamilyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
 		BD5A80382030A9D9006A5EBB /* FamilyWrapperView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyWrapperView.swift; sourceTree = "<group>"; };
 		BD5A80392030A9D9006A5EBB /* FamilyScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyScrollView.swift; sourceTree = "<group>"; };
@@ -197,10 +199,11 @@
 			children = (
 				BD02F56621B43E5E006ECE48 /* FamilyCache.swift */,
 				BD02F56821B43E7F006ECE48 /* FamilyCacheEntry.swift */,
-				BD4C7FE320349B030037D3E5 /* FamilyContentView.swift */,
+				BD4C7FE320349B030037D3E5 /* FamilyDocumentView.swift */,
 				BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */,
 				BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */,
 				BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */,
+				BD46A24F21B5D0E10042AD06 /* FamilyClipView.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -234,7 +237,7 @@
 		BD5A80352030A9D9006A5EBB /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				BD5A80362030A9D9006A5EBB /* FamilyContentView.swift */,
+				BD5A80362030A9D9006A5EBB /* FamilyDocumentView.swift */,
 				BD5A80372030A9D9006A5EBB /* FamilyViewController.swift */,
 				BD5A80382030A9D9006A5EBB /* FamilyWrapperView.swift */,
 				BD5A80392030A9D9006A5EBB /* FamilyScrollView.swift */,
@@ -642,7 +645,7 @@
 				BD5A80432030A9D9006A5EBB /* FamilyScrollView.swift in Sources */,
 				BD5A803F2030A9D9006A5EBB /* FamilyViewController.swift in Sources */,
 				BD0FCCD720794AFB00D813EC /* FamilySpaceManager.swift in Sources */,
-				BD5A803D2030A9D9006A5EBB /* FamilyContentView.swift in Sources */,
+				BD5A803D2030A9D9006A5EBB /* FamilyDocumentView.swift in Sources */,
 				BD5A80452030A9D9006A5EBB /* CALayer+Extensions.swift in Sources */,
 				BD7629C020349CA300C917BB /* FamilyFriendly.swift in Sources */,
 			);
@@ -676,7 +679,7 @@
 				BD5A80422030A9D9006A5EBB /* FamilyScrollView.swift in Sources */,
 				BD5A803E2030A9D9006A5EBB /* FamilyViewController.swift in Sources */,
 				BD535E162079269200AA2EC4 /* FamilySpaceManager.swift in Sources */,
-				BD5A803C2030A9D9006A5EBB /* FamilyContentView.swift in Sources */,
+				BD5A803C2030A9D9006A5EBB /* FamilyDocumentView.swift in Sources */,
 				BD5A80442030A9D9006A5EBB /* CALayer+Extensions.swift in Sources */,
 				BD7629BE20349CA300C917BB /* FamilyFriendly.swift in Sources */,
 			);
@@ -701,7 +704,8 @@
 				BD2236E32034B12A00C465E4 /* NSScrollView+Extensions.swift in Sources */,
 				BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */,
 				BD7629BF20349CA300C917BB /* FamilyFriendly.swift in Sources */,
-				BD4C7FE420349B030037D3E5 /* FamilyContentView.swift in Sources */,
+				BD4C7FE420349B030037D3E5 /* FamilyDocumentView.swift in Sources */,
+				BD46A25021B5D0E10042AD06 /* FamilyClipView.swift in Sources */,
 				BD02F56721B43E5E006ECE48 /* FamilyCache.swift in Sources */,
 				BD02F56921B43E7F006ECE48 /* FamilyCacheEntry.swift in Sources */,
 				BD0FCCD620794AFA00D813EC /* FamilySpaceManager.swift in Sources */,

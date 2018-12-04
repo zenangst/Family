@@ -1,6 +1,6 @@
 import UIKit
 
-public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestureRecognizerDelegate {
+public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestureRecognizerDelegate {
   /// The amount of spacing that should be inserted inbetween views.
   public var spacing: CGFloat {
     get { return spaceManager.spacing }
@@ -45,7 +45,7 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
 
   /// The content view is where all views get added when a view is used
   /// in the `Family` framework.
-  public var contentView: FamilyContentView = FamilyContentView()
+  public var documentView: FamilyDocumentView = FamilyDocumentView()
 
   deinit {
     subviewsInLayoutOrder.removeAll()
@@ -58,13 +58,13 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
   /// - Parameter frame: The frame rectangle for the view, measured in points.
   public required override init(frame: CGRect) {
     super.init(frame: frame)
-    contentView.delegate = self
-    contentView.familyScrollView = self
-    contentView.autoresizingMask = self.autoresizingMask
+    documentView.delegate = self
+    documentView.familyScrollView = self
+    documentView.autoresizingMask = self.autoresizingMask
     if #available(iOS 11.0, tvOS 11.0, *) {
       contentInsetAdjustmentBehavior = .never
     }
-    addSubview(contentView)
+    addSubview(documentView)
   }
 
   required public init?(coder aDecoder: NSCoder) {
@@ -84,7 +84,7 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
     }
   }
 
-  func familyContentView(_ view: FamilyContentView,
+  func familyDocumentView(_ view: FamilyDocumentView,
                          didAddScrollView scrollView: UIScrollView) {
     didAddScrollViewToContainer(scrollView)
   }
@@ -98,14 +98,14 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
   func didAddScrollViewToContainer(_ scrollView: UIScrollView) {
     scrollView.autoresizingMask = [.flexibleWidth]
 
-    guard contentView.subviews.index(of: scrollView) != nil else {
+    guard documentView.subviews.index(of: scrollView) != nil else {
       return
     }
 
     observeView(view: scrollView)
 
     subviewsInLayoutOrder.removeAll()
-    for scrollView in contentView.scrollViews {
+    for scrollView in documentView.scrollViews {
       subviewsInLayoutOrder.append(scrollView)
       configureScrollView(scrollView)
     }
@@ -129,7 +129,7 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
       }
     }
 
-    for scrollView in contentView.scrollViews {
+    for scrollView in documentView.scrollViews {
       configureScrollView(scrollView)
     }
 
@@ -169,7 +169,7 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
   ///
   /// - Parameter view: The view that should be observered.
   private func observeView(view: UIScrollView) {
-    guard view.superview == contentView else { return }
+    guard view.superview == documentView else { return }
 
     let contentSizeObserver = view.observe(\.contentSize, options: [.initial, .new, .old], changeHandler: { [weak self] (scrollView, value) in
       guard let strongSelf = self,
@@ -257,7 +257,7 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
 
   /// Remove wrapper views that don't own their underlaying views.
   func purgeWrapperViews() {
-    for case let wrapperView as FamilyWrapperView in contentView.subviews {
+    for case let wrapperView as FamilyWrapperView in documentView.subviews {
       if wrapperView != wrapperView.view.superview {
         wrapperView.removeFromSuperview()
       }
@@ -280,8 +280,8 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
   public func layoutViews(withDuration duration: CFTimeInterval? = nil) {
     guard superview != nil else { return }
 
-    contentView.frame = bounds
-    contentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
+    documentView.frame = bounds
+    documentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
 
     let animationDuration: TimeInterval? = subviewsInLayoutOrder
       .compactMap({ $0.layer.resolveAnimationDuration }).first ?? duration
@@ -325,9 +325,9 @@ public class FamilyScrollView: UIScrollView, FamilyContentViewDelegate, UIGestur
       frame.size.width = max(frame.size.width, self.frame.size.width)
 
       if scrollView is FamilyWrapperView {
-        newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+        newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
       } else {
-        newHeight = fmin(contentView.frame.height, newHeight)
+        newHeight = fmin(documentView.frame.height, newHeight)
       }
 
       let shouldModifyContentOffset = contentOffset.y <= scrollView.contentSize.height ||

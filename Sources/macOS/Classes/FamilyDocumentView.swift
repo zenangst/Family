@@ -1,6 +1,6 @@
 import Cocoa
 
-public class FamilyContentView: NSView {
+public class FamilyDocumentView: NSView {
   public override var isFlipped: Bool { return true }
 
   weak var familyScrollView: FamilyScrollView?
@@ -18,7 +18,7 @@ public class FamilyContentView: NSView {
     default:
       let wrapper = FamilyWrapperView(frame: view.frame,
                                       wrappedView: view)
-      wrapper.parentContentView = self
+      wrapper.parentDocumentView = self
       subview = wrapper
     }
     super.addSubview(subview)
