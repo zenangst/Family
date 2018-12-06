@@ -1,8 +1,8 @@
-import Cocoa
+import CoreGraphics
 
 class FamilyCache: NSObject {
   var contentSize: CGSize = .zero
-  var storage = [NSView: FamilyCacheEntry]()
+  var storage = [View: FamilyCacheEntry]()
   var isEmpty: Bool { return storage.isEmpty }
   override init() {}
 
@@ -10,7 +10,7 @@ class FamilyCache: NSObject {
     storage[entry.view] = entry
   }
 
-  func entry(for view: NSView) -> FamilyCacheEntry? {
+  func entry(for view: View) -> FamilyCacheEntry? {
     return storage[view]
   }
 

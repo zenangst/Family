@@ -3,10 +3,10 @@ import Cocoa
 public class FamilyScrollView: NSScrollView {
   public override var isFlipped: Bool { return true }
   public lazy var familyDocumentView: FamilyDocumentView = .init()
-  public var spacing: CGFloat {
-    get { return spaceManager.spacing }
+  public var insets: Insets {
+    get { return spaceManager.insets }
     set {
-      spaceManager.spacing = newValue
+      spaceManager.insets = newValue
       cache.clear()
     }
   }
@@ -177,12 +177,12 @@ public class FamilyScrollView: NSScrollView {
     cache.clear()
   }
 
-  public func customSpacing(after view: View) -> CGFloat {
-    return spaceManager.customSpacing(after: view)
+  public func customInsets(for view: View) -> Insets {
+    return spaceManager.customInsets(for: view)
   }
 
-  public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
-    spaceManager.setCustomSpacing(spacing, after: view)
+  public func setCustomInsets(_ insets: Insets, for view: View) {
+    spaceManager.setCustomInsets(insets, for: view)
     cache.clear()
   }
 
@@ -218,13 +218,15 @@ public class FamilyScrollView: NSScrollView {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
       var offset = 0
       for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
+        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         var shouldResize: Bool = true
-        let contentSize: CGSize = contentSizeForView(scrollView.documentView!, shouldResize: &shouldResize)
+        let contentSize: CGSize = contentSizeForView(view, shouldResize: &shouldResize)
+        let insets = spaceManager.customInsets(for: view)
         var frame = scrollView.frame
         var contentOffset = scrollView.contentOffset
 
         if self.contentOffset.y < yOffsetOfCurrentSubview {
-          contentOffset.y = 0
+          contentOffset.y = insets.top
           frame.origin.y = floor(yOffsetOfCurrentSubview)
         } else {
           contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
@@ -253,7 +255,7 @@ public class FamilyScrollView: NSScrollView {
         }
 
         frame.size.height = round(newHeight)
-        frame.size.width = round(self.frame.size.width)
+        frame.size.width = round(self.frame.size.width) - insets.left - insets.right
 
         setFrame(
           frame,
@@ -265,10 +267,12 @@ public class FamilyScrollView: NSScrollView {
 
         scrollView.contentView.scroll(contentOffset)
 
-        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-        yOffsetOfCurrentSubview += contentSize.height + spaceManager.customSpacing(after: view)
+
+        yOffsetOfCurrentSubview += contentSize.height + insets.top + insets.bottom
         offset += 1
-        cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!, origin: frame.origin, contentSize: contentSize))
+        var cachedOrigin = frame.origin
+        cachedOrigin.y += insets.top
+        cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!, origin: cachedOrigin, contentSize: contentSize))
       }
       computeContentSize()
     } else {
@@ -352,7 +356,10 @@ public class FamilyScrollView: NSScrollView {
   private func computeContentSize() {
     let computedHeight: CGFloat = subviewsInLayoutOrder
       .filter({ validateScrollView($0) })
-      .reduce(0, { $0 + ($1.documentView?.frame.size.height ?? 0) + spaceManager.customSpacing(after: ($1 as? FamilyWrapperView)?.view ?? $1) })
+      .reduce(CGFloat(0), { value, view in
+        let insets = spaceManager.customInsets(for: (view as? FamilyWrapperView)?.view ?? view)
+        return value + (view.documentView?.frame.size.height ?? 0) + insets.top + insets.bottom
+      })
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
 
