@@ -1,11 +1,11 @@
 import UIKit
 
 public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestureRecognizerDelegate {
-  /// The amount of spacing that should be inserted inbetween views.
-  public var spacing: CGFloat {
-    get { return spaceManager.spacing }
+  /// The amount of insets that should be inserted inbetween views.
+  public var insets: Insets {
+    get { return spaceManager.insets }
     set {
-      spaceManager.spacing = newValue
+      spaceManager.insets = newValue
       cache.clear()
     }
   }
@@ -236,7 +236,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   private func computeContentSize() {
     let computedHeight = subviewsInLayoutOrder
       .filter({ $0.isHidden == false || ($0 as? FamilyWrapperView)?.view.isHidden == false })
-      .reduce(0, { $0 + $1.contentSize.height + spaceManager.customSpacing(after: ($1 as? FamilyWrapperView)?.view ?? $1) })
+      .reduce(CGFloat(0), { value, view in
+        let insets = spaceManager.customInsets(for: (view as? FamilyWrapperView)?.view ?? view)
+        return value + view.contentSize.height + insets.top + insets.bottom
+      })
     let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
     let height = fmax(computedHeight, minimumContentHeight)
 
@@ -253,12 +256,12 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     layoutViews()
   }
 
-  public func customSpacing(after view: View) -> CGFloat {
-    return spaceManager.customSpacing(after: view)
+  public func customInsets(for view: View) -> Insets {
+    return spaceManager.customInsets(for: view)
   }
 
-  public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
-    spaceManager.setCustomSpacing(spacing, after: view)
+  public func setCustomInsets(_ insets: Insets, for view: View) {
+    spaceManager.setCustomInsets(insets, for: view)
     cache.clear()
   }
 
@@ -311,6 +314,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     if cache.isEmpty {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
       for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
+        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+        let insets = spaceManager.customInsets(for: view)
         if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
           continue
         }
@@ -319,7 +324,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         var contentOffset = scrollView.contentOffset
 
         if self.contentOffset.y < yOffsetOfCurrentSubview {
-          contentOffset.y = 0.0
+          contentOffset.y = insets.top
           frame.origin.y = floor(yOffsetOfCurrentSubview)
         } else {
           contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
@@ -330,7 +335,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
         var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
 
-        frame.size.width = max(frame.size.width, self.frame.size.width)
+//        frame.size.width = max(frame.size.width, self.frame.size.width)
 
         if scrollView is FamilyWrapperView {
           newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
@@ -349,20 +354,18 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
           frame.origin.y = yOffsetOfCurrentSubview
         }
 
+        frame.size.width = self.frame.size.width - insets.left - insets.right
         frame.size.height = newHeight
-
-        if frame.size.width != self.frame.width {
-          frame.size.width = self.frame.width
-        }
 
         if scrollView.frame != frame {
           scrollView.frame = frame
         }
 
-        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-        yOffsetOfCurrentSubview += scrollView.contentSize.height + spaceManager.customSpacing(after: view)
+        yOffsetOfCurrentSubview += scrollView.contentSize.height + insets.bottom + insets.top
+        var cachedOrigin = frame.origin
+        cachedOrigin.y += insets.top
         cache.add(entry: FamilyCacheEntry(view: view,
-                                          origin: frame.origin,
+                                          origin: cachedOrigin,
                                           contentSize: scrollView.contentSize))
       }
       computeContentSize()
@@ -402,7 +405,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
 
         frame.size.height = newHeight
-        frame.size.width = self.frame.width
 
         if scrollView.frame != frame {
           scrollView.frame = frame

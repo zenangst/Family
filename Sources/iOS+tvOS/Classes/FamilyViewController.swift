@@ -6,7 +6,6 @@ import UIKit
 /// adds the controllers view or custom view to view heirarcy inside the
 /// content view of the `FamilyScrollView`.
 open class FamilyViewController: UIViewController, FamilyFriendly {
-//  var observers = [NSKeyValueObservation]()
   var registry = [ViewController: (view: View, observer: NSKeyValueObservation)]()
 
   /// A custom implementation of a `UIScrollView` that handles continious scrolling
@@ -131,7 +130,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameters:
   ///   - childController: The view controller to be added as a child.
   ///   - height: The height that the child controllers should be constrained to.
-  open func addChild(_ childController: UIViewController, customSpacing: CGFloat? = nil, height: CGFloat) {
+  open func addChild(_ childController: UIViewController, customInsets: Insets? = nil, height: CGFloat) {
     childController.willMove(toParent: self)
     super.addChild(childController)
     scrollView.documentView.addSubview(childController.view)
@@ -142,8 +141,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     childController.view.frame.size.height = height
     registry[childController] = (childController.view, observe(childController))
 
-    if let customSpacing = customSpacing {
-      setCustomSpacing(customSpacing, after: childController.view)
+    if let customInsets = customInsets {
+      setCustomInsets(customInsets, for: childController.view)
     }
 
     scrollView.purgeWrapperViews()
@@ -157,7 +156,9 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - childController: The view controller to be added as a child.
   ///   - closure: A closure used to resolve a view other than `.view` on controller used
   ///              to render the view controller.
-  public func addChild<T: UIViewController>(_ childController: T, customSpacing spacing: CGFloat? = nil, view closure: (T) -> UIView) {
+  public func addChild<T: UIViewController>(_ childController: T,
+                                            customInsets insets: Insets? = nil,
+                                            view closure: (T) -> UIView) {
     childController.willMove(toParent: self)
     super.addChild(childController)
     view.addSubview(childController.view)
@@ -169,7 +170,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       (childView as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
     }
 
-    addView(childView, customSpacing: spacing)
+    addView(childView, customInsets: insets)
     childController.didMove(toParent: self)
     registry[childController] = (childView, observe(childController))
     scrollView.purgeWrapperViews()
@@ -191,7 +192,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
-  public func addView(_ subview: View, withHeight height: CGFloat? = nil, customSpacing spacing: CGFloat? = nil) {
+  public func addView(_ subview: View, withHeight height: CGFloat? = nil, customInsets insets: Insets? = nil) {
     if let height = height {
       subview.frame.size.width = view.bounds.size.width
       subview.frame.size.height = height
@@ -202,17 +203,19 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     scrollView.documentView.addSubview(subview)
     scrollView.frame = view.bounds
 
-    if let spacing = spacing {
-      setCustomSpacing(spacing, after: subview)
+    if let insets = insets {
+      setCustomInsets(insets, for: subview)
     }
   }
 
-  public func customSpacing(after view: View) -> CGFloat {
-    return scrollView.customSpacing(after: view)
+  public func customInsets(for view: View) -> Insets {
+    return scrollView.customInsets(for: view)
   }
 
-  public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
-    scrollView.setCustomSpacing(spacing, after: view)
+  public func setCustomInsets(_ insets: Insets, for view: View) {
+    view.frame.origin.x = insets.left
+    view.frame.size.width = self.view.frame.size.width - insets.left - insets.right
+    scrollView.setCustomInsets(insets, for: view)
   }
 
   /// Remove stray views from view hierarcy.

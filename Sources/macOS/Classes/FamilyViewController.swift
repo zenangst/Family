@@ -1,6 +1,7 @@
 import Cocoa
 
 open class FamilyViewController: NSViewController, FamilyFriendly {
+
   public lazy var baseView = NSView()
   public lazy var scrollView: FamilyScrollView = .init()
   /// The scroll view constraints.
@@ -60,7 +61,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     registry[childController] = childController.view
   }
 
-  public func addChild(_ childController: ViewController, customSpacing spacing: CGFloat? = nil, height: CGFloat) {
+  public func addChild(_ childController: ViewController, customInsets insets: Insets? = nil, height: CGFloat) {
     addChild(childController)
     childController.view.translatesAutoresizingMaskIntoConstraints = true
     childController.view.autoresizingMask = [.width]
@@ -68,17 +69,17 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     childController.view.frame.size.width = view.bounds.width
     scrollView.frame = view.bounds
 
-    if let spacing = spacing {
-      setCustomSpacing(spacing, after: childController.view)
+    if let insets = insets {
+      setCustomInsets(insets, for: childController.view)
     }
   }
 
-  public func addChild<T: ViewController>(_ childController: T, customSpacing spacing: CGFloat? = nil, view closure: (T) -> View) {
+  public func addChild<T: ViewController>(_ childController: T, customInsets insets: Insets? = nil, view closure: (T) -> View) {
     super.addChild(childController)
     view.addSubview(childController.view)
     childController.view.frame.size = .zero
     let childView = closure(childController)
-    addView(childView, customSpacing: spacing)
+    addView(childView, customInsets: insets)
     registry[childController] = childView
   }
 
@@ -92,7 +93,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 
-  public func addView(_ subview: View, customSpacing spacing: CGFloat? = nil, withHeight height: CGFloat? = nil) {
+  public func addView(_ subview: View, customInsets insets: Insets? = nil, withHeight height: CGFloat? = nil) {
     if let height = height {
       subview.frame.size.width = view.bounds.size.width
       subview.frame.size.height = height
@@ -102,17 +103,17 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.familyDocumentView.addSubview(subview)
     scrollView.frame = view.bounds
 
-    if let spacing = spacing {
-      setCustomSpacing(spacing, after: view)
+    if let insets = insets {
+      setCustomInsets(insets, for: view)
     }
   }
 
-  public func customSpacing(after view: View) -> CGFloat {
-    return scrollView.customSpacing(after: view)
+  public func customInsets(for view: View) -> Insets {
+    return scrollView.customInsets(for: view)
   }
 
-  public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
-    scrollView.setCustomSpacing(spacing, after: view)
+  public func setCustomInsets(_ insets: Insets, for view: View) {
+    scrollView.setCustomInsets(insets, for: view)
   }
 
   func purgeRemovedViews() {
