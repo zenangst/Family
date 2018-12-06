@@ -15,7 +15,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// The scroll view constraints.
   public var constraints = [NSLayoutConstraint]()
 
-  public var safeAreaLayoutConstraints: Bool = false {
+  public var safeAreaLayoutConstraints: Bool = true {
     didSet { configureConstraints() }
   }
 
@@ -54,6 +54,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
+  @objc func injected() {}
+
   /// Configure constraints for the scroll view.
   private func configureConstraints() {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -61,12 +63,12 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     constraints.removeAll()
     if #available(iOS 11.0, tvOS 11.0, *) {
       let topAnchor = safeAreaLayoutConstraints
-        ? view.topAnchor
-        : view.safeAreaLayoutGuide.topAnchor
+        ? view.safeAreaLayoutGuide.topAnchor
+        : view.topAnchor
 
       let bottomAnchor = safeAreaLayoutConstraints
-        ? view.bottomAnchor
-        : view.safeAreaLayoutGuide.bottomAnchor
+        ? view.safeAreaLayoutGuide.bottomAnchor
+        : view.bottomAnchor
 
       constraints.append(contentsOf: [
         scrollView.topAnchor.constraint(equalTo: topAnchor),

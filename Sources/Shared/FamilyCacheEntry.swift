@@ -1,13 +1,15 @@
-import Cocoa
+import CoreGraphics
 
 class FamilyCacheEntry: NSObject {
-  var view: NSView
+  var view: View
   var origin: CGPoint
   var contentSize: CGSize
+  var maxY: CGFloat
 
-  init(view: NSView, origin: CGPoint, contentSize: CGSize) {
+  init(view: View, origin: CGPoint, contentSize: CGSize) {
     self.view = view
     self.origin = origin
     self.contentSize = contentSize
+    self.maxY = contentSize.height + origin.y
   }
 }

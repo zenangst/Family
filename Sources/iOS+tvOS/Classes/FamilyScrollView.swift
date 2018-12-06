@@ -4,7 +4,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// The amount of spacing that should be inserted inbetween views.
   public var spacing: CGFloat {
     get { return spaceManager.spacing }
-    set { spaceManager.spacing = newValue }
+    set {
+      spaceManager.spacing = newValue
+      cache.clear()
+    }
   }
   /// A collection of scroll views that is used to order the views on screen.
   /// This collection is used by the layout algorithm that render the views and
@@ -28,6 +31,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   private var observers = [Observer]()
 
   private lazy var spaceManager = FamilySpaceManager()
+
+  lazy var cache = FamilyCache()
 
   private var isScrolling: Bool { return isTracking || isDragging || isDecelerating }
 
@@ -96,6 +101,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// - Parameter scrollView: The scroll view that should be configured
   ///                         and observed.
   func didAddScrollViewToContainer(_ scrollView: UIScrollView) {
+    defer { cache.clear() }
     scrollView.autoresizingMask = [.flexibleWidth]
 
     guard documentView.subviews.index(of: scrollView) != nil else {
@@ -119,6 +125,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   ///
   /// - Parameter subview: The subview that got removed from the view heirarcy.
   open override func willRemoveSubview(_ subview: UIView) {
+    defer { cache.clear() }
     if let index = subviewsInLayoutOrder.index(where: { $0 == subview }) {
       subviewsInLayoutOrder.remove(at: index)
     }
@@ -179,7 +186,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
 
       if self?.compare(newValue, to: oldValue) == false {
-        strongSelf.computeContentSize()
+        strongSelf.cache.clear()
         strongSelf.layoutViews()
       }
     })
@@ -244,7 +251,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   open override func layoutSubviews() {
     super.layoutSubviews()
     layoutViews()
-    computeContentSize()
   }
 
   public func customSpacing(after view: View) -> CGFloat {
@@ -253,6 +259,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
   public func setCustomSpacing(_ spacing: CGFloat, after view: View) {
     spaceManager.setCustomSpacing(spacing, after: view)
+    cache.clear()
   }
 
   /// Remove wrapper views that don't own their underlaying views.
@@ -301,58 +308,106 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// when a view changes size or origin. It also scales the frame of scroll views
   /// in order to keep dequeuing for table and collection views.
   private func runLayoutSubviewsAlgorithm() {
-    var yOffsetOfCurrentSubview: CGFloat = 0.0
-    for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
-      if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
-        continue
+    if cache.isEmpty {
+      var yOffsetOfCurrentSubview: CGFloat = 0.0
+      for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
+        if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
+          continue
+        }
+
+        var frame = scrollView.frame
+        var contentOffset = scrollView.contentOffset
+
+        if self.contentOffset.y < yOffsetOfCurrentSubview {
+          contentOffset.y = 0.0
+          frame.origin.y = floor(yOffsetOfCurrentSubview)
+        } else {
+          contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
+          frame.origin.y = floor(self.contentOffset.y)
+        }
+
+        let remainingBoundsHeight = fmax(bounds.maxY - yOffsetOfCurrentSubview, 0.0)
+        let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
+        var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
+
+        frame.size.width = max(frame.size.width, self.frame.size.width)
+
+        if scrollView is FamilyWrapperView {
+          newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
+        } else {
+          newHeight = fmin(documentView.frame.height, newHeight)
+        }
+
+        let shouldModifyContentOffset = contentOffset.y <= scrollView.contentSize.height ||
+          self.contentOffset.y != frame.minY
+
+        if shouldModifyContentOffset {
+          if !compare(scrollView.contentOffset, to: contentOffset) {
+            scrollView.contentOffset.y = contentOffset.y
+          }
+        } else {
+          frame.origin.y = yOffsetOfCurrentSubview
+        }
+
+        frame.size.height = newHeight
+
+        if frame.size.width != self.frame.width {
+          frame.size.width = self.frame.width
+        }
+
+        if scrollView.frame != frame {
+          scrollView.frame = frame
+        }
+
+        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+        yOffsetOfCurrentSubview += scrollView.contentSize.height + spaceManager.customSpacing(after: view)
+        cache.add(entry: FamilyCacheEntry(view: view,
+                                          origin: frame.origin,
+                                          contentSize: scrollView.contentSize))
       }
+      computeContentSize()
+    } else {
+      for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
+        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+        guard let entry = cache.entry(for: view) else { continue }
+        if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
+          continue
+        }
 
-      var frame = scrollView.frame
-      var contentOffset = scrollView.contentOffset
+        var frame = scrollView.frame
+        var contentOffset = scrollView.contentOffset
 
-      if self.contentOffset.y < yOffsetOfCurrentSubview {
-        contentOffset.y = 0.0
-        frame.origin.y = floor(yOffsetOfCurrentSubview)
-      } else {
-        contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
-        frame.origin.y = floor(self.contentOffset.y)
-      }
+        if self.contentOffset.y < entry.origin.y {
+          contentOffset.y = 0.0
+          frame.origin.y = floor(entry.origin.y)
+        } else {
+          contentOffset.y = self.contentOffset.y - entry.origin.y
+          frame.origin.y = floor(self.contentOffset.y)
+        }
 
-      let remainingBoundsHeight = fmax(bounds.maxY - yOffsetOfCurrentSubview, 0.0)
-      let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
-      var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
+        let remainingBoundsHeight = fmax(bounds.maxY - entry.origin.y, 0.0)
+        let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
+        var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
 
-      frame.size.width = max(frame.size.width, self.frame.size.width)
+        if scrollView is FamilyWrapperView {
+          newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
+        } else {
+          newHeight = fmin(documentView.frame.height, newHeight)
+        }
 
-      if scrollView is FamilyWrapperView {
-        newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
-      } else {
-        newHeight = fmin(documentView.frame.height, newHeight)
-      }
+        let shouldScroll = self.contentOffset.y >= entry.origin.y && self.contentOffset.y <= entry.maxY
 
-      let shouldModifyContentOffset = contentOffset.y <= scrollView.contentSize.height ||
-        self.contentOffset.y != frame.minY
-
-      if shouldModifyContentOffset {
-        if !compare(scrollView.contentOffset, to: contentOffset) {
+        if shouldScroll {
           scrollView.contentOffset.y = contentOffset.y
         }
-      } else {
-        frame.origin.y = yOffsetOfCurrentSubview
-      }
 
-      frame.size.height = newHeight
-
-      if frame.size.width != self.frame.width {
+        frame.size.height = newHeight
         frame.size.width = self.frame.width
-      }
 
-      if scrollView.frame != frame {
-        scrollView.frame = frame
+        if scrollView.frame != frame {
+          scrollView.frame = frame
+        }
       }
-
-      let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-      yOffsetOfCurrentSubview += scrollView.contentSize.height + spaceManager.customSpacing(after: view)
     }
   }
 
