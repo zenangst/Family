@@ -15,6 +15,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// The scroll view constraints.
   public var constraints = [NSLayoutConstraint]()
 
+  public var safeAreaLayoutConstraints: Bool = false {
+    didSet { configureConstraints() }
+  }
+
   deinit {
     children.forEach {
       $0.willMove(toParent: nil)
@@ -53,10 +57,20 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// Configure constraints for the scroll view.
   private func configureConstraints() {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.deactivate(constraints)
+    constraints.removeAll()
     if #available(iOS 11.0, tvOS 11.0, *) {
+      let topAnchor = safeAreaLayoutConstraints
+        ? view.topAnchor
+        : view.safeAreaLayoutGuide.topAnchor
+
+      let bottomAnchor = safeAreaLayoutConstraints
+        ? view.bottomAnchor
+        : view.safeAreaLayoutGuide.bottomAnchor
+
       constraints.append(contentsOf: [
-        scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-        scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        scrollView.topAnchor.constraint(equalTo: topAnchor),
+        scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
         scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
         scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
       ])
@@ -70,7 +84,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
         ])
       }
     }
-
     NSLayoutConstraint.activate(constraints)
   }
 
