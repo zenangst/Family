@@ -53,8 +53,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
-  @objc func injected() {}
-
   /// Configure constraints for the scroll view.
   private func configureConstraints() {
     scrollView.translatesAutoresizingMaskIntoConstraints = false
