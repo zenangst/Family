@@ -66,7 +66,7 @@ extension FamilyScrollView {
       }
       computeContentSize()
     } else {
-      for (offset, scrollView) in subviewsInLayoutOrder.enumerated() where scrollView.isHidden == false {
+      for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         guard let entry = cache.entry(for: view) else { continue }
         if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
