@@ -1,6 +1,10 @@
 import UIKit
 
 extension FamilyScrollView {
+  /// The layout algorithm simply lays out the view in linear order vertically
+  /// based on the views index inside `subviewsInLayoutOrder`. This is invoked
+  /// when a view changes size or origin. It also scales the frame of scroll views
+  /// in order to keep dequeuing for table and collection views.
   internal func runLayoutSubviewsAlgorithm() {
     if cache.isEmpty {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
@@ -62,7 +66,7 @@ extension FamilyScrollView {
       }
       computeContentSize()
     } else {
-      for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
+      for (offset, scrollView) in subviewsInLayoutOrder.enumerated() where scrollView.isHidden == false {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         guard let entry = cache.entry(for: view) else { continue }
         if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
@@ -80,18 +84,16 @@ extension FamilyScrollView {
           frame.origin.y = floor(self.contentOffset.y)
         }
 
-        let remainingBoundsHeight = fmax(bounds.maxY - entry.origin.y, 0.0)
-        let remainingContentHeight = fmax(entry.contentSize.height - contentOffset.y, 0.0)
-        var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
+        let remainingBoundsHeight = bounds.maxY - entry.origin.y
+        let remainingContentHeight = entry.contentSize.height - contentOffset.y
+        var newHeight: CGFloat = fmin(documentView.frame.height, scrollView.contentSize.height)
 
-        if scrollView is FamilyWrapperView {
-          newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
-        } else {
-          newHeight = fmin(documentView.frame.height, newHeight)
+        if remainingBoundsHeight <= -self.frame.size.height {
+          newHeight = 0
         }
 
-        if newHeight == 0 {
-          newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
+        if remainingContentHeight <= -self.frame.size.height {
+          newHeight = 0
         }
 
         let shouldScroll = (self.contentOffset.y > frame.origin.y &&
