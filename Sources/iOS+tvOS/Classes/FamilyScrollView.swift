@@ -278,15 +278,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
-  /// The layout algorithm simply lays out the view in linear order vertically
-  /// based on the views index inside `subviewsInLayoutOrder`. This is invoked
-  /// when a view changes size or origin. It also scales the frame of scroll views
-  /// in order to keep dequeuing for table and collection views.
-
-  @objc func injected() {
-
-  }
-
   internal func compare(_ lhs: CGSize, to rhs: CGSize) -> Bool {
     return (abs(lhs.height - rhs.height) <= 0.001)
   }
