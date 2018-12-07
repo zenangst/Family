@@ -125,7 +125,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   ///
   /// - Parameter subview: The subview that got removed from the view heirarcy.
   open override func willRemoveSubview(_ subview: UIView) {
-    defer { cache.clear() }
     if let index = subviewsInLayoutOrder.index(where: { $0 == subview }) {
       subviewsInLayoutOrder.remove(at: index)
     }
@@ -140,6 +139,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       configureScrollView(scrollView)
     }
 
+    cache.clear()
     computeContentSize()
     setNeedsLayout()
     layoutSubviews()
