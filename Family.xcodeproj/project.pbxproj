@@ -33,7 +33,6 @@
 		BD5A804C2030AC9F006A5EBB /* FamilyWrapperViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A804B2030AC9F006A5EBB /* FamilyWrapperViewTests.swift */; };
 		BD5A804D2030AC9F006A5EBB /* FamilyWrapperViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A804B2030AC9F006A5EBB /* FamilyWrapperViewTests.swift */; };
 		BD5A804F2030ACBA006A5EBB /* FamilyScrollViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A804E2030ACBA006A5EBB /* FamilyScrollViewTests.swift */; };
-		BD5A80502030ACBA006A5EBB /* FamilyScrollViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A804E2030ACBA006A5EBB /* FamilyScrollViewTests.swift */; };
 		BD5A80522030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */; };
 		BD5A80542030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */; };
 		BD7055E72043FB9600C2C5CB /* FamilyViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7055E62043FB9600C2C5CB /* FamilyViewControllerTests.swift */; };
@@ -48,6 +47,9 @@
 		BDAC586F21B9916E00412766 /* FamilyCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD02F56621B43E5E006ECE48 /* FamilyCache.swift */; };
 		BDAC587021B9916E00412766 /* FamilyCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD02F56821B43E7F006ECE48 /* FamilyCacheEntry.swift */; };
 		BDAC587121B9916E00412766 /* FamilyCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD02F56821B43E7F006ECE48 /* FamilyCacheEntry.swift */; };
+		BDAC588321BA613A00412766 /* FamilyScrollView+tvOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAC588221BA613A00412766 /* FamilyScrollView+tvOS.swift */; };
+		BDAC588521BA61CA00412766 /* FamilScrollView+iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAC588421BA61CA00412766 /* FamilScrollView+iOS.swift */; };
+		BDAC588921BA63B800412766 /* FamilyScrollViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAC588821BA63B800412766 /* FamilyScrollViewTests.swift */; };
 		BDEE36352043394E00120E35 /* FamilyWrapperViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEE36342043394E00120E35 /* FamilyWrapperViewTests.swift */; };
 		BDEE3637204369F200120E35 /* FamilyContentViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEE3636204369F200120E35 /* FamilyContentViewTests.swift */; };
 		BDEE363920436B1100120E35 /* FamilyScrollViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEE363820436B1100120E35 /* FamilyScrollViewTests.swift */; };
@@ -109,6 +111,9 @@
 		BD7055E82044007300C2C5CB /* NSScrollViewExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSScrollViewExtensionsTests.swift; sourceTree = "<group>"; };
 		BD7629B920349C2500C917BB /* TypeAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeAlias.swift; sourceTree = "<group>"; };
 		BD7629BD20349CA300C917BB /* FamilyFriendly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyFriendly.swift; sourceTree = "<group>"; };
+		BDAC588221BA613A00412766 /* FamilyScrollView+tvOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FamilyScrollView+tvOS.swift"; sourceTree = "<group>"; };
+		BDAC588421BA61CA00412766 /* FamilScrollView+iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FamilScrollView+iOS.swift"; sourceTree = "<group>"; };
+		BDAC588821BA63B800412766 /* FamilyScrollViewTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyScrollViewTests.swift; sourceTree = "<group>"; };
 		BDEE36342043394E00120E35 /* FamilyWrapperViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyWrapperViewTests.swift; sourceTree = "<group>"; };
 		BDEE3636204369F200120E35 /* FamilyContentViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyContentViewTests.swift; sourceTree = "<group>"; };
 		BDEE363820436B1100120E35 /* FamilyScrollViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollViewTests.swift; sourceTree = "<group>"; };
@@ -257,6 +262,22 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		BDAC588021BA611100412766 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				BDAC588421BA61CA00412766 /* FamilScrollView+iOS.swift */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		BDAC588121BA611100412766 /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				BDAC588221BA613A00412766 /* FamilyScrollView+tvOS.swift */,
+			);
+			path = tvOS;
+			sourceTree = "<group>";
+		};
 		D284B12D1F7906DA00D94AF3 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -280,6 +301,7 @@
 		D284B1341F7906DA00D94AF3 /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
+				BDAC588821BA63B800412766 /* FamilyScrollViewTests.swift */,
 				D284B13D1F7907AD00D94AF3 /* tvOSTests.swift */,
 			);
 			path = tvOS;
@@ -337,6 +359,8 @@
 		D5C629691C3A809D007F7B7C /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				BDAC588021BA611100412766 /* iOS */,
+				BDAC588121BA611100412766 /* tvOS */,
 				BD2236DD2034A81500C465E4 /* Shared */,
 				BD4C7FDE20349A950037D3E5 /* macOS */,
 				BD5A80342030A9D9006A5EBB /* iOS+tvOS */,
@@ -650,6 +674,7 @@
 				BD5A803F2030A9D9006A5EBB /* FamilyViewController.swift in Sources */,
 				BDAC586F21B9916E00412766 /* FamilyCache.swift in Sources */,
 				BD0FCCD720794AFB00D813EC /* FamilySpaceManager.swift in Sources */,
+				BDAC588321BA613A00412766 /* FamilyScrollView+tvOS.swift in Sources */,
 				BD5A803D2030A9D9006A5EBB /* FamilyDocumentView.swift in Sources */,
 				BD5A80452030A9D9006A5EBB /* CALayer+Extensions.swift in Sources */,
 				BD7629C020349CA300C917BB /* FamilyFriendly.swift in Sources */,
@@ -663,8 +688,8 @@
 			files = (
 				BD5A804D2030AC9F006A5EBB /* FamilyWrapperViewTests.swift in Sources */,
 				BD5A804A2030AC84006A5EBB /* FamilyViewControllerTests.swift in Sources */,
-				BD5A80502030ACBA006A5EBB /* FamilyScrollViewTests.swift in Sources */,
 				D284B13E1F7907AD00D94AF3 /* tvOSTests.swift in Sources */,
+				BDAC588921BA63B800412766 /* FamilyScrollViewTests.swift in Sources */,
 				BD5A80542030ACFE006A5EBB /* CALayerExtensionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -685,6 +710,7 @@
 				BD5A80422030A9D9006A5EBB /* FamilyScrollView.swift in Sources */,
 				BD5A803E2030A9D9006A5EBB /* FamilyViewController.swift in Sources */,
 				BDAC586E21B9916E00412766 /* FamilyCache.swift in Sources */,
+				BDAC588521BA61CA00412766 /* FamilScrollView+iOS.swift in Sources */,
 				BD535E162079269200AA2EC4 /* FamilySpaceManager.swift in Sources */,
 				BD5A803C2030A9D9006A5EBB /* FamilyDocumentView.swift in Sources */,
 				BD5A80442030A9D9006A5EBB /* CALayer+Extensions.swift in Sources */,

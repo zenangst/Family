@@ -169,8 +169,8 @@ public class FamilyScrollView: NSScrollView {
         subviewsInLayoutOrder.append(scrollView)
       }
     }
-    runLayoutSubviewsAlgorithm()
     cache.clear()
+    runLayoutSubviewsAlgorithm()
   }
 
   func didRemoveScrollViewToContainer(_ subview: NSView) {
