@@ -71,10 +71,10 @@ extension FamilyScrollView {
 
         if self.contentOffset.y < entry.origin.y {
           contentOffset.y = 0.0
-          frame.origin.y = floor(entry.origin.y)
+          frame.origin.y = abs(entry.origin.y)
         } else {
           contentOffset.y = self.contentOffset.y - entry.origin.y
-          frame.origin.y = floor(self.contentOffset.y)
+          frame.origin.y = abs(self.contentOffset.y)
         }
 
         let remainingBoundsHeight = fmax(bounds.maxY - entry.origin.y, 0.0)
@@ -87,10 +87,12 @@ extension FamilyScrollView {
           newHeight = fmin(documentView.frame.height, newHeight)
         }
 
-        let shouldScroll = self.contentOffset.y >= entry.origin.y && self.contentOffset.y <= entry.maxY
+        let shouldScroll = self.contentOffset.y >= entry.origin.y &&
+          self.contentOffset.y <= entry.maxY &&
+          scrollView.contentOffset.y == abs(contentOffset.y)
 
         if shouldScroll {
-          scrollView.contentOffset.y = contentOffset.y
+          scrollView.contentOffset.y = abs(contentOffset.y)
         }
 
         frame.size.height = newHeight
