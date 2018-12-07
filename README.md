@@ -7,7 +7,7 @@
 ![Code Coverage](https://codecov.io/github/zenangst/Family/coverage.svg?branch=master)
 [![License](https://img.shields.io/cocoapods/l/Family.svg?style=flat)](http://cocoadocs.org/docsets/Family)
 [![Platform](https://img.shields.io/cocoapods/p/Family.svg?style=flat)](http://cocoadocs.org/docsets/Family)
-![Swift](https://img.shields.io/badge/%20in-swift%204.0-orange.svg)
+![Swift](https://img.shields.io/badge/%20in-swift%204.2-orange.svg)
 
 </div>
 
