@@ -126,7 +126,7 @@ class FamilyScrollViewTests: XCTestCase {
     scrollView.setContentOffset(CGPoint(x: 0, y: 250), animated: false)
     scrollView.layoutSubviews()
 
-    XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: CGPoint(x: 0, y: 250), size: CGSize(width: size.width, height: 0)))
+    XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size.width, height: 0)))
     XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250), size: size))
     XCTAssertEqual(mockedScrollView3.frame, CGRect(origin: CGPoint(x: 0, y: 500), size: size))
     XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750), size: size))
@@ -135,17 +135,17 @@ class FamilyScrollViewTests: XCTestCase {
     scrollView.setContentOffset(CGPoint(x: 0, y: 500), animated: false)
     scrollView.layoutViews()
 
-    XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: CGPoint(x: 0, y: 500), size: CGSize(width: size.width, height: 0)))
-    XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 500), size: CGSize(width: size.width, height: 0)))
+    XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size.width, height: 0)))
+    XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250), size: CGSize(width: size.width, height: 0)))
     XCTAssertEqual(mockedScrollView3.frame, CGRect(origin: CGPoint(x: 0, y: 500), size: size))
     XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750), size: size))
 
     scrollView.setContentOffset(CGPoint(x: 0, y: 750), animated: false)
     scrollView.layoutViews()
 
-    XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: CGPoint(x: 0, y: 750), size: CGSize(width: size.width, height: 0)))
-    XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 750), size: CGSize(width: size.width, height: 0)))
-    XCTAssertEqual(mockedScrollView3.frame, CGRect(origin: CGPoint(x: 0, y: 750), size: CGSize(width: size.width, height: 0)))
+    XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size.width, height: 0)))
+    XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250), size: CGSize(width: size.width, height: 0)))
+    XCTAssertEqual(mockedScrollView3.frame, CGRect(origin: CGPoint(x: 0, y: 500), size: CGSize(width: size.width, height: 0)))
     XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750), size: size))
   }
 }
