@@ -26,7 +26,6 @@ extension FamilyScrollView {
         let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
         var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
 
-        //        frame.size.width = max(frame.size.width, self.frame.size.width)
         if scrollView is FamilyWrapperView {
           newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
         } else {
