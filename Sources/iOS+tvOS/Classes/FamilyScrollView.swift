@@ -191,33 +191,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
     })
 
-    let contentOffsetObserver = view.observe(\.contentOffset, options: [.new, .old], changeHandler: { [weak self] (_, value) in
-      guard self?.isScrolling == false else { return }
-
-      guard let newValue = value.newValue, let oldValue = value.oldValue else {
-        return
-      }
-
-      if self?.compare(newValue, to: oldValue) == false {
-        self?.layoutViews()
-      }
-    })
-
     observers.append(Observer(view: view, keyValueObservation: contentSizeObserver))
-    observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
-    let boundsObserver = view.observe(\.bounds, options: [.new, .old], changeHandler: { [weak self] (_, value) in
-      guard self?.isScrolling == false else { return }
-
-      guard let newValue = value.newValue, let oldValue = value.oldValue else {
-        return
-      }
-
-      if self?.compare(newValue.origin, to: oldValue.origin) == false {
-        self?.layoutViews()
-      }
-    })
-
-    observers.append(Observer(view: view, keyValueObservation: boundsObserver))
 
     let hiddenObserver = view.observe(\.isHidden, options: [.new, .old], changeHandler: { [weak self] (_, value) in
       guard let newValue = value.newValue, let oldValue = value.oldValue else {
@@ -225,6 +199,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
 
       if newValue != oldValue {
+        self?.cache.clear()
         self?.layoutViews()
       }
     })
@@ -335,21 +310,22 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
         var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
 
-//        frame.size.width = max(frame.size.width, self.frame.size.width)
-
         if scrollView is FamilyWrapperView {
           newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
         } else {
           newHeight = fmin(documentView.frame.height, newHeight)
         }
 
-        let shouldModifyContentOffset = contentOffset.y <= scrollView.contentSize.height ||
-          self.contentOffset.y != frame.minY
+        #if os(tvOS)
+        newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
+        #endif
 
-        if shouldModifyContentOffset {
-          if !compare(scrollView.contentOffset, to: contentOffset) {
-            scrollView.contentOffset.y = contentOffset.y
-          }
+        let shouldScroll = (self.contentOffset.y >= frame.origin.y &&
+          self.contentOffset.y <= scrollView.frame.maxY) &&
+          frame.height >= documentView.frame.height
+
+        if shouldScroll {
+          scrollView.contentOffset.y = contentOffset.y
         } else {
           frame.origin.y = yOffsetOfCurrentSubview
         }
@@ -389,7 +365,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
 
         let remainingBoundsHeight = fmax(bounds.maxY - entry.origin.y, 0.0)
-        let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
+        let remainingContentHeight = fmax(entry.contentSize.height - contentOffset.y, 0.0)
         var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
 
         if scrollView is FamilyWrapperView {
@@ -398,15 +374,24 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
           newHeight = fmin(documentView.frame.height, newHeight)
         }
 
-        let shouldScroll = self.contentOffset.y >= entry.origin.y && self.contentOffset.y <= entry.maxY
+        #if os(tvOS)
+          newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
+        #endif
+
+        let shouldScroll = (self.contentOffset.y > frame.origin.y &&
+          self.contentOffset.y < entry.maxY) &&
+          frame.height >= documentView.frame.height
 
         if shouldScroll {
           scrollView.contentOffset.y = contentOffset.y
+        } else {
+          frame.origin.y = entry.origin.y
         }
 
         frame.size.height = newHeight
 
-        if scrollView.frame != frame {
+        if compare(scrollView.frame.origin, to: frame.origin) ||
+           compare(scrollView.frame.size, to: frame.size) {
           scrollView.frame = frame
         }
       }
