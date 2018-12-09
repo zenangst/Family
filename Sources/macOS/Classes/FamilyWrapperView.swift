@@ -24,6 +24,7 @@ class FamilyWrapperView: NSScrollView {
     self.hasVerticalScroller = false
     self.postsBoundsChangedNotifications = true
     self.verticalScrollElasticity = .none
+    self.drawsBackground = false
 
     self.frameObserver = wrappedView.observe(\.frame, options: [.new, .old], changeHandler: { [weak self] (_, value) in
       guard value.newValue?.size != value.oldValue?.size else { return }
