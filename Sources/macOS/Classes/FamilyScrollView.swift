@@ -223,7 +223,6 @@ public class FamilyScrollView: NSScrollView {
   private func runLayoutSubviewsAlgorithm() {
     if cache.isEmpty {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
-      var offset = 0
       for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         var shouldResize: Bool = true
@@ -276,7 +275,6 @@ public class FamilyScrollView: NSScrollView {
 
 
         yOffsetOfCurrentSubview += contentSize.height + insets.top + insets.bottom
-        offset += 1
         var cachedOrigin = frame.origin
         cachedOrigin.y += insets.top
         cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!, origin: cachedOrigin, contentSize: contentSize))
