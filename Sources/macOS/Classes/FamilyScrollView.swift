@@ -87,6 +87,13 @@ public class FamilyScrollView: NSScrollView {
 
     NotificationCenter.default.addObserver(
       self,
+      selector: #selector(windowDidResize(_:)),
+      name: NSSplitView.didResizeSubviewsNotification,
+      object: nil
+    )
+
+    NotificationCenter.default.addObserver(
+      self,
       selector: #selector(windowDidEndLiveResize(_:)),
       name: NSWindow.didEndLiveResizeNotification,
       object: nil
@@ -216,17 +223,17 @@ public class FamilyScrollView: NSScrollView {
   private func runLayoutSubviewsAlgorithm() {
     if cache.isEmpty {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
-      var offset = 0
       for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         var shouldResize: Bool = true
         let contentSize: CGSize = contentSizeForView(view, shouldResize: &shouldResize)
         let insets = spaceManager.customInsets(for: view)
+        yOffsetOfCurrentSubview += insets.top
         var frame = scrollView.frame
         var contentOffset = scrollView.contentOffset
 
         if self.contentOffset.y < yOffsetOfCurrentSubview {
-          contentOffset.y = insets.top
+          contentOffset.y = 0
           frame.origin.y = floor(yOffsetOfCurrentSubview)
         } else {
           contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
@@ -237,6 +244,7 @@ public class FamilyScrollView: NSScrollView {
         let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
         var newHeight: CGFloat = fmin(remainingBoundsHeight, remainingContentHeight)
 
+        frame.origin.x = insets.left
         frame.size.width = max(frame.size.width, self.frame.size.width)
 
         let shouldModifyContentOffset = contentOffset.y - contentInsets.top <= scrollView.contentSize.height + (contentInsets.top * 2) ||
@@ -266,13 +274,8 @@ public class FamilyScrollView: NSScrollView {
         )
 
         scrollView.contentView.scroll(contentOffset)
-
-
-        yOffsetOfCurrentSubview += contentSize.height + insets.top + insets.bottom
-        offset += 1
-        var cachedOrigin = frame.origin
-        cachedOrigin.y += insets.top
-        cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!, origin: cachedOrigin, contentSize: contentSize))
+        yOffsetOfCurrentSubview += contentSize.height + insets.bottom
+        cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!, origin: frame.origin, contentSize: contentSize))
       }
       computeContentSize()
     } else {

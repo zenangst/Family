@@ -6,7 +6,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   public lazy var scrollView: FamilyScrollView = .init()
   /// The scroll view constraints.
   public var constraints = [NSLayoutConstraint]()
-  var registry = [ViewController: View]()
+  private(set) public var registry = [ViewController: View]()
   var observer: NSKeyValueObservation?
   var eventHandlerKeyDown: Any?
 
@@ -63,8 +63,6 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
 
   public func addChild(_ childController: ViewController, customInsets insets: Insets? = nil, height: CGFloat) {
     addChild(childController)
-    childController.view.translatesAutoresizingMaskIntoConstraints = true
-    childController.view.autoresizingMask = [.width]
     childController.view.frame.size.height = height
     childController.view.frame.size.width = view.bounds.width
     scrollView.frame = view.bounds
@@ -104,7 +102,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.frame = view.bounds
 
     if let insets = insets {
-      setCustomInsets(insets, for: view)
+      setCustomInsets(insets, for: subview)
     }
   }
 
