@@ -63,8 +63,6 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
 
   public func addChild(_ childController: ViewController, customInsets insets: Insets? = nil, height: CGFloat) {
     addChild(childController)
-    childController.view.translatesAutoresizingMaskIntoConstraints = true
-    childController.view.autoresizingMask = [.width]
     childController.view.frame.size.height = height
     childController.view.frame.size.width = view.bounds.width
     scrollView.frame = view.bounds
