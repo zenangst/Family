@@ -102,7 +102,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.frame = view.bounds
 
     if let insets = insets {
-      setCustomInsets(insets, for: view)
+      setCustomInsets(insets, for: subview)
     }
   }
 
