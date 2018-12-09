@@ -6,7 +6,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   public lazy var scrollView: FamilyScrollView = .init()
   /// The scroll view constraints.
   public var constraints = [NSLayoutConstraint]()
-  var registry = [ViewController: View]()
+  private(set) public var registry = [ViewController: View]()
   var observer: NSKeyValueObservation?
   var eventHandlerKeyDown: Any?
 
