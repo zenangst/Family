@@ -87,6 +87,13 @@ public class FamilyScrollView: NSScrollView {
 
     NotificationCenter.default.addObserver(
       self,
+      selector: #selector(windowDidResize(_:)),
+      name: NSSplitView.didResizeSubviewsNotification,
+      object: nil
+    )
+
+    NotificationCenter.default.addObserver(
+      self,
       selector: #selector(windowDidEndLiveResize(_:)),
       name: NSWindow.didEndLiveResizeNotification,
       object: nil
