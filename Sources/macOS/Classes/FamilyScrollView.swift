@@ -274,8 +274,11 @@ public class FamilyScrollView: NSScrollView {
         )
 
         scrollView.contentView.scroll(contentOffset)
+
+        cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!,
+                                          origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),
+                                          contentSize: contentSize))
         yOffsetOfCurrentSubview += contentSize.height + insets.bottom
-        cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!, origin: frame.origin, contentSize: contentSize))
       }
       computeContentSize()
     } else {
@@ -309,13 +312,16 @@ public class FamilyScrollView: NSScrollView {
           newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
         }
 
-        if self.contentOffset.y <= entry.contentSize.height {
+        // Only scroll if the views content offset is less than its content size height
+        // and if the frame is less than the content size height.
+        let shouldScroll = contentOffset.y <= entry.contentSize.height &&
+          frame.size.height < entry.contentSize.height
+
+        if shouldScroll {
           scrollView.contentView.scroll(contentOffset)
           scrollView.frame.origin.y = frame.origin.y
-          if scrollView.frame.size.height != newHeight {
-            scrollView.frame.size.height = newHeight
-          }
-        } else if scrollView.frame.origin.y != entry.origin.y {
+          scrollView.frame.size.height = newHeight
+        } else {
           scrollView.frame.origin.y = entry.origin.y
         }
       }

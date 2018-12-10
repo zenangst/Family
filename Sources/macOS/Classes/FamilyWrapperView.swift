@@ -26,8 +26,8 @@ class FamilyWrapperView: NSScrollView {
     self.verticalScrollElasticity = .none
     self.drawsBackground = false
 
-    self.frameObserver = wrappedView.observe(\.frame, options: [.new, .old], changeHandler: { [weak self] (_, value) in
-      guard value.newValue?.size != value.oldValue?.size else { return }
+    self.frameObserver = view.observe(\.frame, options: [.new, .old], changeHandler: { [weak self] (_, value) in
+      guard abs(value.newValue?.size.height ?? 0) != abs(value.oldValue?.size.height ?? 0) else { return }
       self?.layoutViews(from: value.oldValue, to: value.newValue)
     })
 
@@ -48,6 +48,12 @@ class FamilyWrapperView: NSScrollView {
 
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+
+  override func viewDidMoveToSuperview() {
+    super.viewDidMoveToSuperview()
+    if superview == nil { return }
+    layoutViews(from: bounds, to: bounds)
   }
 
   override func scrollWheel(with event: NSEvent) {

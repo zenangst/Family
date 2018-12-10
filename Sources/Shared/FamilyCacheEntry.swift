@@ -1,10 +1,10 @@
 import CoreGraphics
 
 class FamilyCacheEntry: NSObject {
-  var view: View
-  var origin: CGPoint
-  var contentSize: CGSize
-  var maxY: CGFloat
+  let view: View
+  let origin: CGPoint
+  let contentSize: CGSize
+  let maxY: CGFloat
 
   init(view: View, origin: CGPoint, contentSize: CGSize) {
     self.view = view
