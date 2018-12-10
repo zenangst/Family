@@ -274,8 +274,11 @@ public class FamilyScrollView: NSScrollView {
         )
 
         scrollView.contentView.scroll(contentOffset)
+
+        cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!,
+                                          origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),
+                                          contentSize: contentSize))
         yOffsetOfCurrentSubview += contentSize.height + insets.bottom
-        cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!, origin: frame.origin, contentSize: contentSize))
       }
       computeContentSize()
     } else {
