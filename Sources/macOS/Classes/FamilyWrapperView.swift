@@ -50,6 +50,12 @@ class FamilyWrapperView: NSScrollView {
     fatalError("init(coder:) has not been implemented")
   }
 
+  override func viewDidMoveToSuperview() {
+    super.viewDidMoveToSuperview()
+    if superview == nil { return }
+    layoutViews(from: bounds, to: bounds)
+  }
+
   override func scrollWheel(with event: NSEvent) {
     if event.scrollingDeltaX != 0.0 && view.frame.size.width > frame.size.width {
       super.scrollWheel(with: event)
