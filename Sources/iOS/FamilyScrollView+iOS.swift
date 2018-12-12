@@ -50,12 +50,11 @@ extension FamilyScrollView {
           scrollView.frame = frame
         }
 
-        yOffsetOfCurrentSubview += scrollView.contentSize.height + insets.bottom + insets.top
-        var cachedOrigin = frame.origin
-        cachedOrigin.y += insets.top
         cache.add(entry: FamilyCacheEntry(view: view,
-                                          origin: cachedOrigin,
+                                          origin: CGPoint(x: frame.origin.x,
+                                                          y: yOffsetOfCurrentSubview),
                                           contentSize: scrollView.contentSize))
+        yOffsetOfCurrentSubview += scrollView.contentSize.height + insets.bottom + insets.top
       }
       computeContentSize()
     } else {
