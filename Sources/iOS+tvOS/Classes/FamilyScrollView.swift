@@ -114,6 +114,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
     cache.clear()
     setNeedsLayout()
+    layoutIfNeeded()
   }
 
   /// Removes the observer for any view that gets removed from the view heirarcy.
@@ -136,6 +137,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
     spaceManager.removeView(subview)
     cache.clear()
+    layoutIfNeeded()
   }
 
   /// Configures all scroll view in view heirarcy if they are allowed to scroll or not.
