@@ -98,7 +98,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// - Parameter scrollView: The scroll view that should be configured
   ///                         and observed.
   func didAddScrollViewToContainer(_ scrollView: UIScrollView) {
-    defer { cache.clear() }
     scrollView.autoresizingMask = [.flexibleWidth]
 
     guard documentView.subviews.index(of: scrollView) != nil else {
@@ -113,9 +112,9 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       configureScrollView(scrollView)
     }
 
-    computeContentSize()
+    cache.clear()
     setNeedsLayout()
-    layoutSubviews()
+    layoutIfNeeded()
   }
 
   /// Removes the observer for any view that gets removed from the view heirarcy.
@@ -136,11 +135,9 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       configureScrollView(scrollView)
     }
 
-    cache.clear()
-    computeContentSize()
-    setNeedsLayout()
-    layoutSubviews()
     spaceManager.removeView(subview)
+    cache.clear()
+    layoutIfNeeded()
   }
 
   /// Configures all scroll view in view heirarcy if they are allowed to scroll or not.
