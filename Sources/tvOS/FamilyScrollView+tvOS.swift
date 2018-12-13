@@ -104,6 +104,11 @@ extension FamilyScrollView {
           scrollView.contentOffset.y = contentOffset.y
         } else {
           frame.origin.y = entry.origin.y
+          // Reset content offset to avoid setting offsets that
+          // look liked `clipsToBounds` bugs.
+          if self.contentOffset.y < entry.maxY {
+            scrollView.contentOffset.y = 0
+          }
         }
 
         frame.size.height = newHeight
