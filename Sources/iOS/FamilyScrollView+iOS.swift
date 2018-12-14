@@ -90,7 +90,7 @@ extension FamilyScrollView {
           self.contentOffset.y <= entry.maxY &&
           scrollView.contentOffset.y == abs(contentOffset.y)
 
-        if shouldScroll {
+        if shouldScroll || scrollView is FamilyWrapperView {
           scrollView.contentOffset.y = abs(contentOffset.y)
         }
 
