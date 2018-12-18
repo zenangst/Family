@@ -211,8 +211,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   }
 
   public func setCustomInsets(_ insets: Insets, for view: View) {
-    view.frame.origin.x = insets.left
-    view.frame.size.width = self.view.frame.size.width - insets.left - insets.right
     scrollView.setCustomInsets(insets, for: view)
   }
 
