@@ -38,7 +38,7 @@ class FamilyWrapperView: UIScrollView {
 
     addSubview(view)
     alwaysBounceVertical = true
-    clipsToBounds = true
+    clipsToBounds = false
     if #available(iOS 11.0, tvOS 11.0, *) {
       contentInsetAdjustmentBehavior = .never
     }

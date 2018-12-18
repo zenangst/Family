@@ -11,6 +11,8 @@ extension FamilyScrollView {
           continue
         }
 
+        yOffsetOfCurrentSubview += insets.top
+
         var frame = scrollView.frame
         var contentOffset = scrollView.contentOffset
 
@@ -43,6 +45,7 @@ extension FamilyScrollView {
           frame.origin.y = yOffsetOfCurrentSubview
         }
 
+        frame.origin.x = insets.left
         frame.size.width = self.frame.size.width - insets.left - insets.right
         frame.size.height = newHeight
 
@@ -54,7 +57,7 @@ extension FamilyScrollView {
                                           origin: CGPoint(x: frame.origin.x,
                                                           y: yOffsetOfCurrentSubview),
                                           contentSize: scrollView.contentSize))
-        yOffsetOfCurrentSubview += scrollView.contentSize.height + insets.bottom + insets.top
+        yOffsetOfCurrentSubview += scrollView.contentSize.height + insets.bottom
       }
       computeContentSize()
     } else {
