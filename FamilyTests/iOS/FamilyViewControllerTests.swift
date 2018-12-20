@@ -109,4 +109,19 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(familyViewController.scrollView.contentInset.bottom,
                    familyViewController.scrollView.scrollIndicatorInsets.bottom)
   }
+
+  func testViewControllersInLayoutOrder() {
+    let familyViewController = FamilyViewController()
+
+    let controller1 = UIViewController()
+    let controller2 = UIViewController()
+    let controller3 = UIViewController()
+
+    familyViewController.addChild(controller1, at: 0)
+    familyViewController.addChild(controller3, at: 1)
+    familyViewController.addChild(controller2, at: 0)
+
+    XCTAssertEqual(familyViewController.viewControllersInLayoutOrder(),
+                   [controller2, controller1, controller3])
+  }
 }

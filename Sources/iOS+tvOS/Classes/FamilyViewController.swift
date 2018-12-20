@@ -72,7 +72,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
         scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
         scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
         scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-      ])
+        ])
     } else {
       if #available(iOS 9.0, *) {
         constraints.append(contentsOf: [
@@ -80,7 +80,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
           scrollView.bottomAnchor.constraint(equalTo: bottomLayoutGuide.topAnchor),
           scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
           scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
+          ])
       }
     }
     NSLayoutConstraint.activate(constraints)
@@ -93,34 +93,34 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     purgeRemovedViews()
     childController.willMove(toParent: self)
     super.addChild(childController)
-
-    let childViewControllerView: UIView
-
-    switch childController {
-    case let collectionViewController as UICollectionViewController:
-      if let collectionView = collectionViewController.collectionView {
-        scrollView.documentView.addSubview(collectionView)
-        childViewControllerView = collectionView
-      } else {
-        assertionFailure("Unable to resolve collection view from controller.")
-        return
-      }
-    case let tableViewController as UITableViewController:
-      scrollView.documentView.addSubview(tableViewController.tableView)
-      childViewControllerView = tableViewController.tableView
-    default:
-      scrollView.documentView.addSubview(childController.view)
-      childViewControllerView = childController.view
+    let newView = viewToAdd(from: childController)
+    if #available(iOS 11.0, *, tvOS 11.0, *) {
+      (newView as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
     }
+    addOrInsertView(newView)
+    childController.didMove(toParent: self)
+    registry[childController] = (newView, observe(childController))
+    scrollView.purgeWrapperViews()
+  }
 
+  open func addChild(_ childController: UIViewController, at index: Int?) {
+    purgeRemovedViews()
+    childController.willMove(toParent: self)
+    super.addChild(childController)
+    let view = viewToAdd(from: childController)
+    addOrInsertView(view, at: index)
     if #available(iOS 11.0, *, tvOS 11.0, *) {
       (childController.view as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
     }
 
     childController.didMove(toParent: self)
-
-    registry[childController] = (childViewControllerView, observe(childController))
+    registry[childController] = (view, observe(childController))
     scrollView.purgeWrapperViews()
+  }
+
+  open func moveChild(_ childController: UIViewController, to index: Int) {
+    let view = viewToAdd(from: childController)
+    addOrInsertView(view, at: index)
   }
 
   /// Adds the specified view controller as a child of the current view controller.
@@ -128,10 +128,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameters:
   ///   - childController: The view controller to be added as a child.
   ///   - height: The height that the child controllers should be constrained to.
-  open func addChild(_ childController: UIViewController, customInsets: Insets? = nil, height: CGFloat) {
+  open func addChild(_ childController: UIViewController, at index: Int? = nil, customInsets: Insets? = nil, height: CGFloat) {
     childController.willMove(toParent: self)
     super.addChild(childController)
-    scrollView.documentView.addSubview(childController.view)
+    addView(childController.view, at: index, withHeight: height, customInsets: customInsets)
     childController.didMove(toParent: self)
     childController.view.translatesAutoresizingMaskIntoConstraints = true
     childController.view.frame.size.width = view.frame.size.width
@@ -155,6 +155,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - closure: A closure used to resolve a view other than `.view` on controller used
   ///              to render the view controller.
   public func addChild<T: UIViewController>(_ childController: T,
+                                            at index: Int? = nil,
                                             customInsets insets: Insets? = nil,
                                             view closure: (T) -> UIView) {
     childController.willMove(toParent: self)
@@ -168,7 +169,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       (childView as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
     }
 
-    addView(childView, customInsets: insets)
+    addView(childView, at: index, customInsets: insets)
     childController.didMove(toParent: self)
     registry[childController] = (childView, observe(childController))
     scrollView.purgeWrapperViews()
@@ -190,7 +191,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
-  public func addView(_ subview: View, withHeight height: CGFloat? = nil, customInsets insets: Insets? = nil) {
+  public func addView(_ subview: View,
+                      at index: Int? = nil,
+                      withHeight height: CGFloat? = nil,
+                      customInsets insets: Insets? = nil) {
     if let height = height {
       subview.frame.size.width = view.bounds.size.width
       subview.frame.size.height = height
@@ -198,12 +202,29 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       subview.frame.size.width = view.bounds.width
     }
 
-    scrollView.documentView.addSubview(subview)
+    addOrInsertView(subview, at: index)
     scrollView.frame = view.bounds
 
     if let insets = insets {
       setCustomInsets(insets, for: subview)
     }
+  }
+
+  public func viewControllersInLayoutOrder() -> [ViewController] {
+    var viewControllers = [ViewController]()
+    var temporaryContainer = [View: ViewController]()
+
+    for entry in registry {
+      temporaryContainer[entry.value.view] = entry.key
+    }
+
+    for view in scrollView.documentView.scrollViews {
+      let lookupView = (view as? FamilyWrapperView)?.view ?? view
+      guard let controller = temporaryContainer[lookupView] else { continue }
+      viewControllers.append(controller)
+    }
+
+    return viewControllers
   }
 
   public func customInsets(for view: View) -> Insets {
@@ -212,6 +233,34 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
   public func setCustomInsets(_ insets: Insets, for view: View) {
     scrollView.setCustomInsets(insets, for: view)
+  }
+
+  private func addOrInsertView(_ view: UIView, at index: Int? = nil) {
+    if let index = index, index < scrollView.documentView.subviews.count {
+      scrollView.documentView.insertSubview(view, at: index)
+    } else {
+      scrollView.documentView.addSubview(view)
+    }
+  }
+
+  private func viewToAdd(from childController: UIViewController) -> View {
+    let view: UIView
+
+    switch childController {
+    case let collectionViewController as UICollectionViewController:
+      if let collectionView = collectionViewController.collectionView {
+        view = collectionView
+      } else {
+        assertionFailure("Unable to resolve collection view from controller.")
+        return childController.view
+      }
+    case let tableViewController as UITableViewController:
+      view = tableViewController.tableView
+    default:
+      view = childController.view
+    }
+
+    return view
   }
 
   /// Remove stray views from view hierarcy.

@@ -56,13 +56,29 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   open override func addChild(_ childController: ViewController) {
     super.addChild(childController)
     childController.view.frame.size.width = view.bounds.width
-    scrollView.familyDocumentView.addSubview(childController.view)
+    addOrInsertView(childController.view)
     scrollView.frame = view.bounds
     registry[childController] = childController.view
   }
 
-  public func addChild(_ childController: ViewController, customInsets insets: Insets? = nil, height: CGFloat) {
-    addChild(childController)
+  public func addChild(_ childController: ViewController,
+                       at index: Int? = nil) {
+    super.addChild(childController)
+    childController.view.frame.size.width = view.bounds.width
+    addOrInsertView(childController.view, at: index)
+    scrollView.frame = view.bounds
+    registry[childController] = childController.view
+  }
+
+  public func addChild(_ childController: ViewController,
+                       at index: Int? = nil,
+                       customInsets insets: Insets? = nil,
+                       height: CGFloat) {
+    super.addChild(childController)
+    childController.view.frame.size.width = view.bounds.width
+    addOrInsertView(childController.view, at: index)
+    scrollView.frame = view.bounds
+    registry[childController] = childController.view
     childController.view.frame.size.height = height
     childController.view.frame.size.width = view.bounds.width
     scrollView.frame = view.bounds
@@ -72,12 +88,15 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 
-  public func addChild<T: ViewController>(_ childController: T, customInsets insets: Insets? = nil, view closure: (T) -> View) {
+  public func addChild<T: ViewController>(_ childController: T,
+                                          at index: Int? = nil,
+                                          customInsets insets: Insets? = nil,
+                                          view closure: (T) -> View) {
     super.addChild(childController)
     view.addSubview(childController.view)
     childController.view.frame.size = .zero
     let childView = closure(childController)
-    addView(childView, customInsets: insets)
+    addView(childView, at: index, customInsets: insets)
     registry[childController] = childView
   }
 
@@ -91,19 +110,39 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 
-  public func addView(_ subview: View, customInsets insets: Insets? = nil, withHeight height: CGFloat? = nil) {
+  public func addView(_ subview: View,
+                      at index: Int? = nil,
+                      customInsets insets: Insets? = nil,
+                      withHeight height: CGFloat? = nil) {
     if let height = height {
       subview.frame.size.width = view.bounds.size.width
       subview.frame.size.height = height
     } else {
       subview.frame.size.width = view.bounds.width
     }
-    scrollView.familyDocumentView.addSubview(subview)
+    addOrInsertView(subview, at: index)
     scrollView.frame = view.bounds
 
     if let insets = insets {
       setCustomInsets(insets, for: subview)
     }
+  }
+
+  public func viewControllersInLayoutOrder() -> [ViewController] {
+    var viewControllers = [ViewController]()
+    var temporaryContainer = [View: ViewController]()
+
+    for entry in registry {
+      temporaryContainer[entry.value] = entry.key
+    }
+
+    for view in scrollView.familyDocumentView.subviewsInLayoutOrder {
+      let lookupView = (view as? FamilyWrapperView)?.view ?? view
+      guard let controller = temporaryContainer[lookupView] else { continue }
+      viewControllers.append(controller)
+    }
+
+    return viewControllers
   }
 
   public func customInsets(for view: View) -> Insets {
@@ -112,6 +151,14 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
 
   public func setCustomInsets(_ insets: Insets, for view: View) {
     scrollView.setCustomInsets(insets, for: view)
+  }
+
+  private func addOrInsertView(_ view: View, at index: Int? = nil) {
+    if let index = index, index < scrollView.familyDocumentView.subviewsInLayoutOrder.count {
+      scrollView.familyDocumentView.insertSubview(view, at: index)
+    } else {
+      scrollView.familyDocumentView.addSubview(view)
+    }
   }
 
   func purgeRemovedViews() {

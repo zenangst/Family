@@ -211,8 +211,7 @@ public class FamilyScrollView: NSScrollView {
 
   private func rebuildSubviewsInLayoutOrder(exceptSubview: View? = nil) {
     subviewsInLayoutOrder.removeAll()
-    let filteredSubviews = familyDocumentView.scrollViews.filter({ !($0 === exceptSubview) })
-    subviewsInLayoutOrder = filteredSubviews
+    subviewsInLayoutOrder = familyDocumentView.subviewsInLayoutOrder.filter({ !($0 === exceptSubview) })
   }
 
   private func validateScrollView(_ scrollView: NSScrollView) -> Bool {

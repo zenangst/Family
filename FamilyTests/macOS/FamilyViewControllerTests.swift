@@ -102,4 +102,20 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(viewController.view.frame.size.width, familyViewController.view.frame.width)
     XCTAssertEqual(viewController.view.frame.size.height, 200)
   }
+
+  func testViewControllersInLayoutOrder() {
+    let familyViewController = FamilyViewController()
+    let controller1 = MockViewController()
+    let controller2 = MockViewController()
+    let controller3 = MockViewController()
+
+    familyViewController.addChild(controller1, at: 0)
+    familyViewController.addChild(controller3, at: 1)
+    familyViewController.addChild(controller2, at: 0)
+
+    let expected = [controller2, controller1, controller3]
+    let result = familyViewController.viewControllersInLayoutOrder()
+
+    XCTAssertEqual(result, expected)
+  }
 }
