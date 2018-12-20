@@ -26,6 +26,22 @@ public class FamilyDocumentView: UIView {
   /// - Parameter view: The view to be added.
   ///                   After being added, this view appears on top of any other subviews.
   open override func addSubview(_ view: UIView) {
+    let subview = wrapViewIfNeeded(view)
+    super.addSubview(subview)
+
+    guard let scrollView = subview as? UIScrollView else { return }
+
+    delegate?.familyDocumentView(self, didAddScrollView: scrollView)
+  }
+
+  public override func insertSubview(_ view: UIView, at index: Int) {
+    let subview = wrapViewIfNeeded(view)
+    super.insertSubview(subview, at: index)
+    guard let scrollView = subview as? UIScrollView else { return }
+    delegate?.familyDocumentView(self, didAddScrollView: scrollView)
+  }
+
+  private func wrapViewIfNeeded(_ view: UIView) -> UIView {
     let subview: UIView
 
     switch view {
@@ -38,17 +54,7 @@ public class FamilyDocumentView: UIView {
       subview = wrapper
     }
 
-    super.addSubview(subview)
-
-    guard let scrollView = subview as? UIScrollView else { return }
-
-    delegate?.familyDocumentView(self, didAddScrollView: scrollView)
-  }
-
-  public override func insertSubview(_ view: UIView, at index: Int) {
-    super.insertSubview(view, at: index)
-    guard let scrollView = view as? UIScrollView else { return }
-    delegate?.familyDocumentView(self, didAddScrollView: scrollView)
+    return subview
   }
 
   /// Tells the view that a subview is about to be removed.

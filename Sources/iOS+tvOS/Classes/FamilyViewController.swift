@@ -191,7 +191,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
-  public func addView(_ subview: View, at index: Int? = nil, withHeight height: CGFloat? = nil, customInsets insets: Insets? = nil) {
+  public func addView(_ subview: View,
+                      at index: Int? = nil,
+                      withHeight height: CGFloat? = nil,
+                      customInsets insets: Insets? = nil) {
     if let height = height {
       subview.frame.size.width = view.bounds.size.width
       subview.frame.size.height = height
@@ -207,6 +210,23 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
+  public func viewControllersInLayoutOrder() -> [ViewController] {
+    var viewControllers = [ViewController]()
+    var temporaryContainer = [View: ViewController]()
+
+    for entry in registry {
+      temporaryContainer[entry.value.view] = entry.key
+    }
+
+    for view in scrollView.documentView.scrollViews {
+      let lookupView = (view as? FamilyWrapperView)?.view ?? view
+      guard let controller = temporaryContainer[lookupView] else { continue }
+      viewControllers.append(controller)
+    }
+
+    return viewControllers
+  }
+
   public func customInsets(for view: View) -> Insets {
     return scrollView.customInsets(for: view)
   }
@@ -216,10 +236,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   }
 
   private func addOrInsertView(_ view: UIView, at index: Int? = nil) {
-    if view.superview != nil {
-      view.removeFromSuperview()
-    }
-
     if let index = index, index < scrollView.documentView.subviews.count {
       scrollView.documentView.insertSubview(view, at: index)
     } else {
