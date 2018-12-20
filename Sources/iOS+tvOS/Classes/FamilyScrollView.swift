@@ -172,6 +172,12 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   private func observeView(view: UIScrollView) {
     guard view.superview == documentView else { return }
 
+    for observer in observers.filter({ $0.view === view }) {
+      if let index = observers.index(where: { $0 == observer }) {
+        observers.remove(at: index)
+      }
+    }
+
     let contentSizeObserver = view.observe(\.contentSize, options: [.initial, .new, .old], changeHandler: { [weak self] (scrollView, value) in
       guard let strongSelf = self,
         let newValue = value.newValue,

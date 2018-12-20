@@ -45,6 +45,12 @@ public class FamilyDocumentView: UIView {
     delegate?.familyDocumentView(self, didAddScrollView: scrollView)
   }
 
+  public override func insertSubview(_ view: UIView, at index: Int) {
+    super.insertSubview(view, at: index)
+    guard let scrollView = view as? UIScrollView else { return }
+    delegate?.familyDocumentView(self, didAddScrollView: scrollView)
+  }
+
   /// Tells the view that a subview is about to be removed.
   /// Calls `FamilyScrollView` in order to remove the observers
   /// on the view.
