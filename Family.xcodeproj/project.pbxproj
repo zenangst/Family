@@ -96,7 +96,7 @@
 		BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
 		BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollView.swift; sourceTree = "<group>"; };
 		BD4C7FE320349B030037D3E5 /* FamilyDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyDocumentView.swift; sourceTree = "<group>"; };
-		BD535E142078DEFC00AA2EC4 /* Family.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Family.podspec; sourceTree = "<group>"; };
+		BD535E142078DEFC00AA2EC4 /* Family.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = Family.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		BD535E152079269200AA2EC4 /* FamilySpaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySpaceManager.swift; sourceTree = "<group>"; };
 		BD5A80362030A9D9006A5EBB /* FamilyDocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyDocumentView.swift; sourceTree = "<group>"; };
 		BD5A80372030A9D9006A5EBB /* FamilyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
