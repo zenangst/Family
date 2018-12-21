@@ -239,6 +239,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   public func setCustomInsets(_ insets: Insets, for view: View) {
     spaceManager.setCustomInsets(insets, for: view)
     cache.clear()
+    layoutViews()
   }
 
   /// Remove wrapper views that don't own their underlaying views.
