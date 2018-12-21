@@ -153,6 +153,14 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.setCustomInsets(insets, for: view)
   }
 
+  func performBatchUpdates(_ handler: (FamilyViewController) -> Void, completion: ((FamilyViewController) -> Void)?) {
+    scrollView.isPerformingBatchUpdates = true
+    handler(self)
+    scrollView.isPerformingBatchUpdates = false
+    scrollView.layoutViews(withDuration: 0.25)
+    completion?(self)
+  }
+
   private func addOrInsertView(_ view: View, at index: Int? = nil) {
     if let index = index, index < scrollView.familyDocumentView.subviewsInLayoutOrder.count {
       scrollView.familyDocumentView.insertSubview(view, at: index)
