@@ -13,6 +13,7 @@ public class FamilyScrollView: NSScrollView {
   var layoutIsRunning: Bool = false
   var isScrolling: Bool = false
   var isScrollingByProxy: Bool = false
+  internal var isPerformingBatchUpdates: Bool = false
   private var subviewsInLayoutOrder = [NSScrollView]()
   private lazy var spaceManager = FamilySpaceManager()
   lazy var cache = FamilyCache()
@@ -43,6 +44,8 @@ public class FamilyScrollView: NSScrollView {
 
   public func layoutViews(withDuration duration: CFTimeInterval? = nil,
                           force: Bool = false) {
+    guard isPerformingBatchUpdates == false else { return }
+
     guard !layoutIsRunning || !force else {
       return
     }
@@ -220,6 +223,8 @@ public class FamilyScrollView: NSScrollView {
   }
 
   private func runLayoutSubviewsAlgorithm() {
+    guard isPerformingBatchUpdates == false else { return }
+
     if cache.isEmpty {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
       for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {

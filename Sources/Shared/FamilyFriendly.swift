@@ -7,5 +7,8 @@ protocol FamilyFriendly: class {
   func addChild<T: ViewController>(_ childController: T, at index: Int?, customInsets: Insets?, view closure: (T) -> View)
   func addChildren(_ childControllers: ViewController ...)
 
+  func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
+                           completion: ((FamilyViewController) -> Void)?)
+
   func purgeRemovedViews()
 }

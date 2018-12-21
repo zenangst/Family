@@ -263,6 +263,15 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     return view
   }
 
+  public func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
+                                  completion: ((FamilyViewController) -> Void)? = nil) {
+    scrollView.isPerformingBatchUpdates = true
+    handler(self)
+    scrollView.isPerformingBatchUpdates = false
+    scrollView.layoutViews(withDuration: 0.25)
+    completion?(self)
+  }
+
   /// Remove stray views from view hierarcy.
   func purgeRemovedViews() {
     for (controller, container) in registry where controller.parent == nil {

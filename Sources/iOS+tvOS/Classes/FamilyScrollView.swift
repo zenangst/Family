@@ -30,6 +30,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// properties that get observed.
   private var observers = [Observer]()
   internal lazy var spaceManager = FamilySpaceManager()
+  internal var isPerformingBatchUpdates: Bool = false
   lazy var cache = FamilyCache()
   private var isScrolling: Bool { return isTracking || isDragging || isDecelerating }
 
@@ -87,7 +88,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   }
 
   func familyDocumentView(_ view: FamilyDocumentView,
-                         didAddScrollView scrollView: UIScrollView) {
+                          didAddScrollView scrollView: UIScrollView) {
     didAddScrollViewToContainer(scrollView)
   }
 
@@ -149,17 +150,17 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// - Parameter scrollView: The scroll view that will be configured.
   func configureScrollView(_ scrollView: UIScrollView) {
     #if os(iOS)
-      scrollView.scrollsToTop = false
-      if let collectionView = scrollView as? UICollectionView,
-        (collectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal {
-        scrollView.isScrollEnabled = true
-      } else {
-        scrollView.isScrollEnabled = false
-      }
+    scrollView.scrollsToTop = false
+    if let collectionView = scrollView as? UICollectionView,
+      (collectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal {
+      scrollView.isScrollEnabled = true
+    } else {
+      scrollView.isScrollEnabled = false
+    }
     #else
-      for scrollView in subviewsInLayoutOrder {
-        scrollView.isScrollEnabled = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
-      }
+    for scrollView in subviewsInLayoutOrder {
+      scrollView.isScrollEnabled = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
+    }
     #endif
   }
 
@@ -263,6 +264,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   ///                       with animation. It defaults to `nil` and opts
   ///                       out from animating if the view is scroll by the user.
   public func layoutViews(withDuration duration: CFTimeInterval? = nil) {
+    guard isPerformingBatchUpdates == false else { return }
+
     guard superview != nil else { return }
 
     documentView.frame = bounds
