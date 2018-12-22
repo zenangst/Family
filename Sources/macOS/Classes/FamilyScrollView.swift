@@ -7,7 +7,7 @@ public class FamilyScrollView: NSScrollView {
     get { return spaceManager.insets }
     set {
       spaceManager.insets = newValue
-      cache.clear()
+      cache.invalidate()
     }
   }
   var layoutIsRunning: Bool = false
@@ -149,7 +149,7 @@ public class FamilyScrollView: NSScrollView {
   // MARK: - Window resizing
 
   private func processNewWindowSize(excludeOffscreenViews: Bool) {
-    cache.clear()
+    cache.invalidate()
     layoutViews(withDuration: 0.0, force: false)
   }
 
@@ -179,12 +179,12 @@ public class FamilyScrollView: NSScrollView {
         subviewsInLayoutOrder.append(scrollView)
       }
     }
-    cache.clear()
+    cache.invalidate()
     runLayoutSubviewsAlgorithm()
   }
 
   func didRemoveScrollViewToContainer(_ subview: NSView) {
-    cache.clear()
+    cache.invalidate()
   }
 
   public func customInsets(for view: View) -> Insets {
@@ -193,7 +193,7 @@ public class FamilyScrollView: NSScrollView {
 
   public func setCustomInsets(_ insets: Insets, for view: View) {
     spaceManager.setCustomInsets(insets, for: view)
-    cache.clear()
+    cache.invalidate()
   }
 
   public override func scrollWheel(with event: NSEvent) {
@@ -206,7 +206,7 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func wrapperViewDidChangeFrame(from fromValue: CGRect, to toValue: CGRect) {
-    cache.clear()
+    cache.invalidate()
     layoutViews(withDuration: 0.0, force: false)
   }
 
@@ -224,8 +224,10 @@ public class FamilyScrollView: NSScrollView {
 
   private func runLayoutSubviewsAlgorithm() {
     guard isPerformingBatchUpdates == false else { return }
+    guard cache.state != .isRunning else { return }
 
-    if cache.isEmpty {
+    if cache.state == .empty {
+      cache.state = .isRunning
       var yOffsetOfCurrentSubview: CGFloat = 0.0
       for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
@@ -285,6 +287,7 @@ public class FamilyScrollView: NSScrollView {
         yOffsetOfCurrentSubview += contentSize.height + insets.bottom
       }
       computeContentSize()
+      cache.state = .isFinished
     } else {
       let currentOffset = self.contentOffset.y + contentView.contentInsets.top
       let documentHeight = self.documentView!.frame.size.height

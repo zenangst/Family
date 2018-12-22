@@ -6,7 +6,10 @@ extension FamilyScrollView {
   /// when a view changes size or origin. It also scales the frame of scroll views
   /// in order to keep dequeuing for table and collection views.
   internal func runLayoutSubviewsAlgorithm() {
-    if cache.isEmpty {
+    guard cache.state != .isRunning else { return }
+
+    if cache.state == .empty {
+      cache.state = .isRunning
       var yOffsetOfCurrentSubview: CGFloat = 0.0
       for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
@@ -67,6 +70,7 @@ extension FamilyScrollView {
         yOffsetOfCurrentSubview += scrollView.contentSize.height + insets.bottom
       }
       computeContentSize()
+      cache.state = .isFinished
     } else {
       for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
