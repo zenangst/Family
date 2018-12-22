@@ -55,42 +55,37 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   }
 
   /// Adds the specified view controller as a child of the current view controller.
+  /// The view handler is used to resolve another view for the view controller that should
+  /// be added into the view heirarcy.
   ///
   /// - Parameters:
   ///   - childController: The view controller to be added as a child.
   ///   - index: The index that the view should appear in the view hierarchy.
   ///   - customInsets: The insets that should be applied to the view.
   ///   - height: The height that the child controllers should be constrained to.
-  public func addChild(_ childController: ViewController,
-                       at index: Int? = nil,
-                       customInsets insets: Insets? = nil,
-                       height: CGFloat? = nil) {
-    super.addChild(childController)
-    childController.view.frame.size.width = view.bounds.width
-    addView(childController.view, at: index, customInsets: insets, withHeight: height)
-    registry[childController] = childController.view
-    childController.view.frame.size.width = view.bounds.width
-    scrollView.frame = view.bounds
-  }
-
-  /// Adds the specified view controller as a child of the current view controller.
-  /// The closure is used to resolve another view for the view controller that should
-  /// be added into the view heirarcy.
-  ///
-  /// - Parameters:
-  ///   - childController: The view controller to be added as a child.
-  ///   - closure: A closure used to resolve a view other than `.view` on controller used
+  ///   - handler: A closure used to resolve a view other than `.view` on controller used
   ///              to render the view controller.
   public func addChild<T: ViewController>(_ childController: T,
                                           at index: Int? = nil,
                                           customInsets insets: Insets? = nil,
-                                          view closure: (T) -> View) {
+                                          height: CGFloat? = nil,
+                                          view handler: ((T) -> View)? = nil) {
     super.addChild(childController)
-    view.addSubview(childController.view)
-    childController.view.frame.size = .zero
-    let childView = closure(childController)
-    addView(childView, at: index, customInsets: insets)
-    registry[childController] = childView
+
+    let subview: View
+
+    if let handler = handler {
+      view.addSubview(childController.view)
+      childController.view.frame.size = .zero
+      subview = handler(childController)
+    } else {
+      subview = childController.view
+    }
+
+    scrollView.frame = view.bounds
+    subview.frame.size.width = view.bounds.width
+    addView(subview, at: index, customInsets: insets, withHeight: height)
+    registry[childController] = subview
   }
 
   /// Adds a collection of view controllers as children of the current view controller.

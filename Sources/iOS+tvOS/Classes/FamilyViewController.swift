@@ -73,48 +73,41 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   }
 
   /// Adds the specified view controller as a child of the current view controller.
+  /// The view handler is used to resolve another view for the view controller that should
+  /// be added into the view heirarcy.
   ///
   /// - Parameters:
   ///   - childController: The view controller to be added as a child.
   ///   - index: The index that the view should appear in the view hierarchy.
   ///   - customInsets: The insets that should be applied to the view.
   ///   - height: The height that the child controllers should be constrained to.
-  open func addChild(_ childController: UIViewController,
-                     at index: Int? = nil,
-                     customInsets: Insets? = nil,
-                     height: CGFloat? = nil) {
-    childController.willMove(toParent: self)
-    super.addChild(childController)
-    addView(childController.view, at: index, customInsets: customInsets, withHeight: height)
-    childController.didMove(toParent: self)
-    childController.view.translatesAutoresizingMaskIntoConstraints = true
-    childController.view.autoresizingMask = [.flexibleWidth]
-    registry[childController] = (childController.view, observe(childController))
-    scrollView.purgeWrapperViews()
-  }
-
-  /// Adds the specified view controller as a child of the current view controller.
-  /// The closure is used to resolve another view for the view controller that should
-  /// be added into the view heirarcy.
-  ///
-  /// - Parameters:
-  ///   - childController: The view controller to be added as a child.
-  ///   - closure: A closure used to resolve a view other than `.view` on controller used
+  ///   - handler: A closure used to resolve a view other than `.view` on controller used
   ///              to render the view controller.
   public func addChild<T: UIViewController>(_ childController: T,
                                             at index: Int? = nil,
                                             customInsets insets: Insets? = nil,
-                                            view closure: (T) -> UIView) {
+                                            height: CGFloat? = nil,
+                                            view handler: ((T) -> UIView)? = nil) {
     childController.willMove(toParent: self)
     super.addChild(childController)
-    view.addSubview(childController.view)
-    childController.view.frame.size = .zero
-    childController.view.isHidden = true
-    let childView = closure(childController)
-    addView(childView, at: index, customInsets: insets)
-    childController.didMove(toParent: self)
-    registry[childController] = (childView, observe(childController))
+
+    let subview: View
+
+    if let handler = handler {
+      view.addSubview(childController.view)
+      childController.view.frame.size = .zero
+      childController.view.isHidden = true
+      subview = handler(childController)
+    } else {
+      subview = childController.view
+      childController.view.translatesAutoresizingMaskIntoConstraints = true
+      childController.view.autoresizingMask = [.flexibleWidth]
+    }
+
+    addView(subview, at: index, customInsets: insets, withHeight: height)
+    registry[childController] = (subview, observe(childController))
     scrollView.purgeWrapperViews()
+    childController.didMove(toParent: self)
   }
 
   /// Adds a collection of view controllers as children of the current view controller.
