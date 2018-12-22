@@ -70,6 +70,24 @@ let customController = CustomViewController()
 familyController.addChild(customController, view: { $0.scrollView })
 ```
 
+Moving a view controller
+
+```swift
+familyController.moveChild(customController, to: 1)
+```
+
+Perform batch updates
+
+```swift
+familyController.performBatchUpdates({ controller in
+  controller.addChild(controller1)
+  controller.addChild(controller2)
+  controller.moveChild(controller2, to: 0)
+  controller3.removeFromParent()
+})
+```
+
+
 ## Installation
 
 **Family** is available through [CocoaPods](http://cocoapods.org). To install
