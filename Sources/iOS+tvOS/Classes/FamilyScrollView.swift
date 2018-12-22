@@ -6,7 +6,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     get { return spaceManager.insets }
     set {
       spaceManager.insets = newValue
-      cache.clear()
+      cache.invalidate()
     }
   }
   /// A collection of scroll views that is used to order the views on screen.
@@ -113,7 +113,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       configureScrollView(scrollView)
     }
 
-    cache.clear()
+    cache.invalidate()
     setNeedsLayout()
     layoutIfNeeded()
   }
@@ -137,7 +137,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
 
     spaceManager.removeView(subview)
-    cache.clear()
+    cache.invalidate()
     layoutIfNeeded()
   }
 
@@ -187,7 +187,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
 
       if self?.compare(newValue, to: oldValue) == false {
-        strongSelf.cache.clear()
+        strongSelf.cache.invalidate()
         strongSelf.layoutViews()
       }
     })
@@ -200,7 +200,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
 
       if newValue != oldValue {
-        self?.cache.clear()
+        self?.cache.invalidate()
         self?.layoutViews()
       }
     })
@@ -238,7 +238,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
   public func setCustomInsets(_ insets: Insets, for view: View) {
     spaceManager.setCustomInsets(insets, for: view)
-    cache.clear()
+    cache.invalidate()
     layoutViews()
   }
 

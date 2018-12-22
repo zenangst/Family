@@ -1,9 +1,13 @@
 import CoreGraphics
 
 class FamilyCache: NSObject {
+  enum State {
+    case empty, isRunning, isFinished
+  }
+
+  var state: State = .empty
   var contentSize: CGSize = .zero
   var storage = [View: FamilyCacheEntry]()
-  var isEmpty: Bool { return storage.isEmpty }
   override init() {}
 
   func add(entry: FamilyCacheEntry) {
@@ -14,7 +18,8 @@ class FamilyCache: NSObject {
     return storage[view]
   }
 
-  func clear() {
+  func invalidate() {
     storage.removeAll()
+    state = .empty
   }
 }
