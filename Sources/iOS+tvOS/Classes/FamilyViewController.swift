@@ -27,7 +27,9 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     purgeRemovedViews()
   }
 
-  /// Called after the controller's view is loaded into memory.
+  // MARK: - View lifecycle
+
+  /// Called after the controller's view is loaded into memory.
   open override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -52,6 +54,191 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       }
     }
   }
+
+  // MARK: - Public methods
+
+  /// Adds the specified view controller as a child of the current view controller.
+  ///
+  /// - Parameter childController: The view controller to be added as a child.
+  open override func addChild(_ childController: UIViewController) {
+    purgeRemovedViews()
+    childController.willMove(toParent: self)
+    super.addChild(childController)
+    let newView = viewToAdd(from: childController)
+    addOrInsertView(newView)
+    childController.didMove(toParent: self)
+    registry[childController] = (newView, observe(childController))
+    scrollView.purgeWrapperViews()
+  }
+
+  /// Adds the specified view controller as a child of the current view controller.
+  ///
+  /// - Parameters:
+  ///   - childController: The view controller to be added as a child.
+  ///   - index: The index that the view should appear in the view hierarchy.
+  ///   - customInsets: The insets that should be applied to the view.
+  ///   - height: The height that the child controllers should be constrained to.
+  open func addChild(_ childController: UIViewController,
+                     at index: Int? = nil,
+                     customInsets: Insets? = nil,
+                     height: CGFloat? = nil) {
+    childController.willMove(toParent: self)
+    super.addChild(childController)
+    addView(childController.view, at: index, withHeight: height, customInsets: customInsets)
+    childController.didMove(toParent: self)
+    childController.view.translatesAutoresizingMaskIntoConstraints = true
+    childController.view.autoresizingMask = [.flexibleWidth]
+    registry[childController] = (childController.view, observe(childController))
+    scrollView.purgeWrapperViews()
+  }
+
+  /// Adds the specified view controller as a child of the current view controller.
+  /// The closure is used to resolve another view for the view controller that should
+  /// be added into the view heirarcy.
+  ///
+  /// - Parameters:
+  ///   - childController: The view controller to be added as a child.
+  ///   - closure: A closure used to resolve a view other than `.view` on controller used
+  ///              to render the view controller.
+  public func addChild<T: UIViewController>(_ childController: T,
+                                            at index: Int? = nil,
+                                            customInsets insets: Insets? = nil,
+                                            view closure: (T) -> UIView) {
+    childController.willMove(toParent: self)
+    super.addChild(childController)
+    view.addSubview(childController.view)
+    childController.view.frame.size = .zero
+    childController.view.isHidden = true
+    let childView = closure(childController)
+    addView(childView, at: index, customInsets: insets)
+    childController.didMove(toParent: self)
+    registry[childController] = (childView, observe(childController))
+    scrollView.purgeWrapperViews()
+  }
+
+  /// Adds a collection of view controllers as children of the current view controller.
+  ///
+  /// - Parameter childControllers: The view controllers to be added as children.
+  public func addChildren(_ childControllers: UIViewController ...) {
+    addChildren(childControllers)
+  }
+
+  /// Adds a collection of view controllers as children of the current view controller.
+  ///
+  /// - Parameter childControllers: The view controllers to be added as children.
+  public func addChildren(_ childControllers: [UIViewController]) {
+    for childController in childControllers {
+      addChild(childController)
+    }
+  }
+
+  /// Add a new view to hierarchy.
+  ///
+  /// - Parameters:
+  ///   - subview: The view that should be added.
+  ///   - index: The index that the view should appear.
+  ///   - height: An optional height of the view.
+  ///   - insets: The insets that should be applied to the view.
+  public func addView(_ subview: View,
+                      at index: Int? = nil,
+                      withHeight height: CGFloat? = nil,
+                      customInsets insets: Insets? = nil) {
+    if let height = height {
+      subview.frame.size.width = view.bounds.size.width
+      subview.frame.size.height = height
+    } else {
+      subview.frame.size.width = view.bounds.width
+    }
+
+    addOrInsertView(subview, at: index)
+    scrollView.frame = view.bounds
+
+    if let insets = insets {
+      setCustomInsets(insets, for: subview)
+    }
+  }
+
+  /// Move child view controller to index.
+  ///
+  /// - Parameters:
+  ///   - childController: The child view controller that should be moved to index.
+  ///   - index: The new index of the child view controller.
+  open func moveChild(_ childController: UIViewController, to index: Int) {
+    guard let entry = registry[childController] else { return }
+    addOrInsertView(entry.view, at: index)
+  }
+
+  /// Returns a collection of view controllers in layout order.
+  /// It uses the order as they appear in the document view on the scroll view
+  /// to give a true representation of how the views appear on screen.
+  ///
+  /// - Returns: A collection of view controllers.
+  public func viewControllersInLayoutOrder() -> [ViewController] {
+    var viewControllers = [ViewController]()
+    var temporaryContainer = [View: ViewController]()
+
+    for entry in registry {
+      temporaryContainer[entry.value.view] = entry.key
+    }
+
+    for view in scrollView.documentView.scrollViews {
+      let lookupView = (view as? FamilyWrapperView)?.view ?? view
+      guard let controller = temporaryContainer[lookupView] else { continue }
+      viewControllers.append(controller)
+    }
+
+    return viewControllers
+  }
+
+  /// Get custom insets for a specific view.
+  ///
+  /// - Parameter view: The target view which is used to lookup insets.
+  /// - Returns: The insets for the view, it defaults to the scroll views
+  ///            generic insets.
+  public func customInsets(for view: View) -> Insets {
+    return scrollView.customInsets(for: view)
+  }
+
+  /// Set custom insets to a view.
+  ///
+  /// - Parameters:
+  ///   - insets: The custom insets for the view.
+  ///   - view: The target view that should get custom insets.
+  public func setCustomInsets(_ insets: Insets, for view: View) {
+    scrollView.setCustomInsets(insets, for: view)
+  }
+
+  /// Animates view hierarchy operations as a group.
+  /// This guards the layout algorithm from being invoked multiple
+  /// times while mutating the view hierarchy.
+  ///
+  /// - Parameters:
+  ///   - handler: The operations that should be performed as a group.
+  ///   - completion: A completion handler that is invoked after the view
+  ///                 has laid out its views.
+  public func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
+                                  completion: ((FamilyViewController) -> Void)? = nil) {
+    scrollView.isPerformingBatchUpdates = true
+    handler(self)
+    scrollView.isPerformingBatchUpdates = false
+    scrollView.layoutViews(withDuration: 0.25)
+    completion?(self)
+  }
+
+  /// Remove stray views from view hierarchy.
+  func purgeRemovedViews() {
+    for (controller, container) in registry where controller.parent == nil {
+      if container.view.superview is FamilyWrapperView {
+        container.view.superview?.removeFromSuperview()
+      }
+
+      container.view.removeFromSuperview()
+      container.observer.invalidate()
+      registry.removeValue(forKey: controller)
+    }
+  }
+
+  // MARK: - Private methods
 
   /// Configure constraints for the scroll view.
   private func configureConstraints() {
@@ -86,163 +273,30 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     NSLayoutConstraint.activate(constraints)
   }
 
-  /// Adds the specified view controller as a child of the current view controller.
-  ///
-  /// - Parameter childController: The view controller to be added as a child.
-  open override func addChild(_ childController: UIViewController) {
-    purgeRemovedViews()
-    childController.willMove(toParent: self)
-    super.addChild(childController)
-    let newView = viewToAdd(from: childController)
-    if #available(iOS 11.0, *, tvOS 11.0, *) {
-      (newView as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
-    }
-    addOrInsertView(newView)
-    childController.didMove(toParent: self)
-    registry[childController] = (newView, observe(childController))
-    scrollView.purgeWrapperViews()
-  }
-
-  open func addChild(_ childController: UIViewController, at index: Int?) {
-    purgeRemovedViews()
-    childController.willMove(toParent: self)
-    super.addChild(childController)
-    let view = viewToAdd(from: childController)
-    addOrInsertView(view, at: index)
-    if #available(iOS 11.0, *, tvOS 11.0, *) {
-      (childController.view as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
-    }
-
-    childController.didMove(toParent: self)
-    registry[childController] = (view, observe(childController))
-    scrollView.purgeWrapperViews()
-  }
-
-  open func moveChild(_ childController: UIViewController, to index: Int) {
-    let view = viewToAdd(from: childController)
-    addOrInsertView(view, at: index)
-  }
-
-  /// Adds the specified view controller as a child of the current view controller.
+  /// Appends or inserts a view at a specific index.
   ///
   /// - Parameters:
-  ///   - childController: The view controller to be added as a child.
-  ///   - height: The height that the child controllers should be constrained to.
-  open func addChild(_ childController: UIViewController, at index: Int? = nil, customInsets: Insets? = nil, height: CGFloat) {
-    childController.willMove(toParent: self)
-    super.addChild(childController)
-    addView(childController.view, at: index, withHeight: height, customInsets: customInsets)
-    childController.didMove(toParent: self)
-    childController.view.translatesAutoresizingMaskIntoConstraints = true
-    childController.view.frame.size.width = view.frame.size.width
-    childController.view.autoresizingMask = [.flexibleWidth]
-    childController.view.frame.size.height = height
-    registry[childController] = (childController.view, observe(childController))
-
-    if let customInsets = customInsets {
-      setCustomInsets(customInsets, for: childController.view)
-    }
-
-    scrollView.purgeWrapperViews()
-  }
-
-  /// Adds the specified view controller as a child of the current view controller.
-  /// The closure is used to resolve another view for the view controller that should
-  /// be added into the view heirarcy.
-  ///
-  /// - Parameters:
-  ///   - childController: The view controller to be added as a child.
-  ///   - closure: A closure used to resolve a view other than `.view` on controller used
-  ///              to render the view controller.
-  public func addChild<T: UIViewController>(_ childController: T,
-                                            at index: Int? = nil,
-                                            customInsets insets: Insets? = nil,
-                                            view closure: (T) -> UIView) {
-    childController.willMove(toParent: self)
-    super.addChild(childController)
-    view.addSubview(childController.view)
-    childController.view.frame.size = .zero
-    childController.view.isHidden = true
-    let childView = closure(childController)
-
-    if #available(iOS 11.0, *, tvOS 11.0, *) {
-      (childView as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
-    }
-
-    addView(childView, at: index, customInsets: insets)
-    childController.didMove(toParent: self)
-    registry[childController] = (childView, observe(childController))
-    scrollView.purgeWrapperViews()
-  }
-
-  /// Adds a collection of view controllers as children of the current view controller.
-  ///
-  /// - Parameter childControllers: The view controllers to be added as children.
-  public func addChildren(_ childControllers: UIViewController ...) {
-    addChildren(childControllers)
-  }
-
-  /// Adds a collection of view controllers as children of the current view controller.
-  ///
-  /// - Parameter childControllers: The view controllers to be added as children.
-  public func addChildren(_ childControllers: [UIViewController]) {
-    for childController in childControllers {
-      addChild(childController)
-    }
-  }
-
-  public func addView(_ subview: View,
-                      at index: Int? = nil,
-                      withHeight height: CGFloat? = nil,
-                      customInsets insets: Insets? = nil) {
-    if let height = height {
-      subview.frame.size.width = view.bounds.size.width
-      subview.frame.size.height = height
-    } else {
-      subview.frame.size.width = view.bounds.width
-    }
-
-    addOrInsertView(subview, at: index)
-    scrollView.frame = view.bounds
-
-    if let insets = insets {
-      setCustomInsets(insets, for: subview)
-    }
-  }
-
-  public func viewControllersInLayoutOrder() -> [ViewController] {
-    var viewControllers = [ViewController]()
-    var temporaryContainer = [View: ViewController]()
-
-    for entry in registry {
-      temporaryContainer[entry.value.view] = entry.key
-    }
-
-    for view in scrollView.documentView.scrollViews {
-      let lookupView = (view as? FamilyWrapperView)?.view ?? view
-      guard let controller = temporaryContainer[lookupView] else { continue }
-      viewControllers.append(controller)
-    }
-
-    return viewControllers
-  }
-
-  public func customInsets(for view: View) -> Insets {
-    return scrollView.customInsets(for: view)
-  }
-
-  public func setCustomInsets(_ insets: Insets, for view: View) {
-    scrollView.setCustomInsets(insets, for: view)
-  }
-
+  ///   - view: The view that should be added or inserted depending
+  ///           on if an index is provided.
+  ///   - index: An optional index for where the view should appear.
   private func addOrInsertView(_ view: UIView, at index: Int? = nil) {
     if let index = index, index < scrollView.documentView.subviews.count {
       scrollView.documentView.insertSubview(view, at: index)
     } else {
       scrollView.documentView.addSubview(view)
     }
+
+    if #available(iOS 11.0, *, tvOS 11.0, *) {
+      (view as? UIScrollView)?.contentInsetAdjustmentBehavior = .never
+    }
   }
 
+  /// Resolves which view should be used to add into the view hierarchy.
+  ///
+  /// - Parameter childController: The child view controller that is used
+  ///                              to find the view.
+  /// - Returns: A view that matches the criteria depending on the
+  ///            view controllers type.
   private func viewToAdd(from childController: UIViewController) -> View {
     let view: UIView
 
@@ -261,28 +315,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
 
     return view
-  }
-
-  public func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
-                                  completion: ((FamilyViewController) -> Void)? = nil) {
-    scrollView.isPerformingBatchUpdates = true
-    handler(self)
-    scrollView.isPerformingBatchUpdates = false
-    scrollView.layoutViews(withDuration: 0.25)
-    completion?(self)
-  }
-
-  /// Remove stray views from view hierarcy.
-  func purgeRemovedViews() {
-    for (controller, container) in registry where controller.parent == nil {
-      if container.view.superview is FamilyWrapperView {
-        container.view.superview?.removeFromSuperview()
-      }
-
-      container.view.removeFromSuperview()
-      container.observer.invalidate()
-      registry.removeValue(forKey: controller)
-    }
   }
 
   private func observe(_ childController: UIViewController) -> NSKeyValueObservation {
