@@ -85,7 +85,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
                      height: CGFloat? = nil) {
     childController.willMove(toParent: self)
     super.addChild(childController)
-    addView(childController.view, at: index, withHeight: height, customInsets: customInsets)
+    addView(childController.view, at: index, customInsets: customInsets, withHeight: height)
     childController.didMove(toParent: self)
     childController.view.translatesAutoresizingMaskIntoConstraints = true
     childController.view.autoresizingMask = [.flexibleWidth]

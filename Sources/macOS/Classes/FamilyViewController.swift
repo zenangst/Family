@@ -67,7 +67,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
                        height: CGFloat? = nil) {
     super.addChild(childController)
     childController.view.frame.size.width = view.bounds.width
-    addView(view, at: index, customInsets: insets, withHeight: height)
+    addView(childController.view, at: index, customInsets: insets, withHeight: height)
     registry[childController] = childController.view
     childController.view.frame.size.width = view.bounds.width
     scrollView.frame = view.bounds
