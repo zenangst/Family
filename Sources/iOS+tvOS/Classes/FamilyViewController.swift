@@ -6,6 +6,7 @@ import UIKit
 /// adds the controllers view or custom view to view heirarcy inside the
 /// content view of the `FamilyScrollView`.
 open class FamilyViewController: UIViewController, FamilyFriendly {
+
   var registry = [ViewController: (view: View, observer: NSKeyValueObservation)]()
 
   /// A custom implementation of a `UIScrollView` that handles continious scrolling
@@ -141,8 +142,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - insets: The insets that should be applied to the view.
   public func addView(_ subview: View,
                       at index: Int? = nil,
-                      withHeight height: CGFloat? = nil,
-                      customInsets insets: Insets? = nil) {
+                      customInsets insets: Insets? = nil,
+                      withHeight height: CGFloat? = nil) {
     if let height = height {
       subview.frame.size.width = view.bounds.size.width
       subview.frame.size.height = height
