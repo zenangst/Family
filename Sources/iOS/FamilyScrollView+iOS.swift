@@ -37,17 +37,7 @@ extension FamilyScrollView {
           newHeight = fmin(documentView.frame.height, newHeight)
         }
 
-        let shouldModifyContentOffset = contentOffset.y <= scrollView.contentSize.height ||
-          self.contentOffset.y != frame.minY
-
-        if shouldModifyContentOffset {
-          if !compare(scrollView.contentOffset, to: contentOffset) {
-            scrollView.contentOffset.y = contentOffset.y
-          }
-        } else {
-          frame.origin.y = yOffsetOfCurrentSubview
-        }
-
+        frame.origin.y = yOffsetOfCurrentSubview
         frame.origin.x = insets.left
         frame.size.width = self.frame.size.width - insets.left - insets.right
         frame.size.height = newHeight
@@ -64,49 +54,50 @@ extension FamilyScrollView {
       }
       computeContentSize()
       cache.state = .isFinished
-    } else {
-      for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
-        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-        guard let entry = cache.entry(for: view) else { continue }
-        if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
-          continue
-        }
+    }
 
-        var frame = scrollView.frame
-        var contentOffset = scrollView.contentOffset
+    for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
+      let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+      guard let entry = cache.entry(for: view) else { continue }
+      if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
+        continue
+      }
 
-        if self.contentOffset.y < entry.origin.y {
-          contentOffset.y = 0.0
-          frame.origin.y = abs(entry.origin.y)
-        } else {
-          contentOffset.y = self.contentOffset.y - entry.origin.y
-          frame.origin.y = abs(self.contentOffset.y)
-        }
+      var frame = scrollView.frame
+      var contentOffset = scrollView.contentOffset
 
-        let remainingBoundsHeight = fmax(bounds.maxY - entry.origin.y, 0.0)
-        let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
-        var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
+      if self.contentOffset.y < entry.origin.y {
+        contentOffset.y = 0.0
+        frame.origin.y = abs(entry.origin.y)
+      } else {
+        contentOffset.y = self.contentOffset.y - entry.origin.y
+        frame.origin.y = abs(self.contentOffset.y)
+      }
 
-        if scrollView is FamilyWrapperView {
-          newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
-        } else {
-          newHeight = fmin(documentView.frame.height, newHeight)
-        }
+      let remainingBoundsHeight = fmax(bounds.maxY - entry.origin.y, 0.0)
+      let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
+      var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
 
-        let shouldScroll = self.contentOffset.y >= entry.origin.y &&
-          self.contentOffset.y <= entry.maxY &&
-          scrollView.contentOffset.y == abs(contentOffset.y)
+      if scrollView is FamilyWrapperView {
+        newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
+      } else {
+        newHeight = fmin(documentView.frame.height, newHeight)
+      }
 
-        if shouldScroll || scrollView is FamilyWrapperView {
-          scrollView.contentOffset.y = abs(contentOffset.y)
-        }
+      let shouldScroll = self.contentOffset.y >= entry.origin.y &&
+        self.contentOffset.y <= entry.maxY &&
+        scrollView.contentOffset.y == abs(contentOffset.y)
 
-        frame.size.height = newHeight
+      if shouldScroll || scrollView is FamilyWrapperView {
+        scrollView.contentOffset.y = abs(contentOffset.y)
+      }
 
-        if scrollView.frame != frame {
-          scrollView.frame = frame
-        }
+      frame.size.height = newHeight
+
+      if scrollView.frame != frame {
+        scrollView.frame = frame
       }
     }
+
   }
 }
