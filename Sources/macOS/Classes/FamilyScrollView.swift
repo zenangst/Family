@@ -253,9 +253,6 @@ public class FamilyScrollView: NSScrollView {
         frame.origin.x = insets.left
         frame.size.width = max(frame.size.width, self.frame.size.width)
 
-        let shouldModifyContentOffset = contentOffset.y - contentInsets.top <= scrollView.contentSize.height + (contentInsets.top * 2) ||
-          self.contentOffset.y != frame.minY
-
         if newHeight == 0 {
           newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
           frame.origin.y = yOffsetOfCurrentSubview
