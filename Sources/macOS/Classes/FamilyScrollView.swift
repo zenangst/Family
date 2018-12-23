@@ -43,7 +43,8 @@ public class FamilyScrollView: NSScrollView {
   // MARK: - Public methods
 
   public func layoutViews(withDuration duration: CFTimeInterval? = nil,
-                          force: Bool = false) {
+                          force: Bool = false,
+                          completion: (() -> Void)? = nil) {
     guard isPerformingBatchUpdates == false else { return }
 
     guard !layoutIsRunning || !force else {
@@ -59,6 +60,7 @@ public class FamilyScrollView: NSScrollView {
       }, completionHandler: { [weak self] in
         self?.runLayoutSubviewsAlgorithm()
         self?.layoutIsRunning = false
+        completion?()
       })
       return
     } else if isScrolling {
@@ -69,6 +71,7 @@ public class FamilyScrollView: NSScrollView {
     layoutIsRunning = true
     runLayoutSubviewsAlgorithm()
     layoutIsRunning = false
+    completion?()
   }
 
   // MARK: - Observers
