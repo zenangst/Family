@@ -192,8 +192,9 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
-    scrollView.layoutViews(withDuration: 0.25)
-    completion?(self)
+    scrollView.layoutViews(withDuration: 0.25) {
+      completion?(self)
+    }
   }
 
   /// Remove stray views from view hierarchy.

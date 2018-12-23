@@ -264,7 +264,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   ///                       if the layout algorithm should be performed
   ///                       with animation. It defaults to `nil` and opts
   ///                       out from animating if the view is scroll by the user.
-  public func layoutViews(withDuration duration: CFTimeInterval? = nil) {
+  public func layoutViews(withDuration duration: CFTimeInterval? = nil,
+                          completion: (() -> Void)? = nil) {
     guard isPerformingBatchUpdates == false else { return }
 
     guard superview != nil else { return }
@@ -279,9 +280,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState]
       UIView.animate(withDuration: duration, delay: 0.0, options: options, animations: {
         self.runLayoutSubviewsAlgorithm()
-      })
+      }, completion: { _ in completion?() })
     } else {
       runLayoutSubviewsAlgorithm()
+      completion?()
     }
   }
 

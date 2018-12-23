@@ -8,7 +8,8 @@ class FamilyContentViewTests: XCTestCase {
 
 
     override func layoutViews(withDuration duration: CFTimeInterval? = nil,
-                              force: Bool = false) {
+                              force: Bool = false,
+                              completion: (() -> Void)? = nil) {
       super.layoutViews(
         withDuration: duration,
         force: force
