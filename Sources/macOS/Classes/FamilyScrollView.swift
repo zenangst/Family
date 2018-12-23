@@ -258,11 +258,7 @@ public class FamilyScrollView: NSScrollView {
 
         if newHeight == 0 {
           newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
-          if shouldModifyContentOffset && shouldResize {
-            scrollView.contentOffset.y = contentOffset.y
-          } else {
-            frame.origin.y = yOffsetOfCurrentSubview
-          }
+          frame.origin.y = yOffsetOfCurrentSubview
         } else if remainingContentHeight < contentSize.height {
           frame.origin.y = self.contentOffset.y - (contentSize.height - remainingContentHeight)
           shouldResize = false
@@ -279,8 +275,6 @@ public class FamilyScrollView: NSScrollView {
           to: scrollView
         )
 
-        scrollView.contentView.scroll(contentOffset)
-
         cache.add(entry: FamilyCacheEntry(view: scrollView.documentView!,
                                           origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),
                                           contentSize: contentSize))
@@ -288,49 +282,49 @@ public class FamilyScrollView: NSScrollView {
       }
       computeContentSize()
       cache.state = .isFinished
-    } else {
-      let currentOffset = self.contentOffset.y + contentView.contentInsets.top
-      let documentHeight = self.documentView!.frame.size.height
+    }
 
-      // Reached the top
-      guard currentOffset >= 0 else { return }
+    let currentOffset = self.contentOffset.y + contentView.contentInsets.top
+    let documentHeight = self.documentView!.frame.size.height
 
-      // Reached the end
-      guard self.documentVisibleRect.maxY <= documentHeight else { return }
+    // Reached the top
+    guard currentOffset >= 0 else { return }
 
-      for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
-        guard let entry = cache.entry(for: scrollView.documentView!) else { continue }
-        var frame = scrollView.frame
-        var contentOffset = scrollView.contentOffset
+    // Reached the end
+    guard self.documentVisibleRect.maxY <= documentHeight else { return }
 
-        if self.contentOffset.y < entry.origin.y {
-          contentOffset.y = 0
-          frame.origin.y = floor(entry.origin.y)
-        } else {
-          contentOffset.y = self.contentOffset.y - entry.origin.y
-          frame.origin.y = floor(self.contentOffset.y)
-        }
+    for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
+      guard let entry = cache.entry(for: scrollView.documentView!) else { continue }
+      var frame = scrollView.frame
+      var contentOffset = scrollView.contentOffset
 
-        let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
-        let remainingContentHeight = fmax(entry.contentSize.height - contentOffset.y, 0.0)
-        var newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
+      if self.contentOffset.y < entry.origin.y {
+        contentOffset.y = 0
+        frame.origin.y = floor(entry.origin.y)
+      } else {
+        contentOffset.y = self.contentOffset.y - entry.origin.y
+        frame.origin.y = floor(self.contentOffset.y)
+      }
 
-        if newHeight == 0 {
-          newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
-        }
+      let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
+      let remainingContentHeight = fmax(entry.contentSize.height - contentOffset.y, 0.0)
+      var newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
 
-        // Only scroll if the views content offset is less than its content size height
-        // and if the frame is less than the content size height.
-        let shouldScroll = contentOffset.y <= entry.contentSize.height &&
-          frame.size.height < entry.contentSize.height
+      if newHeight == 0 {
+        newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+      }
 
-        if shouldScroll {
-          scrollView.contentView.scroll(contentOffset)
-          scrollView.frame.origin.y = frame.origin.y
-          scrollView.frame.size.height = newHeight
-        } else {
-          scrollView.frame.origin.y = entry.origin.y
-        }
+      // Only scroll if the views content offset is less than its content size height
+      // and if the frame is less than the content size height.
+      let shouldScroll = contentOffset.y <= entry.contentSize.height &&
+        frame.size.height < entry.contentSize.height
+
+      if shouldScroll {
+        scrollView.contentView.scroll(contentOffset)
+        scrollView.frame.origin.y = frame.origin.y
+        scrollView.frame.size.height = newHeight
+      } else {
+        scrollView.frame.origin.y = entry.origin.y
       }
     }
   }

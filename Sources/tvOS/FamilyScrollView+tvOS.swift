@@ -45,16 +45,7 @@ extension FamilyScrollView {
           newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
         }
 
-        let shouldScroll = (self.contentOffset.y >= frame.origin.y &&
-          self.contentOffset.y <= scrollView.frame.maxY) &&
-          frame.height >= documentView.frame.height
-
-        if shouldScroll {
-          scrollView.contentOffset.y = contentOffset.y
-        } else {
-          frame.origin.y = yOffsetOfCurrentSubview
-        }
-
+        frame.origin.y = yOffsetOfCurrentSubview
         frame.origin.x = insets.left
         frame.size.width = self.frame.size.width - insets.left - insets.right
         frame.size.height = newHeight
@@ -71,59 +62,60 @@ extension FamilyScrollView {
       }
       computeContentSize()
       cache.state = .isFinished
-    } else {
-      for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
-        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-        guard let entry = cache.entry(for: view) else { continue }
-        if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
-          continue
-        }
+    }
 
-        var frame = scrollView.frame
-        var contentOffset = scrollView.contentOffset
+    for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
+      let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+      guard let entry = cache.entry(for: view) else { continue }
+      if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
+        continue
+      }
 
-        if self.contentOffset.y < entry.origin.y {
-          contentOffset.y = 0.0
-          frame.origin.y = floor(entry.origin.y)
-        } else {
-          contentOffset.y = self.contentOffset.y - entry.origin.y
-          frame.origin.y = floor(self.contentOffset.y)
-        }
+      var frame = scrollView.frame
+      var contentOffset = scrollView.contentOffset
 
-        let remainingBoundsHeight = bounds.maxY - entry.origin.y
-        let remainingContentHeight = entry.contentSize.height - contentOffset.y
-        var newHeight: CGFloat = fmin(documentView.frame.height, scrollView.contentSize.height)
+      if self.contentOffset.y < entry.origin.y {
+        contentOffset.y = 0.0
+        frame.origin.y = floor(entry.origin.y)
+      } else {
+        contentOffset.y = self.contentOffset.y - entry.origin.y
+        frame.origin.y = floor(self.contentOffset.y)
+      }
 
-        if remainingBoundsHeight <= -self.frame.size.height {
-          newHeight = 0
-        }
+      let remainingBoundsHeight = bounds.maxY - entry.origin.y
+      let remainingContentHeight = entry.contentSize.height - contentOffset.y
+      var newHeight: CGFloat = fmin(documentView.frame.height, scrollView.contentSize.height)
 
-        if remainingContentHeight <= -self.frame.size.height {
-          newHeight = 0
-        }
+      if remainingBoundsHeight <= -self.frame.size.height {
+        newHeight = 0
+      }
 
-        let shouldScroll = (self.contentOffset.y > frame.origin.y &&
-          self.contentOffset.y < entry.maxY) &&
-          frame.height >= documentView.frame.height
+      if remainingContentHeight <= -self.frame.size.height {
+        newHeight = 0
+      }
 
-        if shouldScroll || scrollView is FamilyWrapperView {
-          scrollView.contentOffset.y = contentOffset.y
-        } else {
-          frame.origin.y = entry.origin.y
-          // Reset content offset to avoid setting offsets that
-          // look liked `clipsToBounds` bugs.
-          if self.contentOffset.y < entry.maxY {
-            scrollView.contentOffset.y = 0
-          }
-        }
+      let shouldScroll = (self.contentOffset.y > frame.origin.y &&
+        self.contentOffset.y < entry.maxY) &&
+        frame.height >= documentView.frame.height
 
-        frame.size.height = newHeight
-
-        if compare(scrollView.frame.origin, to: frame.origin) ||
-          compare(scrollView.frame.size, to: frame.size) {
-          scrollView.frame = frame
+      if shouldScroll || scrollView is FamilyWrapperView {
+        scrollView.contentOffset.y = contentOffset.y
+      } else {
+        frame.origin.y = entry.origin.y
+        // Reset content offset to avoid setting offsets that
+        // look liked `clipsToBounds` bugs.
+        if self.contentOffset.y < entry.maxY {
+          scrollView.contentOffset.y = 0
         }
       }
+
+      frame.size.height = newHeight
+
+      if compare(scrollView.frame.origin, to: frame.origin) ||
+        compare(scrollView.frame.size, to: frame.size) {
+        scrollView.frame = frame
+      }
     }
+
   }
 }
