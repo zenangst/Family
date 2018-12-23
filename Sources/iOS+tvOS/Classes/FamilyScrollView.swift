@@ -285,8 +285,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       runLayoutSubviewsAlgorithm()
       completion?()
     }
-
-
   }
 
   internal func compare(_ lhs: CGSize, to rhs: CGSize) -> Bool {
