@@ -243,10 +243,10 @@ public class FamilyScrollView: NSScrollView {
 
         if self.contentOffset.y < yOffsetOfCurrentSubview {
           contentOffset.y = 0
-          frame.origin.y = floor(yOffsetOfCurrentSubview)
+          frame.origin.y = round(yOffsetOfCurrentSubview)
         } else {
           contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
-          frame.origin.y = floor(self.contentOffset.y)
+          frame.origin.y = round(self.contentOffset.y)
         }
 
         let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
@@ -300,10 +300,10 @@ public class FamilyScrollView: NSScrollView {
 
       if self.contentOffset.y < entry.origin.y {
         contentOffset.y = 0
-        frame.origin.y = floor(entry.origin.y)
+        frame.origin.y = round(entry.origin.y)
       } else {
         contentOffset.y = self.contentOffset.y - entry.origin.y
-        frame.origin.y = floor(self.contentOffset.y)
+        frame.origin.y = round(self.contentOffset.y)
       }
 
       let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
