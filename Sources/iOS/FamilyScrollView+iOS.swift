@@ -21,10 +21,10 @@ extension FamilyScrollView {
 
         if self.contentOffset.y < yOffsetOfCurrentSubview {
           contentOffset.y = insets.top
-          frame.origin.y = floor(yOffsetOfCurrentSubview)
+          frame.origin.y = round(yOffsetOfCurrentSubview)
         } else {
           contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
-          frame.origin.y = floor(self.contentOffset.y)
+          frame.origin.y = round(self.contentOffset.y)
         }
 
         let remainingBoundsHeight = fmax(bounds.maxY - yOffsetOfCurrentSubview, 0.0)
@@ -68,10 +68,10 @@ extension FamilyScrollView {
 
       if self.contentOffset.y < entry.origin.y {
         contentOffset.y = 0.0
-        frame.origin.y = abs(entry.origin.y)
+        frame.origin.y = abs(round(entry.origin.y))
       } else {
         contentOffset.y = self.contentOffset.y - entry.origin.y
-        frame.origin.y = abs(self.contentOffset.y)
+        frame.origin.y = abs(round(self.contentOffset.y))
       }
 
       let remainingBoundsHeight = fmax(bounds.maxY - entry.origin.y, 0.0)
