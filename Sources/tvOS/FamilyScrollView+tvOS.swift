@@ -98,7 +98,13 @@ extension FamilyScrollView {
         self.contentOffset.y < entry.maxY) &&
         frame.height >= documentView.frame.height
 
-      if shouldScroll || scrollView is FamilyWrapperView {
+      if scrollView is FamilyWrapperView {
+        if self.contentOffset.y < entry.origin.y {
+          scrollView.contentOffset.y = contentOffset.y
+        } else {
+          frame.origin.y = entry.origin.y
+        }
+      } else if shouldScroll {
         scrollView.contentOffset.y = contentOffset.y
       } else {
         frame.origin.y = entry.origin.y
