@@ -9,6 +9,13 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       cache.invalidate()
     }
   }
+
+  /// The current viewport
+  public var documentVisibleRect: CGRect {
+    return CGRect(origin: contentOffset,
+                  size: frame.size)
+  }
+
   /// A collection of scroll views that is used to order the views on screen.
   /// This collection is used by the layout algorithm that render the views and
   /// the order that they should appear.
