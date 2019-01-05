@@ -236,6 +236,25 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
+  /// Check if a view controller is visible on screen.
+  ///
+  /// - Parameter viewController: The target view controller
+  /// - Returns: True if the view controller is visible on screen
+  public func viewControllerIsVisible(_ viewController: UIViewController) -> Bool {
+    return registry[viewController]?.view.frame.intersects(documentVisibleRect) ?? false
+  }
+
+  /// Check if a view controller is fully visible on screen.
+  ///
+  /// - Parameter viewController: The target view controller
+  /// - Returns: True if the view controller is fully visible on screen
+  public func viewControllerIsFullyVisible(_ viewController: UIViewController) -> Bool {
+    guard let item = registry[viewController] else { return false }
+    let convertedFrame = scrollView.documentView.convert(item.view.frame,
+                                                         to: scrollView.documentView)
+    return documentVisibleRect.contains(convertedFrame)
+  }
+
   // MARK: - Private methods
 
   /// Configure constraints for the scroll view.
