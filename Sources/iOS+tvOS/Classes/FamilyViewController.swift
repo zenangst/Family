@@ -223,19 +223,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
-  /// Remove stray views from view hierarchy.
-  func purgeRemovedViews() {
-    for (controller, container) in registry where controller.parent == nil {
-      if container.view.superview is FamilyWrapperView {
-        container.view.superview?.removeFromSuperview()
-      }
-
-      container.view.removeFromSuperview()
-      container.observer.invalidate()
-      registry.removeValue(forKey: controller)
-    }
-  }
-
   /// Check if a view controller is visible on screen.
   ///
   /// - Parameter viewController: The target view controller
@@ -253,6 +240,29 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     let convertedFrame = scrollView.documentView.convert(item.view.frame,
                                                          to: scrollView.documentView)
     return documentVisibleRect.contains(convertedFrame)
+  }
+
+  /// Extract attributes for a view controller.
+  ///
+  /// - Parameter viewController: The target view controller.
+  /// - Returns: An optional `FamilyViewControllerAttributes` for the target view controller.
+  public func attributesForViewController(_ viewController: UIViewController) -> FamilyViewControllerAttributes? {
+    guard let entry = registry[viewController],
+      let attributes = scrollView.cache.entry(for: entry.view) else { return nil }
+    return attributes
+  }
+
+  /// Remove stray views from view hierarchy.
+  func purgeRemovedViews() {
+    for (controller, container) in registry where controller.parent == nil {
+      if container.view.superview is FamilyWrapperView {
+        container.view.superview?.removeFromSuperview()
+      }
+
+      container.view.removeFromSuperview()
+      container.observer.invalidate()
+      registry.removeValue(forKey: controller)
+    }
   }
 
   // MARK: - Private methods

@@ -6,6 +6,10 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   public lazy var scrollView: FamilyScrollView = .init()
   /// The scroll view constraints.
   public var constraints = [NSLayoutConstraint]()
+
+  //  The current viewport of the scroll view
+  public var documentVisibleRect: CGRect { return scrollView.documentVisibleRect }
+
   private(set) public var registry = [ViewController: View]()
   var observer: NSKeyValueObservation?
   var eventHandlerKeyDown: Any?
@@ -195,6 +199,35 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.layoutViews(withDuration: 0.25) {
       completion?(self)
     }
+  }
+
+  /// Check if a view controller is visible on screen.
+  ///
+  /// - Parameter viewController: The target view controller
+  /// - Returns: True if the view controller is visible on screen
+  public func viewControllerIsVisible(_ viewController: NSViewController) -> Bool {
+    return registry[viewController]?.frame.intersects(documentVisibleRect) ?? false
+  }
+
+  /// Check if a view controller is fully visible on screen.
+  ///
+  /// - Parameter viewController: The target view controller
+  /// - Returns: True if the view controller is fully visible on screen
+  public func viewControllerIsFullyVisible(_ viewController: NSViewController) -> Bool {
+    guard let view = registry[viewController] else { return false }
+    let convertedFrame = scrollView.familyDocumentView.convert(view.frame,
+                                                         to: scrollView.documentView)
+    return documentVisibleRect.contains(convertedFrame)
+  }
+
+  /// Extract attributes for a view controller.
+  ///
+  /// - Parameter viewController: The target view controller.
+  /// - Returns: An optional `FamilyViewControllerAttributes` for the target view controller.
+  public func attributesForViewController(_ viewController: NSViewController) -> FamilyViewControllerAttributes? {
+    guard let view = registry[viewController],
+      let attributes = scrollView.cache.entry(for: view) else { return nil }
+    return attributes
   }
 
   /// Remove stray views from view hierarchy.

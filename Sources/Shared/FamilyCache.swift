@@ -7,14 +7,14 @@ class FamilyCache: NSObject {
 
   var state: State = .empty
   var contentSize: CGSize = .zero
-  var storage = [View: FamilyCacheEntry]()
+  var storage = [View: FamilyViewControllerAttributes]()
   override init() {}
 
-  func add(entry: FamilyCacheEntry) {
+  func add(entry: FamilyViewControllerAttributes) {
     storage[entry.view] = entry
   }
 
-  func entry(for view: View) -> FamilyCacheEntry? {
+  func entry(for view: View) -> FamilyViewControllerAttributes? {
     return storage[view]
   }
 

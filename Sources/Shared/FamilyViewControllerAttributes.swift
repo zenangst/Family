@@ -1,6 +1,6 @@
 import CoreGraphics
 
-class FamilyCacheEntry: NSObject {
+public class FamilyViewControllerAttributes: NSObject {
   let view: View
   let origin: CGPoint
   let contentSize: CGSize
