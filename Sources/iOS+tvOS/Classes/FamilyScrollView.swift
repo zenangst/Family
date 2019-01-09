@@ -216,7 +216,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
   /// Computes the content size for the collection view based on
   /// combined content size of all the underlaying scroll views.
-  internal func computeContentSize() {
+  internal func computeContentSize() -> CGSize {
     let computedHeight = subviewsInLayoutOrder
       .filter({ $0.isHidden == false || ($0 as? FamilyWrapperView)?.view.isHidden == false })
       .reduce(CGFloat(0), { value, view in
@@ -226,7 +226,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
     let height = fmax(computedHeight, minimumContentHeight)
 
-    contentSize = CGSize(width: bounds.size.width, height: height)
+    return CGSize(width: bounds.size.width, height: height)
   }
 
   /// This method will call the layout algorithm without duration

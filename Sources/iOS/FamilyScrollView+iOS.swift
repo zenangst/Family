@@ -52,8 +52,9 @@ extension FamilyScrollView {
                                                         contentSize: scrollView.contentSize))
         yOffsetOfCurrentSubview += scrollView.contentSize.height + insets.bottom
       }
-      computeContentSize()
+      cache.contentSize = computeContentSize()
       cache.state = .isFinished
+      contentSize = cache.contentSize
     }
 
     for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
