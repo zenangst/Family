@@ -280,7 +280,8 @@ public class FamilyScrollView: NSScrollView {
                                                         contentSize: contentSize))
         yOffsetOfCurrentSubview += contentSize.height + insets.bottom
       }
-      computeContentSize()
+      cache.contentSize = computeContentSize()
+      documentView?.frame.size = cache.contentSize
       cache.state = .isFinished
     }
 
@@ -363,7 +364,7 @@ public class FamilyScrollView: NSScrollView {
     }
   }
 
-  private func computeContentSize() {
+  private func computeContentSize() -> CGSize {
     let computedHeight: CGFloat = subviewsInLayoutOrder
       .filter({ validateScrollView($0) })
       .reduce(CGFloat(0), { value, view in
@@ -377,7 +378,6 @@ public class FamilyScrollView: NSScrollView {
       height -= contentInsets.top
     }
 
-    cache.contentSize = documentView!.frame.size
-    documentView?.frame.size = CGSize(width: bounds.size.width, height: height)
+    return CGSize(width: bounds.size.width, height: height)
   }
 }

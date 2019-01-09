@@ -52,8 +52,9 @@ extension FamilyScrollView {
                                                         contentSize: scrollView.contentSize))
         yOffsetOfCurrentSubview += scrollView.contentSize.height + insets.bottom
       }
-      computeContentSize()
+      cache.contentSize = computeContentSize()
       cache.state = .isFinished
+      contentSize = cache.contentSize
     }
 
     for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
@@ -85,11 +86,23 @@ extension FamilyScrollView {
       }
 
       let shouldScroll = self.contentOffset.y >= entry.origin.y &&
-        self.contentOffset.y <= entry.maxY &&
-        scrollView.contentOffset.y == abs(contentOffset.y)
+        self.contentOffset.y <= entry.maxY
 
-      if shouldScroll || scrollView is FamilyWrapperView {
-        scrollView.contentOffset.y = abs(contentOffset.y)
+      if scrollView is FamilyWrapperView {
+        if self.contentOffset.y < entry.origin.y {
+          scrollView.contentOffset.y = contentOffset.y
+        } else {
+          frame.origin.y = entry.origin.y
+        }
+      } else if shouldScroll {
+        scrollView.contentOffset.y = contentOffset.y
+      } else {
+        frame.origin.y = entry.origin.y
+        // Reset content offset to avoid setting offsets that
+        // look liked `clipsToBounds` bugs.
+        if self.contentOffset.y < entry.maxY {
+          scrollView.contentOffset.y = 0
+        }
       }
 
       frame.size.height = newHeight
@@ -98,6 +111,5 @@ extension FamilyScrollView {
         scrollView.frame = frame
       }
     }
-
   }
 }
