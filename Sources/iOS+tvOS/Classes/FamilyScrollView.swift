@@ -194,8 +194,12 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
 
       if self?.compare(newValue, to: oldValue) == false {
+        let contentOffset = strongSelf.contentOffset
         strongSelf.cache.invalidate()
         strongSelf.layoutViews()
+        if !strongSelf.isScrolling {
+          strongSelf.setContentOffset(contentOffset, animated: false)
+        }
       }
     })
 
