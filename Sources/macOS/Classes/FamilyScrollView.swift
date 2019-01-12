@@ -11,6 +11,7 @@ public class FamilyScrollView: NSScrollView {
     }
   }
   var layoutIsRunning: Bool = false
+  var isScrollingWithWheel: Bool = false
   var isScrolling: Bool = false
   var isScrollingByProxy: Bool = false
   internal var isPerformingBatchUpdates: Bool = false
@@ -121,12 +122,13 @@ public class FamilyScrollView: NSScrollView {
   }
 
   @objc func didLiveScroll() { isScrolling = true }
-  @objc func didEndLiveScroll() { isScrolling = false }
+  @objc func didEndLiveScroll() { isScrolling = false; isScrollingWithWheel = false }
 
   @objc func contentViewBoundsDidChange(_ notification: NSNotification) {
     if (notification.object as? NSClipView) === contentView,
       let window = window,
-      !window.inLiveResize {
+      !window.inLiveResize,
+      !isScrollingWithWheel {
       layoutViews(withDuration: 0.0)
     }
   }
@@ -204,6 +206,7 @@ public class FamilyScrollView: NSScrollView {
 
     isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
       !(event.phase == .ended || event.momentumPhase == .ended)
+    isScrollingWithWheel = isScrolling
 
     layoutViews(withDuration: 0.0)
   }
@@ -324,7 +327,7 @@ public class FamilyScrollView: NSScrollView {
         scrollView.contentView.scroll(contentOffset)
         scrollView.frame.origin.y = frame.origin.y
         scrollView.frame.size.height = newHeight
-      } else {
+      } else if scrollView.frame.origin.y != entry.origin.y {
         scrollView.frame.origin.y = entry.origin.y
       }
     }
