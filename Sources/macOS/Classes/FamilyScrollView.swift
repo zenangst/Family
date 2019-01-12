@@ -199,15 +199,6 @@ public class FamilyScrollView: NSScrollView {
     cache.invalidate()
   }
 
-  public override func scrollWheel(with event: NSEvent) {
-    super.scrollWheel(with: event)
-
-    isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
-      !(event.phase == .ended || event.momentumPhase == .ended)
-
-    layoutViews(withDuration: 0.0)
-  }
-
   func wrapperViewDidChangeFrame(from fromValue: CGRect, to toValue: CGRect) {
     cache.invalidate()
     layoutViews(withDuration: 0.0, force: false)
@@ -324,7 +315,7 @@ public class FamilyScrollView: NSScrollView {
         scrollView.contentView.scroll(contentOffset)
         scrollView.frame.origin.y = frame.origin.y
         scrollView.frame.size.height = newHeight
-      } else {
+      } else if scrollView.frame.origin.y != entry.origin.y {
         scrollView.frame.origin.y = entry.origin.y
       }
     }
