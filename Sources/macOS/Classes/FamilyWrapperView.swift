@@ -18,7 +18,6 @@ class FamilyWrapperView: NSScrollView {
     self.view = wrappedView
     super.init(frame: frameRect)
     self.contentView = clipView
-    self.contentView.translatesAutoresizingMaskIntoConstraints = false
     self.documentView = wrappedView
     self.hasHorizontalScroller = true
     self.hasVerticalScroller = false

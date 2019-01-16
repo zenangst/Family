@@ -237,8 +237,7 @@ public class FamilyScrollView: NSScrollView {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
       for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-        var shouldResize: Bool = true
-        let contentSize: CGSize = contentSizeForView(view, shouldResize: &shouldResize)
+        let contentSize: CGSize = contentSizeForView(view)
         let insets = spaceManager.customInsets(for: view)
         yOffsetOfCurrentSubview += insets.top
         var frame = scrollView.frame
@@ -256,27 +255,18 @@ public class FamilyScrollView: NSScrollView {
         let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
         var newHeight: CGFloat = fmin(remainingBoundsHeight, remainingContentHeight)
 
-        frame.origin.x = insets.left
-        frame.size.width = max(frame.size.width, self.frame.size.width)
-
         if newHeight == 0 {
           newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
-          frame.origin.y = yOffsetOfCurrentSubview
-        } else if remainingContentHeight < contentSize.height {
-          frame.origin.y = self.contentOffset.y - (contentSize.height - remainingContentHeight)
-          shouldResize = false
         }
 
-        frame.size.height = round(newHeight)
+        frame.origin.x = insets.left
+        frame.size.height = newHeight
         frame.size.width = round(self.frame.size.width) - insets.left - insets.right
 
-        setFrame(
-          frame,
-          contentSize: contentSize,
-          shouldResize: shouldResize,
-          currentYOffset: yOffsetOfCurrentSubview,
-          to: scrollView
-        )
+        scrollView.documentView?.frame.size.width = frame.width
+        scrollView.documentView?.frame.size.height = contentSize.height
+        scrollView.frame.origin.x = frame.origin.x
+        scrollView.frame.size = frame.size
 
         cache.add(entry: FamilyViewControllerAttributes(view: scrollView.documentView!,
                                                         origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),
@@ -333,12 +323,11 @@ public class FamilyScrollView: NSScrollView {
     }
   }
 
-  private func contentSizeForView(_ view: NSView, shouldResize: inout Bool) -> CGSize {
+  private func contentSizeForView(_ view: NSView) -> CGSize {
     var contentSize: CGSize = .zero
     switch view {
     case let collectionView as NSCollectionView:
       if let flowLayout = collectionView.collectionViewLayout as? NSCollectionViewFlowLayout {
-        shouldResize = flowLayout.scrollDirection == .vertical
         contentSize = flowLayout.collectionViewContentSize
       }
     default:
@@ -346,25 +335,6 @@ public class FamilyScrollView: NSScrollView {
     }
 
     return contentSize
-  }
-
-  private func setFrame(_ frame: NSRect,
-                        contentSize: CGSize,
-                        shouldResize: Bool,
-                        currentYOffset: CGFloat,
-                        to wrapperView: NSScrollView) {
-
-    if shouldResize {
-      wrapperView.documentView?.frame.size.width = frame.width
-      wrapperView.documentView?.frame.size.height = contentSize.height
-      wrapperView.frame = frame
-    } else {
-      wrapperView.documentView?.frame.size.width = max(contentSize.width, frame.width)
-      wrapperView.documentView?.frame.size.height = contentSize.height
-      wrapperView.frame.size.height = contentSize.height
-      wrapperView.frame.size.width = frame.width
-      wrapperView.frame.origin.y = currentYOffset
-    }
   }
 
   private func computeContentSize() -> CGSize {
