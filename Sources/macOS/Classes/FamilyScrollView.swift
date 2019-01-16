@@ -263,7 +263,10 @@ public class FamilyScrollView: NSScrollView {
         frame.size.height = newHeight
         frame.size.width = round(self.frame.size.width) - insets.left - insets.right
 
-        setFrame(frame, contentSize: contentSize, to: scrollView)
+        scrollView.documentView?.frame.size.width = frame.width
+        scrollView.documentView?.frame.size.height = contentSize.height
+        scrollView.frame.origin.x = frame.origin.x
+        scrollView.frame.size = frame.size
 
         cache.add(entry: FamilyViewControllerAttributes(view: scrollView.documentView!,
                                                         origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),
@@ -332,14 +335,6 @@ public class FamilyScrollView: NSScrollView {
     }
 
     return contentSize
-  }
-
-  private func setFrame(_ frame: NSRect, contentSize: CGSize,
-                        to wrapperView: NSScrollView) {
-    wrapperView.documentView?.frame.size.width = max(contentSize.width, frame.width)
-    wrapperView.documentView?.frame.size.height = contentSize.height
-    wrapperView.frame.size.height = contentSize.height
-    wrapperView.frame.size.width = frame.width
   }
 
   private func computeContentSize() -> CGSize {
