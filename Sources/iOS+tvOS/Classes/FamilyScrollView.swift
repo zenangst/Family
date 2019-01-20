@@ -223,6 +223,18 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
     })
     observers.append(Observer(view: view, keyValueObservation: hiddenObserver))
+
+    let contentOffsetObserver = view.observe(\.contentOffset, options: [.new], changeHandler: { [weak self] (scrollView, value) in
+      guard let strongSelf = self, let newValue = value.newValue else {
+        return
+      }
+
+      if strongSelf.scrollViewIsHorizontal(scrollView), newValue.y != 0 {
+        scrollView.contentOffset.y = 0
+        strongSelf.layoutSubviews()
+      }
+    })
+    observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
   }
 
   /// Computes the content size for the collection view based on
