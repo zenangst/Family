@@ -166,9 +166,17 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
     #else
     for scrollView in subviewsInLayoutOrder {
-      scrollView.isScrollEnabled = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
+      scrollView.isScrollEnabled = scrollViewIsHorizontal(scrollView)
     }
     #endif
+  }
+
+  /// Check if the scroll view is of horizontal nature.
+  ///
+  /// - Parameter scrollView: The target scroll view.
+  /// - Returns: `true` if the scroll view as scroll direction set to horizontal.
+  private func scrollViewIsHorizontal(_ scrollView: UIScrollView) -> Bool {
+    return ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
   }
 
   /// Sets up observers for the view that gets added into the view heirarcy.
