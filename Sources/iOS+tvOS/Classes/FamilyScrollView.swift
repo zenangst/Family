@@ -166,9 +166,17 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
     #else
     for scrollView in subviewsInLayoutOrder {
-      scrollView.isScrollEnabled = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
+      scrollView.isScrollEnabled = scrollViewIsHorizontal(scrollView)
     }
     #endif
+  }
+
+  /// Check if the scroll view is of horizontal nature.
+  ///
+  /// - Parameter scrollView: The target scroll view.
+  /// - Returns: `true` if the scroll view as scroll direction set to horizontal.
+  private func scrollViewIsHorizontal(_ scrollView: UIScrollView) -> Bool {
+    return ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
   }
 
   /// Sets up observers for the view that gets added into the view heirarcy.
@@ -202,7 +210,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
       }
     })
-
     observers.append(Observer(view: view, keyValueObservation: contentSizeObserver))
 
     let hiddenObserver = view.observe(\.isHidden, options: [.new, .old], changeHandler: { [weak self] (_, value) in
@@ -216,6 +223,18 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
     })
     observers.append(Observer(view: view, keyValueObservation: hiddenObserver))
+
+    let contentOffsetObserver = view.observe(\.contentOffset, options: [.new], changeHandler: { [weak self] (scrollView, value) in
+      guard let strongSelf = self, let newValue = value.newValue else {
+        return
+      }
+
+      if strongSelf.scrollViewIsHorizontal(scrollView), newValue.y != 0 {
+        scrollView.contentOffset.y = 0
+        strongSelf.layoutSubviews()
+      }
+    })
+    observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
   }
 
   /// Computes the content size for the collection view based on
