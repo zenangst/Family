@@ -210,7 +210,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
       }
     })
-
     observers.append(Observer(view: view, keyValueObservation: contentSizeObserver))
 
     let hiddenObserver = view.observe(\.isHidden, options: [.new, .old], changeHandler: { [weak self] (_, value) in
