@@ -56,7 +56,7 @@ public class FamilyScrollView: NSScrollView {
       layoutIsRunning = true
       NSAnimationContext.runAnimationGroup({ (context) in
         context.duration = duration
-        context.allowsImplicitAnimation = false
+        context.allowsImplicitAnimation = true
         runLayoutSubviewsAlgorithm()
       }, completionHandler: { [weak self] in
         self?.runLayoutSubviewsAlgorithm()
