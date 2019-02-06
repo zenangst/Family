@@ -16,14 +16,11 @@
 <img src="https://github.com/zenangst/Family/blob/master/Images/Family-icon.png?raw=true" alt="Family Icon" align="right" />
 
 Family is a child view controller framework that makes setting up your parent controllers as easy as pie.
-With a simple yet powerful public API, you can build complex layout without losing maintainability. Leaving you to focus on what matters, making your applications pop and your business logic shine.
+With a simple yet powerful public API, you can build complex layouts without losing maintainability, leaving you to focus on what matters: making your applications pop and your business logic shine.
 
-This framework was built to make it easier to build and maintain parent controllers, or made famous by other in the industry as flow controllers. Using child view controllers can make your code more modular, flexible and testable. There are just some shortcoming with the vanilla approach when dealing with child view controllers.
+This framework was built to make it easier to build and maintain parent controllers, also known as flow controllers. Using child view controllers can make your code more modular, flexible and testable. It addresses one of the biggest shortcomings of the vanilla approach: how do you get a continuous scrolling experience while keeping dequeuing intact?
 
-How do you get a continuous scrolling experience while keeping dequeuing intact?
-
-This is where Family framework comes in, with the help of its layout algorithm, all your regular- and scroll views get stacked in the same linear vertical order you add them to the hierarchy. To achieve a continuous, your scroll-views no longer scroll themselves but get their new content offset passed to them by the parent scroll view that is handled for you internally in the framework.
-The algorithm also modifies the views frames on the fly, constraining the height to the window.
+This is where Family framework comes in. With the help of its layout algorithm, all your regular- and scroll views get stacked in the same linear vertical order you add them to the hierarchy. To achieve a continuous scrolling view, your child scroll views no longer scroll themselves, but get their new content offset passed to them by the parent scroll view, which the framework handles for you. The framework also modifies the views' frames on the fly, constraining the height to the window.
 
 ## The story behind Family
 If you are interested in the origin story behind Family, then you can read this [Medium article](https://medium.com/hyperoslo/why-i-wrote-family-framework-d1c3cb062c85).
@@ -41,7 +38,7 @@ If you are interested in the origin story behind Family, then you can read this 
 
 ## Usage
 
-Adding a regular child view controller.
+Add a regular child view controller:
 
 ```swift
 let familyController = FamilyViewController()
@@ -50,7 +47,7 @@ let viewController = UIViewController()
 familyController.addChild(viewController)
 ```
 
-Adding a child view controller constrained in height.
+Add a child view controller constrained by height:
 
 ```swift
 let familyController = FamilyViewController()
@@ -59,7 +56,7 @@ let viewController = UIViewController()
 familyController.addChild(viewController, height: 175)
 ```
 
-Adding a child view controller with a custom view on the controller.
+Add a child view controller with a custom view on the controller:
 
 ```swift
 let familyController = FamilyViewController()
@@ -70,13 +67,13 @@ let customController = CustomViewController()
 familyController.addChild(customController, view: { $0.scrollView })
 ```
 
-Moving a view controller
+Move a view controller:
 
 ```swift
 familyController.moveChild(customController, to: 1)
 ```
 
-Perform batch updates
+Perform batch updates:
 
 ```swift
 familyController.performBatchUpdates({ controller in
@@ -97,12 +94,24 @@ it, simply add the following line to your Podfile:
 pod 'Family'
 ```
 
+and then run
+```sh
+pod install
+```
+
 **Family** is also available through [Carthage](https://github.com/Carthage/Carthage).
 To install just write into your Cartfile:
 
 ```ruby
 github "zenangst/Family"
 ```
+
+and then run
+```sh
+carthage install
+```
+
+When it's finished, install the built framework (which can be found in the `Carthage/Build` folder) into your Xcode project.
 
 **Family** can also be installed manually. Just download and drop `Sources` folders in your project.
 
