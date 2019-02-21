@@ -18,6 +18,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   //  The current viewport of the scroll view
   public var documentVisibleRect: CGRect { return scrollView.documentVisibleRect }
 
+  public var isChild: Bool = false {
+    didSet { scrollView.isChild = isChild }
+  }
+
   public var safeAreaLayoutConstraints: Bool = true {
     didSet { configureConstraints() }
   }
@@ -59,12 +63,24 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
+  open override func viewWillLayoutSubviews() {
+    super.viewWillLayoutSubviews()
+
+    if isChild {
+      view.frame.size.height = scrollView.contentSize.height
+    }
+    Swift.print(view.frame)
+  }
+
   // MARK: - Public methods
 
   /// Adds the specified view controller as a child of the current view controller.
   ///
   /// - Parameter childController: The view controller to be added as a child.
   open override func addChild(_ childController: UIViewController) {
+    if childController.parent != nil {
+      childController.removeFromParent()
+    }
     purgeRemovedViews()
     childController.willMove(toParent: self)
     super.addChild(childController)
@@ -91,6 +107,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
                                             customInsets insets: Insets? = nil,
                                             height: CGFloat? = nil,
                                             view handler: ((T) -> UIView)? = nil) {
+    if childController.parent != nil {
+      childController.removeFromParent()
+    }
+    purgeRemovedViews()
     childController.willMove(toParent: self)
     super.addChild(childController)
 
@@ -253,7 +273,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   }
 
   /// Remove stray views from view hierarchy.
-  func purgeRemovedViews() {
+  public func purgeRemovedViews() {
     for (controller, container) in registry where controller.parent == nil {
       if container.view.superview is FamilyWrapperView {
         container.view.superview?.removeFromSuperview()

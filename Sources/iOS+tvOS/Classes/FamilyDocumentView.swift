@@ -32,6 +32,7 @@ public class FamilyDocumentView: UIView {
     guard let scrollView = subview as? UIScrollView else { return }
 
     delegate?.familyDocumentView(self, didAddScrollView: scrollView)
+    purgeViews()
   }
 
   public override func insertSubview(_ view: UIView, at index: Int) {
@@ -39,6 +40,7 @@ public class FamilyDocumentView: UIView {
     super.insertSubview(subview, at: index)
     guard let scrollView = subview as? UIScrollView else { return }
     delegate?.familyDocumentView(self, didAddScrollView: scrollView)
+    purgeViews()
   }
 
   private func wrapViewIfNeeded(_ view: UIView) -> UIView {
@@ -55,6 +57,14 @@ public class FamilyDocumentView: UIView {
     }
 
     return subview
+  }
+
+  private func purgeViews() {
+    for case let wrapperView as FamilyWrapperView in subviews {
+      if wrapperView.view.superview != wrapperView {
+        wrapperView.removeFromSuperview()
+      }
+    }
   }
 
   /// Tells the view that a subview is about to be removed.
