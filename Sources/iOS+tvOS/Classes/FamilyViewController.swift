@@ -17,13 +17,22 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
   //  The current viewport of the scroll view
   public var documentVisibleRect: CGRect { return scrollView.documentVisibleRect }
-
-  public var isChild: Bool = false {
-    didSet { scrollView.isChild = isChild }
-  }
-
+  public var isChildViewController: Bool = false
   public var safeAreaLayoutConstraints: Bool = true {
     didSet { configureConstraints() }
+  }
+
+  public convenience init(isChildViewController: Bool) {
+    self.init(nibName: nil, bundle: nil)
+    self.isChildViewController = isChildViewController
+  }
+
+  public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    super.init(nibName: nil, bundle: nil)
+  }
+
+  required public init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
   }
 
   deinit {
@@ -42,11 +51,15 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     super.viewDidLoad()
 
     view.addSubview(scrollView)
-    scrollView.frame = view.bounds
     scrollView.alwaysBounceVertical = true
     scrollView.clipsToBounds = true
-
-    configureConstraints()
+    scrollView.isScrollEnabled = false
+    scrollView.isChildViewController = isChildViewController
+    if !isChildViewController {
+      configureConstraints()
+    } else {
+      scrollView.frame = view.bounds
+    }
   }
 
   /// Notifies the view controller that its view is about to be added to a view hierarchy.
@@ -66,10 +79,15 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   open override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
 
-    if isChild {
+    if isChildViewController {
+      scrollView.frame = view.bounds
       view.frame.size.height = scrollView.contentSize.height
     }
-    Swift.print(view.frame)
+  }
+
+  open override func willMove(toParent parent: UIViewController?) {
+    super.willMove(toParent: parent)
+    isChildViewController = !(parent is UITabBarController) && !(parent is UINavigationController)
   }
 
   // MARK: - Public methods
@@ -168,7 +186,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
 
     addOrInsertView(subview, at: index)
-    scrollView.frame = view.bounds
 
     if let insets = insets {
       setCustomInsets(insets, for: subview)
