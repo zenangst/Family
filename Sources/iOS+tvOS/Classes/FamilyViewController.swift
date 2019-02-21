@@ -53,11 +53,11 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     view.addSubview(scrollView)
     scrollView.alwaysBounceVertical = true
     scrollView.clipsToBounds = true
-    scrollView.isScrollEnabled = false
     scrollView.isChildViewController = isChildViewController
     if !isChildViewController {
       configureConstraints()
     } else {
+      scrollView.isScrollEnabled = false
       scrollView.frame = view.bounds
     }
   }
