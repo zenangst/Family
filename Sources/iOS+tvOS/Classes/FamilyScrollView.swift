@@ -10,7 +10,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
-  internal var isChild: Bool = false
+  internal var isChildViewController: Bool = false
 
   /// The current viewport
   public var documentVisibleRect: CGRect {
@@ -251,10 +251,9 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
     var height = fmax(computedHeight, minimumContentHeight)
 
-    if isChild {
+    if isChildViewController {
       height = computedHeight
       superview?.frame.size.height = computedHeight
-      Swift.print("The computed height is: \(computedHeight)")
     }
 
     return CGSize(width: bounds.size.width, height: height)
