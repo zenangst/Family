@@ -262,6 +262,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		BD93C37E22200640003100D1 /* iOS+tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				BD5A80462030AC7D006A5EBB /* FamilyViewControllerTests.swift */,
+			);
+			path = "iOS+tvOS";
+			sourceTree = "<group>";
+		};
 		BDAC588021BA611100412766 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -311,7 +319,6 @@
 			isa = PBXGroup;
 			children = (
 				D284B1361F7906DA00D94AF3 /* FamilyContentViewTests.swift */,
-				BD5A80462030AC7D006A5EBB /* FamilyViewControllerTests.swift */,
 				BD5A804B2030AC9F006A5EBB /* FamilyWrapperViewTests.swift */,
 				BD5A804E2030ACBA006A5EBB /* FamilyScrollViewTests.swift */,
 			);
@@ -371,6 +378,7 @@
 		D5C6298F1C3A8BDA007F7B7C /* FamilyTests */ = {
 			isa = PBXGroup;
 			children = (
+				BD93C37E22200640003100D1 /* iOS+tvOS */,
 				D284B12F1F7906DA00D94AF3 /* Info-iOS-Tests.plist */,
 				D284B1331F7906DA00D94AF3 /* Info-macOS-Tests.plist */,
 				D284B1301F7906DA00D94AF3 /* Info-tvOS-Tests.plist */,

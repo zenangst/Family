@@ -17,7 +17,12 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
   //  The current viewport of the scroll view
   public var documentVisibleRect: CGRect { return scrollView.documentVisibleRect }
-  public var isChildViewController: Bool = false
+  public var isChildViewController: Bool = false {
+    didSet {
+      scrollView.isChildViewController = isChildViewController
+      scrollView.isScrollEnabled = !isChildViewController
+    }
+  }
   public var safeAreaLayoutConstraints: Bool = true {
     didSet { configureConstraints() }
   }
