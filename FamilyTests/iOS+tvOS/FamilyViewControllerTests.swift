@@ -152,12 +152,17 @@ class FamilyViewControllerTests: XCTestCase {
 
   func testViewControllerIsVisibleMethods() {
     let familyViewController = FamilyViewController()
+    familyViewController.view.frame.size = CGSize(width: 375, height: 667)
     familyViewController.prepareViewController()
 
     let controller1 = UIViewController()
     let controller2 = UIViewController()
     let controller3 = UIViewController()
     let controller4 = UIViewController()
+
+    [controller1, controller2, controller3].forEach {
+      $0.view.frame.size = CGSize(width: 375, height: 667)
+    }
 
     familyViewController.addChildren([
       controller1, controller2, controller3

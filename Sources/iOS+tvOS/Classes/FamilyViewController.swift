@@ -272,6 +272,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   public func viewControllerIsVisible(_ viewController: UIViewController) -> Bool {
     guard let entry = registry[viewController] else { return false }
     let view = wrappedViewIfNeeded(entry.view)
+    if view.frame.size.height == 0 { return false }
     return view.frame.intersects(documentVisibleRect)
   }
 
@@ -282,6 +283,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   public func viewControllerIsFullyVisible(_ viewController: UIViewController) -> Bool {
     guard let entry = registry[viewController] else { return false }
     let view = wrappedViewIfNeeded(entry.view)
+    if view.frame.size.height == 0 { return false }
     let convertedFrame = scrollView.documentView.convert(view.frame,
                                                          to: scrollView.documentView)
     return documentVisibleRect.contains(convertedFrame)
