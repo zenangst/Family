@@ -149,4 +149,57 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertFalse(familyViewController.isChildViewController)
     XCTAssertTrue(familyViewController.scrollView.isScrollEnabled)
   }
+
+  func testViewControllerIsVisibleMethods() {
+    let familyViewController = FamilyViewController()
+    familyViewController.view.frame.size = CGSize(width: 375, height: 667)
+    familyViewController.prepareViewController()
+
+    let controller1 = UIViewController()
+    let controller2 = UIViewController()
+    let controller3 = UIViewController()
+    let controller4 = UIViewController()
+
+    [controller1, controller2, controller3].forEach {
+      $0.view.frame.size = CGSize(width: 375, height: 667)
+    }
+
+    familyViewController.addChildren([
+      controller1, controller2, controller3
+    ])
+
+    XCTAssertTrue(familyViewController.viewControllerIsVisible(controller1))
+    XCTAssertTrue(familyViewController.viewControllerIsFullyVisible(controller1))
+
+    XCTAssertFalse(familyViewController.viewControllerIsVisible(controller2))
+    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller2))
+
+    XCTAssertFalse(familyViewController.viewControllerIsVisible(controller3))
+    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller3))
+
+    familyViewController.scrollView.setContentOffset(.init(x: 0, y: 667 / 2), animated: false)
+
+    XCTAssertTrue(familyViewController.viewControllerIsVisible(controller1))
+    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller1))
+
+    XCTAssertTrue(familyViewController.viewControllerIsVisible(controller2))
+    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller2))
+
+    XCTAssertFalse(familyViewController.viewControllerIsVisible(controller3))
+    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller3))
+
+    familyViewController.scrollView.setContentOffset(.init(x: 0, y: 667), animated: false)
+
+    XCTAssertFalse(familyViewController.viewControllerIsVisible(controller1))
+    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller1))
+
+    XCTAssertTrue(familyViewController.viewControllerIsVisible(controller2))
+    XCTAssertTrue(familyViewController.viewControllerIsFullyVisible(controller2))
+
+    XCTAssertFalse(familyViewController.viewControllerIsVisible(controller3))
+    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller3))
+
+    XCTAssertFalse(familyViewController.viewControllerIsVisible(controller4))
+    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller4))
+  }
 }

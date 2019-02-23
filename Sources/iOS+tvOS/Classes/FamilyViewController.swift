@@ -270,7 +270,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameter viewController: The target view controller
   /// - Returns: True if the view controller is visible on screen
   public func viewControllerIsVisible(_ viewController: UIViewController) -> Bool {
-    return registry[viewController]?.view.frame.intersects(documentVisibleRect) ?? false
+    guard let entry = registry[viewController] else { return false }
+    let view = wrappedViewIfNeeded(entry.view)
+    if view.frame.size.height == 0 { return false }
+    return view.frame.intersects(documentVisibleRect)
   }
 
   /// Check if a view controller is fully visible on screen.
@@ -278,8 +281,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameter viewController: The target view controller
   /// - Returns: True if the view controller is fully visible on screen
   public func viewControllerIsFullyVisible(_ viewController: UIViewController) -> Bool {
-    guard let item = registry[viewController] else { return false }
-    let convertedFrame = scrollView.documentView.convert(item.view.frame,
+    guard let entry = registry[viewController] else { return false }
+    let view = wrappedViewIfNeeded(entry.view)
+    if view.frame.size.height == 0 { return false }
+    let convertedFrame = scrollView.documentView.convert(view.frame,
                                                          to: scrollView.documentView)
     return documentVisibleRect.contains(convertedFrame)
   }
@@ -340,6 +345,14 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       }
     }
     NSLayoutConstraint.activate(constraints)
+  }
+
+  public func wrappedViewIfNeeded(_ view: UIView) -> UIView {
+    if let wrapperView = view.superview as? FamilyWrapperView {
+      return wrapperView
+    }
+
+    return view
   }
 
   /// Appends or inserts a view at a specific index.

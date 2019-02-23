@@ -239,7 +239,10 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   /// - Parameter viewController: The target view controller
   /// - Returns: True if the view controller is visible on screen
   public func viewControllerIsVisible(_ viewController: NSViewController) -> Bool {
-    return registry[viewController]?.frame.intersects(documentVisibleRect) ?? false
+    guard let entry = registry[viewController] else { return false }
+    let view = wrappedViewIfNeeded(entry)
+    if view.frame.size.height == 0 { return false }
+    return view.frame.intersects(documentVisibleRect)
   }
 
   /// Check if a view controller is fully visible on screen.
@@ -247,7 +250,9 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   /// - Parameter viewController: The target view controller
   /// - Returns: True if the view controller is fully visible on screen
   public func viewControllerIsFullyVisible(_ viewController: NSViewController) -> Bool {
-    guard let view = registry[viewController] else { return false }
+    guard let entry = registry[viewController] else { return false }
+    let view = wrappedViewIfNeeded(entry)
+    if view.frame.size.height == 0 { return false }
     let convertedFrame = scrollView.familyDocumentView.convert(view.frame,
                                                          to: scrollView.documentView)
     return documentVisibleRect.contains(convertedFrame)
@@ -286,6 +291,14 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
         ])
       NSLayoutConstraint.activate(constraints)
     }
+  }
+
+  public func wrappedViewIfNeeded(_ view: NSView) -> NSView {
+    if let wrapperView = view.enclosingScrollView as? FamilyWrapperView {
+      return wrapperView
+    }
+
+    return view
   }
 
   /// Appends or inserts a view at a specific index.
