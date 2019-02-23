@@ -197,4 +197,20 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertFalse(familyViewController.viewControllerIsVisible(controller4))
     XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller4))
   }
+
+  func testAttributesForViewController() {
+    let familyViewController = FamilyViewController()
+    familyViewController.prepareViewController()
+
+    let controller1 = UIViewController()
+
+    familyViewController.addChild(controller1)
+
+    let attributes = familyViewController.attributesForViewController(controller1)
+
+    XCTAssertEqual(attributes?.contentSize, CGSize(width: 375, height: 667))
+    XCTAssertEqual(attributes?.maxY, 667)
+    XCTAssertEqual(attributes?.view, controller1.view)
+    XCTAssertEqual(attributes?.origin, CGPoint(x: 0, y: 0))
+  }
 }
