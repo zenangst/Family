@@ -189,4 +189,29 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(attributes?.view, controller1.view)
     XCTAssertEqual(attributes?.origin, CGPoint(x: 0, y: 0))
   }
+
+  func testBatchUpdates() {
+    let familyViewController = FamilyViewController()
+    familyViewController.view.frame.size = CGSize(width: 375, height: 667)
+    familyViewController.prepareViewController()
+
+    let controller1 = MockViewController()
+    controller1.title = "Controller 1"
+    let controller2 = MockViewController()
+    controller2.title = "Controller 2"
+    let controller3 = MockViewController()
+    controller3.title = "Controller 3"
+
+    familyViewController.performBatchUpdates({ controller in
+      controller.addChild(controller1)
+      controller.addChild(controller2)
+      controller.addChild(controller3)
+      controller.moveChild(controller3, to: 0)
+    }, completion: nil)
+
+    familyViewController.view.layoutSubtreeIfNeeded()
+
+    XCTAssertEqual(familyViewController.viewControllersInLayoutOrder().compactMap({ $0.title }),
+                   ["Controller 3", "Controller 1", "Controller 2"])
+  }
 }
