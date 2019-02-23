@@ -207,6 +207,17 @@ public class FamilyScrollView: NSScrollView {
     cache.invalidate()
   }
 
+  /// Remove wrapper views that don't own their underlaying views.
+  func purgeWrapperViews() {
+    for case let wrapperView as FamilyWrapperView in familyDocumentView.subviews {
+      if wrapperView != wrapperView.view.enclosingScrollView {
+        wrapperView.removeFromSuperview()
+      }
+    }
+
+    spaceManager.removeViewsWithoutSuperview()
+  }
+
   public override func scrollWheel(with event: NSEvent) {
     guard isScrollEnabled else {
       nextResponder?.scrollWheel(with: event)

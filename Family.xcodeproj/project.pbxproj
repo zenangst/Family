@@ -294,10 +294,10 @@
 		D284B12D1F7906DA00D94AF3 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
-				BDEE36342043394E00120E35 /* FamilyWrapperViewTests.swift */,
 				BDEE3636204369F200120E35 /* FamilyContentViewTests.swift */,
 				BDEE363820436B1100120E35 /* FamilyScrollViewTests.swift */,
 				BD7055E62043FB9600C2C5CB /* FamilyViewControllerTests.swift */,
+				BDEE36342043394E00120E35 /* FamilyWrapperViewTests.swift */,
 				BD7055E82044007300C2C5CB /* NSScrollViewExtensionsTests.swift */,
 			);
 			path = macOS;

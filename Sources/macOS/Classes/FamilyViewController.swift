@@ -123,6 +123,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     subview.frame.size.width = view.bounds.width
     addView(subview, at: index, customInsets: insets, withHeight: height)
     registry[childController] = subview
+    scrollView.purgeWrapperViews()
   }
 
   /// Adds a collection of view controllers as children of the current view controller.

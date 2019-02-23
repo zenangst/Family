@@ -214,4 +214,25 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(familyViewController.viewControllersInLayoutOrder().compactMap({ $0.title }),
                    ["Controller 3", "Controller 1", "Controller 2"])
   }
+
+  func testChangingViewSize() {
+    let familyViewController = FamilyViewController()
+    let window = NSWindow(contentViewController: familyViewController)
+    window.setFrame(NSRect.init(origin: .zero, size: CGSize(width: 375, height: 667)), display: false)
+    familyViewController.view.frame.size = CGSize(width: 375, height: 667)
+    familyViewController.prepareViewController()
+
+    let controller1 = MockViewController()
+    controller1.title = "Controller 1"
+    controller1.view.frame.size = CGSize(width: 375, height: 200)
+
+    familyViewController.addChild(controller1)
+    familyViewController.scrollView.layoutViews()
+
+    let wrapperView = controller1.view.enclosingScrollView
+    XCTAssertEqual(controller1.view.frame.size.height, wrapperView?.frame.size.height)
+
+    controller1.view.frame.size.height = 400
+    XCTAssertEqual(controller1.view.frame.size.height, wrapperView?.frame.size.height)
+  }
 }
