@@ -354,7 +354,7 @@
 				D500FD121C3AAC8E00782D78 /* Playground-macOS.playground */,
 				D284B13F1F79081F00D94AF3 /* Info */,
 				D5C629691C3A809D007F7B7C /* Sources */,
-				D5C6298F1C3A8BDA007F7B7C /* FamilyTests */,
+				D5C6298F1C3A8BDA007F7B7C /* Tests */,
 				D5B2E8A01C3A780C00C0327D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -385,7 +385,7 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		D5C6298F1C3A8BDA007F7B7C /* FamilyTests */ = {
+		D5C6298F1C3A8BDA007F7B7C /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				D284B12F1F7906DA00D94AF3 /* Info-iOS-Tests.plist */,
@@ -397,7 +397,7 @@
 				D284B1311F7906DA00D94AF3 /* Shared */,
 				D284B1341F7906DA00D94AF3 /* tvOS */,
 			);
-			path = FamilyTests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -872,7 +872,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = "$(SRCROOT)/FamilyTests/Info-tvOS-Tests.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info-tvOS-Tests.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks $(FRAMEWORK_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = "no.hyper.Family-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -897,7 +897,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = "$(SRCROOT)/FamilyTests/Info-tvOS-Tests.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info-tvOS-Tests.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks $(FRAMEWORK_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = "no.hyper.Family-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1129,7 +1129,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = "$(SRCROOT)/FamilyTests/Info-iOS-Tests.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info-iOS-Tests.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks $(FRAMEWORK_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = no.hyper.FamilyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1144,7 +1144,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = "$(SRCROOT)/FamilyTests/Info-iOS-Tests.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info-iOS-Tests.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks $(FRAMEWORK_SEARCH_PATHS)";
 				PRODUCT_BUNDLE_IDENTIFIER = no.hyper.FamilyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1207,7 +1207,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = "$(SRCROOT)/FamilyTests/Info-macOS-Tests.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info-macOS-Tests.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks $(FRAMEWORK_SEARCH_PATHS)";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "no.hyper.Family-MacTests";
@@ -1224,7 +1224,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = "$(SRCROOT)/FamilyTests/Info-macOS-Tests.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info-macOS-Tests.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks $(FRAMEWORK_SEARCH_PATHS)";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "no.hyper.Family-MacTests";

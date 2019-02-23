@@ -2,6 +2,6 @@ ignore:
   - "Applications/Xcode.app/.*"
   - "bin"
   - "Example"
-  - "FamilyTests"
+  - "Tests"
   - "Images"
   - "Info"
