@@ -1,13 +1,11 @@
-osx_image: xcode10
-language: objective-c
+os: osx
+osx_image: xcode10.1
+language: swift
 
 script:
-  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-macOS" -sdk macosx clean build | xcpretty
-  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-macOS" -sdk macosx -enableCodeCoverage YES test | xcpretty
-  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-iOS" -sdk iphonesimulator -destination name="iPhone 8" clean build | xcpretty
-  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-iOS" -sdk iphonesimulator -destination name="iPhone 8" -enableCodeCoverage YES test | xcpretty
-  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-tvOS" -destination 'platform=tvOS Simulator,name=Apple TV,OS=11.4' clean build | xcpretty
-  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-tvOS" -destination 'platform=tvOS Simulator,name=Apple TV,OS=11.4' -enableCodeCoverage YES test | xcpretty
+  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-macOS" -sdk macosx -enableCodeCoverage YES clean build test | xcpretty
+  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-tvOS" -destination 'platform=tvOS Simulator,name=Apple TV,OS=11.4' -enableCodeCoverage YES clean build test | xcpretty
+  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-iOS" -sdk iphonesimulator -destination name="iPhone 8" -enableCodeCoverage YES clean build test | xcpretty
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

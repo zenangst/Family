@@ -1,17 +1,7 @@
-coverage:
-  comment: "header diff changes sunburst"
-  behavior: new
-  ignore:
-    - "Applications/Xcode.app/.*"
-    - "bin"
-    - "Example"
-    - "FamilyTests"
-    - "Images"
-    - "Info"
-  status:
-    patch:
-      default:
-        target: 55%
-    project:
-      default:
-        target: auto
+ignore:
+  - "Applications/Xcode.app/.*"
+  - "bin"
+  - "Example"
+  - "Tests"
+  - "Images"
+  - "Info"
