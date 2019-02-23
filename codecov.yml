@@ -5,7 +5,7 @@ coverage:
     - "Applications/Xcode.app/.*"
     - "bin"
     - "Example"
-    - "FamilyTests"
+    - "FamilyTests/**/*"
     - "Images"
     - "Info"
   status:
