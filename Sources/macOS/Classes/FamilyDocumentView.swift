@@ -15,11 +15,13 @@ public class FamilyDocumentView: NSView {
   }
 
   public override func addSubview(_ view: NSView) {
+    (view.enclosingScrollView as? FamilyWrapperView)?.removeFromSuperview()
     let subview = wrapViewIfNeeded(view)
     super.addSubview(subview)
   }
 
   public func insertSubview(_ view: View, at index: Int) {
+    (view.enclosingScrollView as? FamilyWrapperView)?.removeFromSuperview()
     let subview = wrapViewIfNeeded(view)
     if !subviews.contains(subview) {
       subviews.insert(subview, at: index)
