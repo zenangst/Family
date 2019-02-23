@@ -205,9 +205,11 @@ class FamilyViewControllerTests: XCTestCase {
 
   func testAttributesForViewController() {
     let familyViewController = FamilyViewController()
+    familyViewController.view.frame.size = CGSize(width: 375, height: 667)
     familyViewController.prepareViewController()
 
     let controller1 = UIViewController()
+    controller1.view.frame.size = CGSize(width: 375, height: 667)
 
     familyViewController.addChild(controller1)
 
