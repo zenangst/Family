@@ -5,3 +5,28 @@ ignore:
   - "Tests"
   - "Images"
   - "Info"
+coverage:
+  status:
+    project:
+      default: off
+      macOS:
+        flags: macOS
+      tvOS:
+        flags: tvOS
+      iOS:
+        flags: iOS
+flags:
+  macOS:
+    paths:
+      - Sources/macOS
+      - Sources/Shared
+  tvOS:
+    paths:
+      - Sources/tvOS
+      - Sources/iOS+tvOS
+      - Sources/Shared
+  iOS:
+    paths:
+      - Sources/iOS
+      - Sources/iOS+tvOS
+      - Sources/Shared
