@@ -1,13 +1,13 @@
+ignore:
+  - "Applications/Xcode.app/.*"
+  - "bin"
+  - "Example"
+  - "FamilyTests/**/*"
+  - "Images"
+  - "Info"
 coverage:
   comment: "header diff changes sunburst"
   behavior: new
-  ignore:
-    - "Applications/Xcode.app/.*"
-    - "bin"
-    - "Example"
-    - "FamilyTests/**/*"
-    - "Images"
-    - "Info"
   status:
     patch:
       default:
