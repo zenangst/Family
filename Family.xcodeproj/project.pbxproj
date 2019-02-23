@@ -111,6 +111,11 @@
 		BD7055E82044007300C2C5CB /* NSScrollViewExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSScrollViewExtensionsTests.swift; sourceTree = "<group>"; };
 		BD7629B920349C2500C917BB /* TypeAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeAlias.swift; sourceTree = "<group>"; };
 		BD7629BD20349CA300C917BB /* FamilyFriendly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyFriendly.swift; sourceTree = "<group>"; };
+		BD93C37F2221C1AA003100D1 /* .swift-version */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-version"; sourceTree = "<group>"; };
+		BD93C3802221C1AA003100D1 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		BD93C3812221C1AA003100D1 /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
+		BD93C3822221C1AA003100D1 /* circle.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = circle.yml; sourceTree = "<group>"; };
+		BD93C3832221C1AA003100D1 /* codecov.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = codecov.yml; sourceTree = "<group>"; };
 		BDAC588221BA613A00412766 /* FamilyScrollView+tvOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FamilyScrollView+tvOS.swift"; sourceTree = "<group>"; };
 		BDAC588421BA61CA00412766 /* FamilyScrollView+iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FamilyScrollView+iOS.swift"; sourceTree = "<group>"; };
 		BDAC588821BA63B800412766 /* FamilyScrollViewTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyScrollViewTests.swift; sourceTree = "<group>"; };
@@ -339,6 +344,11 @@
 		D5B2E8951C3A780C00C0327D = {
 			isa = PBXGroup;
 			children = (
+				BD93C3802221C1AA003100D1 /* .gitignore */,
+				BD93C37F2221C1AA003100D1 /* .swift-version */,
+				BD93C3812221C1AA003100D1 /* .travis.yml */,
+				BD93C3822221C1AA003100D1 /* circle.yml */,
+				BD93C3832221C1AA003100D1 /* codecov.yml */,
 				BD535E142078DEFC00AA2EC4 /* Family.podspec */,
 				D500FD111C3AABED00782D78 /* Playground-iOS.playground */,
 				D500FD121C3AAC8E00782D78 /* Playground-macOS.playground */,
