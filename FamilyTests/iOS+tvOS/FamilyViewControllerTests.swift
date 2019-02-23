@@ -124,4 +124,29 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(familyViewController.viewControllersInLayoutOrder(),
                    [controller2, controller1, controller3])
   }
+
+  func testFamilyViewControllerAsChildViewController() {
+    let viewController = UIViewController()
+    let familyViewController = FamilyViewController()
+    familyViewController.willMove(toParent: viewController)
+    viewController.addChild(familyViewController)
+    XCTAssertTrue(familyViewController.isChildViewController)
+    XCTAssertFalse(familyViewController.scrollView.isScrollEnabled)
+
+    _ = UINavigationController(rootViewController: familyViewController)
+
+    XCTAssertFalse(familyViewController.isChildViewController)
+    XCTAssertTrue(familyViewController.scrollView.isScrollEnabled)
+
+    familyViewController.willMove(toParent: viewController)
+    viewController.addChild(familyViewController)
+    XCTAssertTrue(familyViewController.isChildViewController)
+    XCTAssertFalse(familyViewController.scrollView.isScrollEnabled)
+
+    let tabBarController = UITabBarController()
+    tabBarController.viewControllers = [familyViewController]
+
+    XCTAssertFalse(familyViewController.isChildViewController)
+    XCTAssertTrue(familyViewController.scrollView.isScrollEnabled)
+  }
 }

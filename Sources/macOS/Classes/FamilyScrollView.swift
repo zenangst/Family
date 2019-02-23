@@ -10,6 +10,12 @@ public class FamilyScrollView: NSScrollView {
       cache.invalidate()
     }
   }
+
+  @objc(scrollEnabled)
+  public var isScrollEnabled: Bool = true
+
+  internal var isChildViewController: Bool = false
+
   var layoutIsRunning: Bool = false
   var isScrollingWithWheel: Bool = false
   var isScrolling: Bool = false
@@ -202,6 +208,10 @@ public class FamilyScrollView: NSScrollView {
   }
 
   public override func scrollWheel(with event: NSEvent) {
+    guard isScrollEnabled else {
+      nextResponder?.scrollWheel(with: event)
+      return
+    }
     super.scrollWheel(with: event)
 
     isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
@@ -349,6 +359,11 @@ public class FamilyScrollView: NSScrollView {
 
     if computedHeight < minimumContentHeight {
       height -= contentInsets.top
+    }
+
+    if isChildViewController {
+      height = computedHeight
+      superview?.frame.size.height = computedHeight
     }
 
     return CGSize(width: bounds.size.width, height: height)

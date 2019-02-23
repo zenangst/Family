@@ -9,10 +9,29 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
 
   //  The current viewport of the scroll view
   public var documentVisibleRect: CGRect { return scrollView.documentVisibleRect }
+  public var isChildViewController: Bool = false {
+    didSet {
+      scrollView.isChildViewController = isChildViewController
+      scrollView.isScrollEnabled = !isChildViewController
+    }
+  }
 
   private(set) public var registry = [ViewController: View]()
   var observer: NSKeyValueObservation?
   var eventHandlerKeyDown: Any?
+
+  public convenience init(isChildViewController: Bool) {
+    self.init(nibName: nil, bundle: nil)
+    self.isChildViewController = isChildViewController
+  }
+
+  public override init(nibName nibNameOrNil: NSNib.Name?, bundle nibBundleOrNil: Bundle?) {
+    super.init(nibName: nil, bundle: nil)
+  }
+
+  public required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
 
   deinit {
     children.forEach { $0.removeFromParent() }
@@ -38,10 +57,24 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     super.viewDidLoad()
     view.addSubview(scrollView)
     scrollView.autoresizingMask = [.width]
-    configureConstraints()
+    if !isChildViewController {
+      configureConstraints()
+    } else {
+      scrollView.isScrollEnabled = false
+      scrollView.frame = view.bounds
+    }
     eventHandlerKeyDown = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { (event) -> NSEvent? in
       self.scrollView.isScrollingByProxy = true
       return event
+    }
+  }
+
+  open override func viewDidLayout() {
+    super.viewDidLayout()
+
+    if isChildViewController {
+      scrollView.frame = view.bounds
+      view.frame.size.height = scrollView.contentSize.height
     }
   }
 

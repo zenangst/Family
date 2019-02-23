@@ -10,6 +10,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
+  internal var isChildViewController: Bool = false
+
   /// The current viewport
   public var documentVisibleRect: CGRect {
     return CGRect(origin: contentOffset,
@@ -247,7 +249,12 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         return value + view.contentSize.height + insets.top + insets.bottom
       })
     let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
-    let height = fmax(computedHeight, minimumContentHeight)
+    var height = fmax(computedHeight, minimumContentHeight)
+
+    if isChildViewController {
+      height = computedHeight
+      superview?.frame.size.height = computedHeight
+    }
 
     return CGSize(width: bounds.size.width, height: height)
   }
