@@ -21,6 +21,10 @@ class FamilyWrapperView: UIScrollView {
   required init(frame: CGRect, view: UIView) {
     self.view = view
     super.init(frame: frame)
+    // Disable resizing of subviews to avoid recursion.
+    // The wrapper view should follow the `.view`'s size, not the
+    // otherway around. If this is set to `true` then there is
+    // a potential for the observers trigger a resizing recursion.
     autoresizesSubviews = false
     addSubview(view)
     alwaysBounceVertical = true
