@@ -21,7 +21,22 @@ class FamilyWrapperView: UIScrollView {
   required init(frame: CGRect, view: UIView) {
     self.view = view
     super.init(frame: frame)
+    autoresizesSubviews = false
+    addSubview(view)
+    alwaysBounceVertical = true
+    clipsToBounds = false
+    if #available(iOS 11.0, tvOS 11.0, *) {
+      contentInsetAdjustmentBehavior = .never
+    }
 
+    configureObservers()
+  }
+
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  private func configureObservers() {
     frameObserver = view.observe(\.frame, options: [.initial, .new]) { [weak self] (view, value) in
       if let rect = value.newValue {
         self?.setWrapperFrameSize(rect)
@@ -35,17 +50,6 @@ class FamilyWrapperView: UIScrollView {
         self?.parentDocumentView?.familyScrollView?.layoutIfNeeded()
       }
     }
-
-    addSubview(view)
-    alwaysBounceVertical = true
-    clipsToBounds = false
-    if #available(iOS 11.0, tvOS 11.0, *) {
-      contentInsetAdjustmentBehavior = .never
-    }
-  }
-
-  required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
   }
 
   /// Sets the size of the rectangle as the content size for the view.
