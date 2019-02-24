@@ -307,6 +307,14 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
     guard superview != nil else { return }
 
+    // Make sure that wrapper views have the correct width
+    // on their wrapped views.
+    for case let wrapperView as FamilyWrapperView in subviewsInLayoutOrder {
+      if wrapperView.view.frame.size.width != frame.size.width {
+        wrapperView.view.frame.size.width = frame.size.width
+      }
+    }
+
     documentView.frame = bounds
     documentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
 
