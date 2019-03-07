@@ -90,11 +90,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     }
   }
 
-  open override func willMove(toParent parent: UIViewController?) {
-    super.willMove(toParent: parent)
-    isChildViewController = !(parent is UITabBarController) && !(parent is UINavigationController)
-  }
-
   // MARK: - Public methods
 
   /// Adds the specified view controller as a child of the current view controller.
