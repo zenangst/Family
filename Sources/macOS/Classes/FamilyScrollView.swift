@@ -13,7 +13,7 @@ public class FamilyScrollView: NSScrollView {
 
   @objc(scrollEnabled)
   public var isScrollEnabled: Bool = true
-
+  internal var isDeallocating: Bool = false
   internal var isChildViewController: Bool = false
 
   var layoutIsRunning: Bool = false
@@ -52,7 +52,7 @@ public class FamilyScrollView: NSScrollView {
   public func layoutViews(withDuration duration: CFTimeInterval? = nil,
                           force: Bool = false,
                           completion: (() -> Void)? = nil) {
-    guard isPerformingBatchUpdates == false else { return }
+    guard isPerformingBatchUpdates == false, !isDeallocating else { return }
 
     guard !layoutIsRunning || !force else {
       return
@@ -250,8 +250,9 @@ public class FamilyScrollView: NSScrollView {
   }
 
   private func runLayoutSubviewsAlgorithm() {
-    guard isPerformingBatchUpdates == false else { return }
-    guard cache.state != .isRunning else { return }
+    guard isPerformingBatchUpdates == false,
+      !isDeallocating,
+      cache.state != .isRunning else { return }
 
     if cache.state == .empty {
       cache.state = .isRunning
