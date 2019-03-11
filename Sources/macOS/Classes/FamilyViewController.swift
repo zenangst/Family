@@ -34,6 +34,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   }
 
   deinit {
+    scrollView.isDeallocating = true
     children.forEach { $0.removeFromParent() }
     purgeRemovedViews()
 

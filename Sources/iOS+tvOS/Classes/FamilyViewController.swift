@@ -41,6 +41,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   }
 
   deinit {
+    scrollView.isDeallocating = true
     children.forEach {
       $0.willMove(toParent: nil)
       $0.removeFromParent()

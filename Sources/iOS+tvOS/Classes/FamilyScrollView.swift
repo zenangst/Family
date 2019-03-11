@@ -10,6 +10,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
+  internal var isDeallocating: Bool = false
   internal var isChildViewController: Bool = false
 
   /// The current viewport
@@ -305,7 +306,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
                           completion: (() -> Void)? = nil) {
     guard isPerformingBatchUpdates == false else { return }
 
-    guard superview != nil else { return }
+    guard superview != nil, !isDeallocating else { return }
 
     // Make sure that wrapper views have the correct width
     // on their wrapped views.
