@@ -111,7 +111,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   func didAddScrollViewToContainer(_ scrollView: UIScrollView) {
     scrollView.autoresizingMask = [.flexibleWidth]
 
-    guard documentView.subviews.index(of: scrollView) != nil else {
+    guard documentView.subviews.firstIndex(of: scrollView) != nil else {
       return
     }
 
@@ -132,12 +132,12 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   ///
   /// - Parameter subview: The subview that got removed from the view heirarcy.
   open override func willRemoveSubview(_ subview: UIView) {
-    if let index = subviewsInLayoutOrder.index(where: { $0 == subview }) {
+    if let index = subviewsInLayoutOrder.firstIndex(where: { $0 == subview }) {
       subviewsInLayoutOrder.remove(at: index)
     }
 
     for observer in observers.filter({ $0.view === subview }) {
-      if let index = observers.index(where: { $0 == observer }) {
+      if let index = observers.firstIndex(where: { $0 == observer }) {
         observers.remove(at: index)
       }
     }
@@ -192,7 +192,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     guard view.superview == documentView else { return }
 
     for observer in observers.filter({ $0.view === view }) {
-      if let index = observers.index(where: { $0 == observer }) {
+      if let index = observers.firstIndex(where: { $0 == observer }) {
         observers.remove(at: index)
       }
     }

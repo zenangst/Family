@@ -182,7 +182,7 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func didAddScrollViewToContainer(_ scrollView: NSScrollView) {
-    if familyDocumentView.scrollViews.index(of: scrollView) != nil {
+    if familyDocumentView.scrollViews.firstIndex(of: scrollView) != nil {
       rebuildSubviewsInLayoutOrder()
       subviewsInLayoutOrder.removeAll()
 

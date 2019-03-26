@@ -20,5 +20,5 @@ Pod::Spec.new do |s|
   s.tvos.source_files = 'Sources/{iOS+tvOS,tvOS,Shared}/**/*'
   s.macos.source_files = 'Sources/{macOS,Shared}/**/*'
 
-  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '4.2' }
+  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '5.0' }
 end
