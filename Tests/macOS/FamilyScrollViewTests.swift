@@ -49,7 +49,7 @@ class FamilyScrollViewTests: XCTestCase {
     // Check that layout algorithm takes spacing between views into account.
 
     scrollView.insets = .init(top: 0, left: 0, bottom: 10, right: 0)
-    scrollView.layoutViews()
+    scrollView.layoutViews(withDuration: nil, force: false, completion: nil)
 
     XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: .zero, size: size))
     XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250 + scrollView.insets.bottom), size: size))
@@ -63,7 +63,7 @@ class FamilyScrollViewTests: XCTestCase {
 
     scrollView.setCustomInsets(.init(top: 0, left: 0, bottom: 10, right: 0), for: mockedScrollView1)
     scrollView.setCustomInsets(.init(top: 0, left: 0, bottom: 10, right: 0), for: mockedScrollView3)
-    scrollView.layoutViews()
+    scrollView.layoutViews(withDuration: nil, force: false, completion: nil)
 
     XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: .zero, size: size))
     XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250 + 10), size: size))
@@ -74,10 +74,10 @@ class FamilyScrollViewTests: XCTestCase {
 
     scrollView.setCustomInsets(.init(top: 0, left: 0, bottom: 0, right: 0), for: mockedScrollView1)
     scrollView.setCustomInsets(.init(top: 0, left: 0, bottom: 0, right: 0), for: mockedScrollView3)
-    scrollView.layoutViews()
+    scrollView.layoutViews(withDuration: nil, force: false, completion: nil)
 
     scrollView.contentOffset.y = 250
-    scrollView.layoutViews()
+    scrollView.layoutViews(withDuration: nil, force: false, completion: nil)
     scrollView.layout()
 
     let lastSize = CGSize(width: 500, height: 220)
@@ -90,7 +90,7 @@ class FamilyScrollViewTests: XCTestCase {
 
     scrollView.contentOffset.y = 500
     scrollView.layout()
-    scrollView.layoutViews()
+    scrollView.layoutViews(withDuration: nil, force: false, completion: nil)
 
     XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: CGPoint(x: 0, y: 0), size: size))
     XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250), size: size))
@@ -98,7 +98,7 @@ class FamilyScrollViewTests: XCTestCase {
     XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750), size: lastSize))
 
     scrollView.contentOffset.y = 750
-    scrollView.layoutViews()
+    scrollView.layoutViews(withDuration: nil, force: false, completion: nil)
 
     XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: CGPoint(x: 0, y: 0), size: size))
     XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250), size: size))

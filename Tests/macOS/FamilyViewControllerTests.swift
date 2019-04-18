@@ -69,7 +69,7 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(wrapperView?.documentView, thirdViewController.view)
 
     familyViewController.scrollView.layout()
-    familyViewController.scrollView.layoutViews(withDuration: 0)
+    familyViewController.scrollView.layoutViews(withDuration: 0, force: false, completion: nil)
     XCTAssertEqual(familyViewController.scrollView.documentView?.frame.size.height, 1500)
     secondViewController.view.isHidden = true
     familyViewController.scrollView.layout()
@@ -227,7 +227,7 @@ class FamilyViewControllerTests: XCTestCase {
     controller1.view.frame.size = CGSize(width: 375, height: 200)
 
     familyViewController.addChild(controller1)
-    familyViewController.scrollView.layoutViews()
+    familyViewController.scrollView.layoutViews(withDuration: nil, force: false, completion: nil)
 
     let wrapperView = controller1.view.enclosingScrollView
     XCTAssertEqual(controller1.view.frame.size.height, wrapperView?.frame.size.height)
