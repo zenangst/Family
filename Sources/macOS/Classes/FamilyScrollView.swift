@@ -49,9 +49,9 @@ public class FamilyScrollView: NSScrollView {
 
   // MARK: - Public methods
 
-  public func layoutViews(withDuration duration: CFTimeInterval? = nil,
-                          force: Bool = false,
-                          completion: (() -> Void)? = nil) {
+  public func layoutViews(withDuration duration: CFTimeInterval?,
+                          force: Bool,
+                          completion: (() -> Void)?) {
     guard isPerformingBatchUpdates == false, !isDeallocating else { return }
 
     guard !layoutIsRunning || !force else {
@@ -135,7 +135,7 @@ public class FamilyScrollView: NSScrollView {
       let window = window,
       !window.inLiveResize,
       !isScrollingWithWheel {
-      layoutViews(withDuration: 0.0)
+      layoutViews(withDuration: 0.0, force: false, completion: nil)
     }
   }
 
@@ -161,7 +161,7 @@ public class FamilyScrollView: NSScrollView {
 
   private func processNewWindowSize(excludeOffscreenViews: Bool) {
     cache.invalidate()
-    layoutViews(withDuration: 0.0, force: false)
+    layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
 
   @objc open func windowDidResize(_ notification: Notification) {
@@ -229,12 +229,12 @@ public class FamilyScrollView: NSScrollView {
       !(event.phase == .ended || event.momentumPhase == .ended)
     isScrollingWithWheel = isScrolling
 
-    layoutViews(withDuration: 0.0)
+    layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
 
   func wrapperViewDidChangeFrame(from fromValue: CGRect, to toValue: CGRect) {
     cache.invalidate()
-    layoutViews(withDuration: 0.0, force: false)
+    layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
 
   // MARK: - Private methods
