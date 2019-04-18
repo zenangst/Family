@@ -30,12 +30,10 @@ class FamilyWrapperView: NSScrollView {
     self.verticalScrollElasticity = .none
     self.drawsBackground = false
 
-    self.frameObserver = view.observe(\.frame, options: [.new, .old], changeHandler: { [weak self] (_, value) in
-      guard abs(value.newValue?.size.height ?? 0) != abs(value.oldValue?.size.height ?? 0) else { return }
+    self.frameObserver = view.observe(\.frame, options: [.initial, .new], changeHandler: { [weak self] (_, value) in
       if let newValue = value.newValue {
         self?.setWrapperFrameSize(newValue)
       }
-      self?.layoutViews(from: value.oldValue, to: value.newValue)
     })
 
     self.alphaObserver = view.observe(\.alphaValue, options: [.initial, .new, .old]) { [weak self] (_, value) in
