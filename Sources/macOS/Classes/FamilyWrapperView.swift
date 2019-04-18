@@ -32,6 +32,9 @@ class FamilyWrapperView: NSScrollView {
 
     self.frameObserver = view.observe(\.frame, options: [.new, .old], changeHandler: { [weak self] (_, value) in
       guard abs(value.newValue?.size.height ?? 0) != abs(value.oldValue?.size.height ?? 0) else { return }
+      if let newValue = value.newValue {
+        self?.setWrapperFrameSize(newValue)
+      }
       self?.layoutViews(from: value.oldValue, to: value.newValue)
     })
 
@@ -69,6 +72,10 @@ class FamilyWrapperView: NSScrollView {
 
     isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
       !(event.phase == .ended || event.momentumPhase == .ended)
+  }
+
+  private func setWrapperFrameSize(_ rect: CGRect) {
+    frame.size = rect.size
   }
 
   func layoutViews(from fromValue: CGRect? = nil, to toValue: CGRect? = nil) {
