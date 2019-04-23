@@ -273,7 +273,7 @@ public class FamilyScrollView: NSScrollView {
           frame.origin.y = round(self.contentOffset.y)
         }
 
-        let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
+        let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - yOffsetOfCurrentSubview, 0.0)
         let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
         var newHeight: CGFloat = fmin(remainingBoundsHeight, remainingContentHeight)
 
@@ -285,10 +285,16 @@ public class FamilyScrollView: NSScrollView {
         frame.size.height = newHeight
         frame.size.width = round(self.frame.size.width) - insets.left - insets.right
 
-        scrollView.documentView?.frame.size.width = frame.width
-        scrollView.documentView?.frame.size.height = contentSize.height
-        scrollView.frame.origin.x = frame.origin.x
-        scrollView.frame.size = frame.size
+        // Opt-out from setting new document size to NSCollectionView and check that we don't set
+        // the same size more than once.
+        if !(scrollView.documentView is NSCollectionView) &&
+          scrollView.documentView?.frame.size != CGSize(width: frame.size.width, height: contentSize.height) {
+          scrollView.documentView?.frame.size = CGSize(width: frame.size.width, height: contentSize.height)
+        }
+
+        if scrollView.frame != frame {
+          scrollView.frame = frame
+        }
 
         cache.add(entry: FamilyViewControllerAttributes(view: scrollView.documentView!,
                                                         origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),

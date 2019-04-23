@@ -73,7 +73,10 @@ class FamilyWrapperView: NSScrollView {
   }
 
   private func setWrapperFrameSize(_ rect: CGRect) {
-    frame.size = rect.size
+    let oldValue = frame
+    let newValue = rect
+    frame.size = newValue.size
+    (enclosingScrollView as? FamilyScrollView)?.wrapperViewDidChangeFrame(from: oldValue, to: newValue)
   }
 
   func layoutViews(from fromValue: CGRect?, to toValue: CGRect?) {
