@@ -50,6 +50,7 @@ public class FamilyScrollView: NSScrollView {
   // MARK: - Public methods
 
   public func layoutViews(withDuration duration: CFTimeInterval?,
+                          allowsImplicitAnimation: Bool = true,
                           force: Bool,
                           completion: (() -> Void)?) {
     guard isPerformingBatchUpdates == false, !isDeallocating else { return }
@@ -62,17 +63,18 @@ public class FamilyScrollView: NSScrollView {
       layoutIsRunning = true
       NSAnimationContext.runAnimationGroup({ (context) in
         context.duration = duration
-        context.allowsImplicitAnimation = true
+        context.allowsImplicitAnimation = allowsImplicitAnimation
         runLayoutSubviewsAlgorithm()
       }, completionHandler: { [weak self] in
-        self?.runLayoutSubviewsAlgorithm()
-        self?.layoutIsRunning = false
         completion?()
+        self?.layoutIsRunning = false
       })
       return
-    } else if isScrolling {
+    } else if isScrolling || duration == nil {
+      NSAnimationContext.beginGrouping()
       NSAnimationContext.current.duration = 0.0
       NSAnimationContext.current.allowsImplicitAnimation = false
+      defer { NSAnimationContext.endGrouping() }
     }
 
     layoutIsRunning = true
@@ -160,6 +162,7 @@ public class FamilyScrollView: NSScrollView {
   // MARK: - Window resizing
 
   private func processNewWindowSize(excludeOffscreenViews: Bool) {
+    guard window != nil else { return }
     cache.invalidate()
     layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
@@ -190,8 +193,10 @@ public class FamilyScrollView: NSScrollView {
         subviewsInLayoutOrder.append(scrollView)
       }
     }
+
+    guard window != nil else { return }
     cache.invalidate()
-    runLayoutSubviewsAlgorithm()
+    layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
 
   func didRemoveScrollViewToContainer(_ subview: NSView) {
@@ -232,9 +237,14 @@ public class FamilyScrollView: NSScrollView {
     layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
 
-  func wrapperViewDidChangeFrame(from fromValue: CGRect, to toValue: CGRect) {
+  func wrapperViewDidChangeFrame(_ view: NSView, from fromValue: CGRect, to toValue: CGRect) {
+    guard window != nil else { return }
+    guard round(fromValue.height) != round(toValue.height) else { return }
     cache.invalidate()
-    layoutViews(withDuration: 0.0, force: false, completion: nil)
+    layoutViews(withDuration: nil,
+                allowsImplicitAnimation: false,
+                force: true,
+                completion: nil)
   }
 
   // MARK: - Private methods
