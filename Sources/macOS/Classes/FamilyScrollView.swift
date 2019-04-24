@@ -74,7 +74,7 @@ public class FamilyScrollView: NSScrollView {
       NSAnimationContext.beginGrouping()
       NSAnimationContext.current.duration = 0.0
       NSAnimationContext.current.allowsImplicitAnimation = false
-      defer { NSAnimationContext.endGrouping() }
+      NSAnimationContext.endGrouping()
     }
 
     layoutIsRunning = true
@@ -194,7 +194,6 @@ public class FamilyScrollView: NSScrollView {
       }
     }
 
-    guard window != nil else { return }
     cache.invalidate()
     layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
