@@ -153,6 +153,10 @@ public class FamilyScrollView: NSScrollView {
       newOffset.y -= contentView.contentInsets.top
     }
 
+    if point.y == 0 {
+      newOffset.y = 0
+    }
+
     contentView.scroll(newOffset)
     // This is invoked to avoid animation stutter.
     contentView.scroll(to: newOffset)
