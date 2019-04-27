@@ -57,7 +57,7 @@ class FamilyScrollViewTests: XCTestCase {
     XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750 + scrollView.insets.bottom * 3),
                                                    size: CGSize(width: size.width, height: size.height - scrollView.insets.bottom * 3)))
     scrollView.layout()
-    XCTAssertEqual(scrollView.documentView?.frame.size.height, 1040)
+    XCTAssertEqual(scrollView.documentView?.frame.size.height, 1000)
 
     scrollView.insets = .init(top: 0, left: 0, bottom: 0, right: 0)
 

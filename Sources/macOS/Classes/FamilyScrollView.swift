@@ -385,6 +385,7 @@ public class FamilyScrollView: NSScrollView {
     let computedHeight: CGFloat = validSubviews.reduce(CGFloat(0), { value, view in
       return value + contentSizeForView(view.documentView ?? view).height
     })
+
     let computedInsets: CGFloat = validSubviews.reduce(CGFloat(0), { value, view in
       let insets = spaceManager.customInsets(for: view.documentView ?? view)
       return value + insets.top + insets.bottom
@@ -392,10 +393,11 @@ public class FamilyScrollView: NSScrollView {
 
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
-    height += computedInsets
 
-    if computedHeight < minimumContentHeight {
+    if computedHeight <= minimumContentHeight {
       height -= contentInsets.top
+    } else {
+      height += computedInsets
     }
 
     if isChildViewController {
