@@ -34,7 +34,7 @@ class FamilyScrollViewTests: XCTestCase {
     let mockedScrollView4 = NSScrollView(frame: CGRect(origin: .zero, size: size))
 
     [mockedScrollView1, mockedScrollView2, mockedScrollView3, mockedScrollView4].forEach {
-      $0.documentView = NSView()
+      $0.documentView = NSCollectionView()
       $0.documentView?.frame.size = size
       scrollView.documentView?.addSubview($0)
     }

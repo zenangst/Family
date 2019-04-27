@@ -382,12 +382,18 @@ public class FamilyScrollView: NSScrollView {
     let computedHeight: CGFloat = subviewsInLayoutOrder
       .filter({ validateScrollView($0) })
       .reduce(CGFloat(0), { value, view in
-        let insets = spaceManager.customInsets(for: (view as? FamilyWrapperView)?.view ?? view)
-        let height = contentSizeForView(view.documentView ?? view).height
-        return value + height + insets.top + insets.bottom
+        return value + contentSizeForView(view.documentView ?? view).height
       })
+    let computedInsets: CGFloat = subviewsInLayoutOrder
+      .filter({ validateScrollView($0) })
+      .reduce(CGFloat(0), { value, view in
+        let insets = spaceManager.customInsets(for: view.documentView ?? view)
+        return value + insets.top + insets.bottom
+      })
+
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
+    height += computedInsets
 
     if computedHeight < minimumContentHeight {
       height -= contentInsets.top
