@@ -383,7 +383,8 @@ public class FamilyScrollView: NSScrollView {
       .filter({ validateScrollView($0) })
       .reduce(CGFloat(0), { value, view in
         let insets = spaceManager.customInsets(for: (view as? FamilyWrapperView)?.view ?? view)
-        return value + (view.documentView?.frame.size.height ?? 0) + insets.top + insets.bottom
+        let height = contentSizeForView(view.documentView ?? view).height
+        return value + height + insets.top + insets.bottom
       })
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
