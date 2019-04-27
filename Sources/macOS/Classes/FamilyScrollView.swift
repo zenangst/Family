@@ -346,7 +346,7 @@ public class FamilyScrollView: NSScrollView {
       var newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
 
       if newHeight == 0 {
-        newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+        newHeight = floor(fmin(contentView.frame.height, scrollView.contentSize.height))
       }
 
       // Only scroll if the views content offset is less than its content size height
