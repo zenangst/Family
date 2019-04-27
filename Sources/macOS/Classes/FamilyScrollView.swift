@@ -288,10 +288,10 @@ public class FamilyScrollView: NSScrollView {
 
         let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - yOffsetOfCurrentSubview, 0.0)
         let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
-        var newHeight: CGFloat = fmin(remainingBoundsHeight, remainingContentHeight)
+        var newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
 
         if newHeight == 0 {
-          newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+          newHeight = floor(fmin(contentView.frame.height, scrollView.contentSize.height))
         }
 
         frame.origin.x = insets.left
@@ -354,7 +354,12 @@ public class FamilyScrollView: NSScrollView {
       let shouldScroll = contentOffset.y <= entry.contentSize.height &&
         frame.size.height < entry.contentSize.height
 
-      if shouldScroll {
+      if !(entry.view is NSCollectionView) {
+        if scrollView.frame != CGRect(origin: entry.origin, size: entry.contentSize) {
+          scrollView.frame.origin.y = entry.origin.y
+          scrollView.frame.size.height = entry.contentSize.height
+        }
+      } else if shouldScroll {
         scrollView.contentView.scroll(contentOffset)
         scrollView.frame.origin.y = frame.origin.y
         scrollView.frame.size.height = newHeight
