@@ -288,10 +288,10 @@ public class FamilyScrollView: NSScrollView {
 
         let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - yOffsetOfCurrentSubview, 0.0)
         let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
-        var newHeight: CGFloat = fmin(remainingBoundsHeight, remainingContentHeight)
+        var newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
 
         if newHeight == 0 {
-          newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+          newHeight = floor(fmin(contentView.frame.height, scrollView.contentSize.height))
         }
 
         frame.origin.x = insets.left
@@ -303,6 +303,10 @@ public class FamilyScrollView: NSScrollView {
         if !(scrollView.documentView is NSCollectionView) &&
           scrollView.documentView?.frame.size != CGSize(width: frame.size.width, height: contentSize.height) {
           scrollView.documentView?.frame.size = CGSize(width: frame.size.width, height: contentSize.height)
+        }
+
+        if scrollView.documentView!.frame.size.width != frame.width {
+          scrollView.documentView!.frame.size.width = frame.width
         }
 
         if scrollView.frame != frame {
@@ -318,15 +322,6 @@ public class FamilyScrollView: NSScrollView {
       documentView?.frame.size = cache.contentSize
       cache.state = .isFinished
     }
-
-    let currentOffset = self.contentOffset.y + contentView.contentInsets.top
-    let documentHeight = self.documentView!.frame.size.height
-
-    // Reached the top
-    guard currentOffset >= 0 else { return }
-
-    // Reached the end
-    guard self.documentVisibleRect.maxY <= documentHeight else { return }
 
     for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
       guard let entry = cache.entry(for: scrollView.documentView!) else { continue }
@@ -346,7 +341,7 @@ public class FamilyScrollView: NSScrollView {
       var newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
 
       if newHeight == 0 {
-        newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+        newHeight = floor(fmin(contentView.frame.height, scrollView.contentSize.height))
       }
 
       // Only scroll if the views content offset is less than its content size height
@@ -354,7 +349,12 @@ public class FamilyScrollView: NSScrollView {
       let shouldScroll = contentOffset.y <= entry.contentSize.height &&
         frame.size.height < entry.contentSize.height
 
-      if shouldScroll {
+      if !(entry.view is NSCollectionView) {
+        if scrollView.frame != CGRect(origin: entry.origin, size: entry.contentSize) {
+          scrollView.frame.origin.y = entry.origin.y
+          scrollView.frame.size.height = entry.contentSize.height
+        }
+      } else if shouldScroll {
         scrollView.contentView.scroll(contentOffset)
         scrollView.frame.origin.y = frame.origin.y
         scrollView.frame.size.height = newHeight
@@ -379,17 +379,25 @@ public class FamilyScrollView: NSScrollView {
   }
 
   private func computeContentSize() -> CGSize {
-    let computedHeight: CGFloat = subviewsInLayoutOrder
+    let validSubviews = subviewsInLayoutOrder
       .filter({ validateScrollView($0) })
-      .reduce(CGFloat(0), { value, view in
-        let insets = spaceManager.customInsets(for: (view as? FamilyWrapperView)?.view ?? view)
-        return value + (view.documentView?.frame.size.height ?? 0) + insets.top + insets.bottom
-      })
+
+    let computedHeight: CGFloat = validSubviews.reduce(CGFloat(0), { value, view in
+      return value + contentSizeForView(view.documentView ?? view).height
+    })
+
+    let computedInsets: CGFloat = validSubviews.reduce(CGFloat(0), { value, view in
+      let insets = spaceManager.customInsets(for: view.documentView ?? view)
+      return value + insets.top + insets.bottom
+    })
+
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
 
-    if computedHeight < minimumContentHeight {
+    if computedHeight <= minimumContentHeight {
       height -= contentInsets.top
+    } else {
+      height += computedInsets
     }
 
     if isChildViewController {
