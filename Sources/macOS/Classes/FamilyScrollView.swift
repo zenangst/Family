@@ -305,6 +305,10 @@ public class FamilyScrollView: NSScrollView {
           scrollView.documentView?.frame.size = CGSize(width: frame.size.width, height: contentSize.height)
         }
 
+        if scrollView.documentView!.frame.size.width != frame.width {
+          scrollView.documentView!.frame.size.width = frame.width
+        }
+
         if scrollView.frame != frame {
           scrollView.frame = frame
         }
@@ -318,9 +322,6 @@ public class FamilyScrollView: NSScrollView {
       documentView?.frame.size = cache.contentSize
       cache.state = .isFinished
     }
-
-    let currentOffset = self.contentOffset.y + contentView.contentInsets.top
-    let documentHeight = self.documentView!.frame.size.height
 
     for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
       guard let entry = cache.entry(for: scrollView.documentView!) else { continue }
