@@ -327,13 +327,18 @@ public class FamilyScrollView: NSScrollView {
       guard let entry = cache.entry(for: scrollView.documentView!) else { continue }
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
+      var scrollViewContentOffset = self.contentOffset
+
+      // Constrain the computed offset to be inside of document visible rect.
+      scrollViewContentOffset.y = min(documentVisibleRect.origin.y,
+                                      cache.contentSize.height - documentVisibleRect.size.height)
 
       if self.contentOffset.y < entry.origin.y {
         contentOffset.y = 0
         frame.origin.y = round(entry.origin.y)
       } else {
-        contentOffset.y = self.contentOffset.y - entry.origin.y
-        frame.origin.y = round(self.contentOffset.y)
+        contentOffset.y = scrollViewContentOffset.y - entry.origin.y
+        frame.origin.y = round(scrollViewContentOffset.y)
       }
 
       let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
@@ -382,7 +387,7 @@ public class FamilyScrollView: NSScrollView {
     let validSubviews = subviewsInLayoutOrder
       .filter({ validateScrollView($0) })
 
-    let computedHeight: CGFloat = validSubviews.reduce(CGFloat(0), { value, view in
+    var computedHeight: CGFloat = validSubviews.reduce(CGFloat(0), { value, view in
       return value + contentSizeForView(view.documentView ?? view).height
     })
 
@@ -391,13 +396,13 @@ public class FamilyScrollView: NSScrollView {
       return value + insets.top + insets.bottom
     })
 
+    computedHeight += computedInsets
+
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
 
     if computedHeight <= minimumContentHeight {
       height -= contentInsets.top
-    } else {
-      height += computedInsets
     }
 
     if isChildViewController {
