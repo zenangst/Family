@@ -259,6 +259,13 @@ public class FamilyScrollView: NSScrollView {
 
   private func validateScrollView(_ scrollView: NSScrollView) -> Bool {
     guard scrollView.documentView != nil else { return false }
+
+    // Exclude collection views that are smaller than its item size.
+    if let collectionView = scrollView.documentView as? NSCollectionView,
+      collectionView.dataSource?.collectionView(collectionView, numberOfItemsInSection: 0) == 0 {
+      return false
+    }
+
     return scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0)
   }
 
@@ -266,6 +273,8 @@ public class FamilyScrollView: NSScrollView {
     guard isPerformingBatchUpdates == false,
       !isDeallocating,
       cache.state != .isRunning else { return }
+
+    var scrollViewContentOffset = self.contentOffset
 
     if cache.state == .empty {
       cache.state = .isRunning
@@ -278,22 +287,30 @@ public class FamilyScrollView: NSScrollView {
         var frame = scrollView.frame
         var contentOffset = scrollView.contentOffset
 
+        scrollViewContentOffset.y = min(documentVisibleRect.origin.y,
+                                        contentSize.height - documentVisibleRect.size.height)
+
         if self.contentOffset.y < yOffsetOfCurrentSubview {
           contentOffset.y = 0
           frame.origin.y = round(yOffsetOfCurrentSubview)
         } else {
-          contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
-          frame.origin.y = round(self.contentOffset.y)
+          contentOffset.y = scrollViewContentOffset.y - yOffsetOfCurrentSubview
+          frame.origin.y = round(scrollViewContentOffset.y)
         }
 
-        let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - yOffsetOfCurrentSubview, 0.0)
+        let remainingBoundsHeight = fmax(documentVisibleRect.maxY - frame.minY, 0.0)
         let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
-        var newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
+        var newHeight: CGFloat = abs(fmin(documentVisibleRect.maxY, contentSize.height))
 
-        if newHeight == 0 {
-          newHeight = floor(fmin(contentView.frame.height, scrollView.contentSize.height))
+        if remainingBoundsHeight <= -self.frame.size.height {
+          newHeight = 0
         }
 
+        if remainingContentHeight <= -self.frame.size.height {
+          newHeight = 0
+        }
+
+        frame.origin.y = yOffsetOfCurrentSubview
         frame.origin.x = insets.left
         frame.size.height = newHeight
         frame.size.width = round(self.frame.size.width) - insets.left - insets.right
@@ -327,7 +344,6 @@ public class FamilyScrollView: NSScrollView {
       guard let entry = cache.entry(for: scrollView.documentView!) else { continue }
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
-      var scrollViewContentOffset = self.contentOffset
 
       // Constrain the computed offset to be inside of document visible rect.
       scrollViewContentOffset.y = min(documentVisibleRect.origin.y,
@@ -335,18 +351,22 @@ public class FamilyScrollView: NSScrollView {
 
       if self.contentOffset.y < entry.origin.y {
         contentOffset.y = 0
-        frame.origin.y = round(entry.origin.y)
+        frame.origin.y = abs(entry.origin.y)
       } else {
-        contentOffset.y = scrollViewContentOffset.y - entry.origin.y
-        frame.origin.y = round(scrollViewContentOffset.y)
+        contentOffset.y = abs(scrollViewContentOffset.y - entry.origin.y)
+        frame.origin.y = abs(scrollViewContentOffset.y)
       }
 
-      let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
+      let remainingBoundsHeight = fmax(documentVisibleRect.maxY - frame.minY, 0.0)
       let remainingContentHeight = fmax(entry.contentSize.height - contentOffset.y, 0.0)
-      var newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
+      var newHeight: CGFloat = abs(fmin(documentVisibleRect.maxY, entry.contentSize.height))
 
-      if newHeight == 0 {
-        newHeight = floor(fmin(contentView.frame.height, scrollView.contentSize.height))
+      if remainingBoundsHeight <= -self.frame.size.height {
+        newHeight = 0
+      }
+
+      if remainingContentHeight <= -self.frame.size.height {
+        newHeight = 0
       }
 
       // Only scroll if the views content offset is less than its content size height
@@ -355,16 +375,27 @@ public class FamilyScrollView: NSScrollView {
         frame.size.height < entry.contentSize.height
 
       if !(entry.view is NSCollectionView) {
-        if scrollView.frame != CGRect(origin: entry.origin, size: entry.contentSize) {
-          scrollView.frame.origin.y = entry.origin.y
-          scrollView.frame.size.height = entry.contentSize.height
+        if self.contentOffset.y < entry.origin.y {
+          scrollView.contentOffset.y = contentOffset.y
+        } else {
+          frame.origin.y = entry.origin.y
         }
       } else if shouldScroll {
-        scrollView.contentView.scroll(contentOffset)
         scrollView.frame.origin.y = frame.origin.y
+        scrollView.contentOffset.y = contentOffset.y
         scrollView.frame.size.height = newHeight
-      } else if scrollView.frame.origin.y != entry.origin.y {
-        scrollView.frame.origin.y = entry.origin.y
+      } else {
+        frame.origin.y = entry.origin.y
+        // Reset content offset to avoid setting offsets that
+        // look liked `clipsToBounds` bugs.
+        if self.contentOffset.y < entry.maxY {
+          scrollView.contentOffset.y = 0
+        }
+      }
+
+      if compare(scrollView.frame.origin, to: frame.origin) ||
+        compare(scrollView.frame.size, to: frame.size) {
+        scrollView.frame = frame
       }
     }
   }
@@ -411,5 +442,13 @@ public class FamilyScrollView: NSScrollView {
     }
 
     return CGSize(width: bounds.size.width, height: height)
+  }
+
+  internal func compare(_ lhs: CGSize, to rhs: CGSize) -> Bool {
+    return (abs(lhs.height - rhs.height) <= 0.001)
+  }
+
+  internal func compare(_ lhs: CGPoint, to rhs: CGPoint) -> Bool {
+    return (abs(lhs.y - rhs.y) <= 0.001)
   }
 }
