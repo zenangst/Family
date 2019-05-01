@@ -348,8 +348,8 @@ public class FamilyScrollView: NSScrollView {
       var contentOffset = scrollView.contentOffset
 
       // Constrain the computed offset to be inside of document visible rect.
-      scrollViewContentOffset.y = min(documentVisibleRect.origin.y,
-                                      cache.contentSize.height - documentVisibleRect.size.height)
+      scrollViewContentOffset.y = min(documentVisibleRect.origin.y + contentInsets.top,
+                                      cache.contentSize.height - documentVisibleRect.size.height + contentInsets.top)
 
       if self.contentOffset.y < entry.origin.y {
         contentOffset.y = 0
