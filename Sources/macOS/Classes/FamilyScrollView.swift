@@ -302,7 +302,7 @@ public class FamilyScrollView: NSScrollView {
 
         let remainingBoundsHeight = fmax(documentVisibleRect.maxY - frame.minY, 0.0)
         let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
-        var newHeight: CGFloat = abs(fmin(documentVisibleRect.maxY, contentSize.height))
+        var newHeight: CGFloat = abs(fmin(documentVisibleRect.size.height, contentSize.height))
 
         if remainingBoundsHeight <= -self.frame.size.height {
           newHeight = 0
@@ -361,7 +361,7 @@ public class FamilyScrollView: NSScrollView {
 
       let remainingBoundsHeight = fmax(documentVisibleRect.maxY - frame.minY, 0.0)
       let remainingContentHeight = fmax(entry.contentSize.height - contentOffset.y, 0.0)
-      var newHeight: CGFloat = abs(fmin(documentVisibleRect.maxY, entry.contentSize.height))
+      var newHeight: CGFloat = abs(fmin(documentVisibleRect.size.height, entry.contentSize.height))
 
       if remainingBoundsHeight <= -self.frame.size.height {
         newHeight = 0
