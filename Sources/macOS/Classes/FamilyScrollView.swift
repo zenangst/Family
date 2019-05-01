@@ -142,11 +142,14 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func scrollTo(_ point: CGPoint, in view: NSView) {
-    guard isScrollingByProxy,
-      !isScrolling,
-      !layoutIsRunning,
-      view.window?.isVisible == true,
-      let entry = cache.entry(for: view) else { return }
+    let shouldScrollByProxy = isScrollingByProxy &&
+      !isScrolling &&
+      !layoutIsRunning &&
+      view.window?.isVisible == true
+    defer { isScrollingByProxy = false }
+    guard shouldScrollByProxy, let entry = cache.entry(for: view) else {
+      return
+    }
     var newOffset = CGPoint(x: self.contentOffset.x,
                             y: entry.origin.y + point.y)
     if newOffset.y < contentOffset.y {
@@ -160,7 +163,6 @@ public class FamilyScrollView: NSScrollView {
     contentView.scroll(newOffset)
     // This is invoked to avoid animation stutter.
     contentView.scroll(to: newOffset)
-    isScrollingByProxy = false
   }
 
   // MARK: - Window resizing
