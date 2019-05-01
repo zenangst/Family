@@ -259,6 +259,13 @@ public class FamilyScrollView: NSScrollView {
 
   private func validateScrollView(_ scrollView: NSScrollView) -> Bool {
     guard scrollView.documentView != nil else { return false }
+
+    // Exclude collection views that are smaller than its item size.
+    if let collectionView = scrollView.documentView as? NSCollectionView,
+      collectionView.dataSource?.collectionView(collectionView, numberOfItemsInSection: 0) == 0 {
+      return false
+    }
+
     return scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0)
   }
 
