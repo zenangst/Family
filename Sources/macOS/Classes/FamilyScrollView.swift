@@ -262,10 +262,11 @@ public class FamilyScrollView: NSScrollView {
   private func validateScrollView(_ scrollView: NSScrollView) -> Bool {
     guard scrollView.documentView != nil else { return false }
 
-    // Exlucde empty collection views.
-    if let collectionView = scrollView.documentView as? NSCollectionView,
-      collectionView.dataSource?.collectionView(collectionView, numberOfItemsInSection: 0) == 0 {
-      return false
+    // Exclude empty collection views.
+    if let collectionView = scrollView.documentView as? NSCollectionView {
+      guard collectionView.numberOfSections > 0 else { return false }
+      guard collectionView.numberOfItems(inSection: 0) > 0 else { return false }
+      return true
     }
 
     return scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0)
