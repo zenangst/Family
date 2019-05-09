@@ -230,7 +230,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
-    scrollView.layoutViews(withDuration: 0.25, force: false) {
+    scrollView.layoutViews(withDuration: NSAnimationContext.current.duration, force: false) {
       completion?(self)
     }
   }
