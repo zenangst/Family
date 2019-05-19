@@ -376,6 +376,7 @@ public class FamilyScrollView: NSScrollView {
       if scrollView.frame.origin.x != insets.left {
         frame.origin.x = insets.left
       }
+
       let viewWidth = round(self.frame.size.width) - insets.left - insets.right
       if scrollView.frame.size.width != viewWidth {
         frame.size.width = viewWidth
@@ -403,6 +404,7 @@ public class FamilyScrollView: NSScrollView {
       if compare(scrollView.frame.origin, to: frame.origin) ||
         compare(scrollView.frame.size, to: frame.size) {
         scrollView.frame = frame
+        scrollView.documentView?.frame.size.height = entry.contentSize.height
       }
     }
   }
