@@ -328,10 +328,6 @@ public class FamilyScrollView: NSScrollView {
           scrollView.documentView!.frame.size.width = frame.width
         }
 
-        if scrollView.frame != frame {
-          scrollView.frame = frame
-        }
-
         cache.add(entry: FamilyViewControllerAttributes(view: scrollView.documentView!,
                                                         origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),
                                                         contentSize: contentSize))
@@ -344,6 +340,7 @@ public class FamilyScrollView: NSScrollView {
 
     for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
       guard let entry = cache.entry(for: scrollView.documentView!) else { continue }
+      let insets = spaceManager.customInsets(for: scrollView.documentView!)
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
 
@@ -375,6 +372,14 @@ public class FamilyScrollView: NSScrollView {
       // and if the frame is less than the content size height.
       let shouldScroll = contentOffset.y <= entry.contentSize.height &&
         frame.size.height < entry.contentSize.height
+
+      if scrollView.frame.origin.x != insets.left {
+        frame.origin.x = insets.left
+      }
+      let viewWidth = round(self.frame.size.width) - insets.left - insets.right
+      if scrollView.frame.size.width != viewWidth {
+        frame.size.width = viewWidth
+      }
 
       if !(entry.view is NSCollectionView) {
         if self.contentOffset.y < entry.origin.y {
