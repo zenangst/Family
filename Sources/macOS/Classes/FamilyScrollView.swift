@@ -184,7 +184,7 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func didAddScrollViewToContainer(_ scrollView: NSScrollView) {
-    if familyDocumentView.scrollViews.index(of: scrollView) != nil {
+    if familyDocumentView.scrollViews.firstIndex(of: scrollView) != nil {
       rebuildSubviewsInLayoutOrder()
       subviewsInLayoutOrder.removeAll()
 
@@ -327,6 +327,8 @@ public class FamilyScrollView: NSScrollView {
       if remainingContentHeight <= -self.frame.size.height {
         newHeight = 0
       }
+
+      frame.size.height = newHeight
 
       // Only scroll if the views content offset is less than its content size height
       // and if the frame is less than the content size height.
