@@ -63,7 +63,7 @@ public class FamilyDocumentView: NSView {
 
   override public func scroll(_ point: NSPoint) {
     super.scroll(point)
-    familyScrollView?.layoutViews()
+    familyScrollView?.layoutViews(withDuration: nil, force: false, completion: nil)
   }
 
   private func rebuildSubviewsInLayoutOrder(exceptSubview: View? = nil) {

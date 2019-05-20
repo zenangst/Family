@@ -7,12 +7,15 @@ class FamilyContentViewTests: XCTestCase {
 
 
 
-    override func layoutViews(withDuration duration: CFTimeInterval? = nil,
-                              force: Bool = false,
-                              completion: (() -> Void)? = nil) {
+    override func layoutViews(withDuration duration: CFTimeInterval?,
+                              allowsImplicitAnimation: Bool,
+                              force: Bool,
+                              completion: (() -> Void)?) {
       super.layoutViews(
         withDuration: duration,
-        force: force
+        allowsImplicitAnimation: true,
+        force: force,
+        completion: nil
       )
       didLayout = true
     }

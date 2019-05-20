@@ -37,7 +37,6 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.isDeallocating = true
     children.forEach { $0.removeFromParent() }
     purgeRemovedViews()
-
     if let eventHandlerKeyDown = eventHandlerKeyDown { NSEvent.removeMonitor(eventHandlerKeyDown) }
   }
 
@@ -64,8 +63,8 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
       scrollView.isScrollEnabled = false
       scrollView.frame = view.bounds
     }
-    eventHandlerKeyDown = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { (event) -> NSEvent? in
-      self.scrollView.isScrollingByProxy = true
+    eventHandlerKeyDown = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event -> NSEvent? in
+      self?.scrollView.isScrollingByProxy = true
       return event
     }
   }
@@ -238,7 +237,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
-    scrollView.layoutViews(withDuration: 0.25) {
+    scrollView.layoutViews(withDuration: NSAnimationContext.current.duration, force: false) {
       completion?(self)
     }
   }

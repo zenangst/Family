@@ -49,9 +49,10 @@ public class FamilyScrollView: NSScrollView {
 
   // MARK: - Public methods
 
-  public func layoutViews(withDuration duration: CFTimeInterval? = nil,
-                          force: Bool = false,
-                          completion: (() -> Void)? = nil) {
+  public func layoutViews(withDuration duration: CFTimeInterval?,
+                          allowsImplicitAnimation: Bool = true,
+                          force: Bool,
+                          completion: (() -> Void)?) {
     guard isPerformingBatchUpdates == false, !isDeallocating else { return }
 
     guard !layoutIsRunning || !force else {
@@ -62,17 +63,18 @@ public class FamilyScrollView: NSScrollView {
       layoutIsRunning = true
       NSAnimationContext.runAnimationGroup({ (context) in
         context.duration = duration
-        context.allowsImplicitAnimation = true
+        context.allowsImplicitAnimation = allowsImplicitAnimation
         runLayoutSubviewsAlgorithm()
       }, completionHandler: { [weak self] in
-        self?.runLayoutSubviewsAlgorithm()
-        self?.layoutIsRunning = false
         completion?()
+        self?.layoutIsRunning = false
       })
       return
-    } else if isScrolling {
+    } else if isScrolling || duration == nil {
+      NSAnimationContext.beginGrouping()
       NSAnimationContext.current.duration = 0.0
       NSAnimationContext.current.allowsImplicitAnimation = false
+      NSAnimationContext.endGrouping()
     }
 
     layoutIsRunning = true
@@ -85,45 +87,38 @@ public class FamilyScrollView: NSScrollView {
 
   private func configureObservers() {
     NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(contentViewBoundsDidChange(_:)),
-      name: NSView.boundsDidChangeNotification,
-      object: contentView
+      self, selector: #selector(contentViewBoundsDidChange(_:)),
+      name: NSView.boundsDidChangeNotification, object: contentView
     )
 
     NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(windowDidResize(_:)),
-      name: NSWindow.didResizeNotification,
-      object: nil
+      self,selector: #selector(windowDidResize(_:)),
+      name: NSWindow.didResizeNotification, object: nil
     )
 
     NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(windowDidResize(_:)),
-      name: NSSplitView.didResizeSubviewsNotification,
-      object: nil
+      self, selector: #selector(windowDidResize(_:)),
+      name: NSSplitView.didResizeSubviewsNotification, object: nil
     )
 
     NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(windowDidEndLiveResize(_:)),
-      name: NSWindow.didEndLiveResizeNotification,
-      object: nil
+      self, selector: #selector(windowDidResize(_:)),
+      name: NSSplitView.willResizeSubviewsNotification, object: nil
     )
 
     NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(didLiveScroll),
-      name: NSScrollView.didLiveScrollNotification,
-      object: nil
+      self, selector: #selector(windowDidEndLiveResize(_:)),
+      name: NSWindow.didEndLiveResizeNotification, object: nil
     )
 
     NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(didEndLiveScroll),
-      name: NSScrollView.didEndLiveScrollNotification,
-      object: nil
+      self, selector: #selector(didLiveScroll),
+      name: NSScrollView.didLiveScrollNotification, object: nil
+    )
+
+    NotificationCenter.default.addObserver(
+      self, selector: #selector(didEndLiveScroll),
+      name: NSScrollView.didEndLiveScrollNotification, object: nil
     )
   }
 
@@ -135,41 +130,48 @@ public class FamilyScrollView: NSScrollView {
       let window = window,
       !window.inLiveResize,
       !isScrollingWithWheel {
-      layoutViews(withDuration: 0.0)
+      layoutViews(withDuration: 0.0, force: false, completion: nil)
     }
   }
 
   func scrollTo(_ point: CGPoint, in view: NSView) {
-    guard isScrollingByProxy,
-      !isScrolling,
-      !layoutIsRunning,
-      view.window?.isVisible == true,
-      let entry = cache.entry(for: view) else { return }
+    let shouldScrollByProxy = isScrollingByProxy &&
+      !isScrolling &&
+      !layoutIsRunning &&
+      view.window?.isVisible == true
+    defer { isScrollingByProxy = false }
+    guard shouldScrollByProxy, let entry = cache.entry(for: view) else {
+      return
+    }
     var newOffset = CGPoint(x: self.contentOffset.x,
                             y: entry.origin.y + point.y)
     if newOffset.y < contentOffset.y {
       newOffset.y -= contentView.contentInsets.top
     }
 
+    if point.y == 0 {
+      newOffset.y = 0
+    }
+
     contentView.scroll(newOffset)
     // This is invoked to avoid animation stutter.
     contentView.scroll(to: newOffset)
-    isScrollingByProxy = false
   }
 
   // MARK: - Window resizing
 
-  private func processNewWindowSize(excludeOffscreenViews: Bool) {
+  private func processNewWindowSize() {
+    guard window != nil else { return }
     cache.invalidate()
-    layoutViews(withDuration: 0.0, force: false)
+    layoutViews(withDuration: nil, force: false, completion: nil)
   }
 
   @objc open func windowDidResize(_ notification: Notification) {
-    processNewWindowSize(excludeOffscreenViews: true)
+    processNewWindowSize()
   }
 
   @objc public func windowDidEndLiveResize(_ notification: Notification) {
-    processNewWindowSize(excludeOffscreenViews: false)
+    processNewWindowSize()
   }
 
   public override func viewWillMove(toSuperview newSuperview: NSView?) {
@@ -190,8 +192,9 @@ public class FamilyScrollView: NSScrollView {
         subviewsInLayoutOrder.append(scrollView)
       }
     }
+
     cache.invalidate()
-    runLayoutSubviewsAlgorithm()
+    layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
 
   func didRemoveScrollViewToContainer(_ subview: NSView) {
@@ -229,12 +232,17 @@ public class FamilyScrollView: NSScrollView {
       !(event.phase == .ended || event.momentumPhase == .ended)
     isScrollingWithWheel = isScrolling
 
-    layoutViews(withDuration: 0.0)
+    layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
 
-  func wrapperViewDidChangeFrame(from fromValue: CGRect, to toValue: CGRect) {
+  func wrapperViewDidChangeFrame(_ view: NSView, from fromValue: CGRect, to toValue: CGRect) {
+    guard window != nil else { return }
+    guard round(fromValue.height) != round(toValue.height) else { return }
     cache.invalidate()
-    layoutViews(withDuration: 0.0, force: false)
+    layoutViews(withDuration: nil,
+                allowsImplicitAnimation: false,
+                force: true,
+                completion: nil)
   }
 
   // MARK: - Private methods
@@ -246,6 +254,13 @@ public class FamilyScrollView: NSScrollView {
 
   private func validateScrollView(_ scrollView: NSScrollView) -> Bool {
     guard scrollView.documentView != nil else { return false }
+
+    // Exlucde empty collection views.
+    if let collectionView = scrollView.documentView as? NSCollectionView,
+      collectionView.dataSource?.collectionView(collectionView, numberOfItemsInSection: 0) == 0 {
+      return false
+    }
+
     return scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0)
   }
 
@@ -254,95 +269,111 @@ public class FamilyScrollView: NSScrollView {
       !isDeallocating,
       cache.state != .isRunning else { return }
 
-    if cache.state == .empty {
-      cache.state = .isRunning
-      var yOffsetOfCurrentSubview: CGFloat = 0.0
-      for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
-        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-        let contentSize: CGSize = contentSizeForView(view)
-        let insets = spaceManager.customInsets(for: view)
-        yOffsetOfCurrentSubview += insets.top
-        var frame = scrollView.frame
-        var contentOffset = scrollView.contentOffset
-
-        if self.contentOffset.y < yOffsetOfCurrentSubview {
-          contentOffset.y = 0
-          frame.origin.y = round(yOffsetOfCurrentSubview)
-        } else {
-          contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
-          frame.origin.y = round(self.contentOffset.y)
-        }
-
-        let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
-        let remainingContentHeight = fmax(contentSize.height - contentOffset.y, 0.0)
-        var newHeight: CGFloat = fmin(remainingBoundsHeight, remainingContentHeight)
-
-        if newHeight == 0 {
-          newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
-        }
-
-        frame.origin.x = insets.left
-        frame.size.height = newHeight
-        frame.size.width = round(self.frame.size.width) - insets.left - insets.right
-
-        scrollView.documentView?.frame.size.width = frame.width
-        scrollView.documentView?.frame.size.height = contentSize.height
-        scrollView.frame.origin.x = frame.origin.x
-        scrollView.frame.size = frame.size
-
-        cache.add(entry: FamilyViewControllerAttributes(view: scrollView.documentView!,
-                                                        origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),
-                                                        contentSize: contentSize))
-        yOffsetOfCurrentSubview += contentSize.height + insets.bottom
-      }
-      cache.contentSize = computeContentSize()
-      documentView?.frame.size = cache.contentSize
-      cache.state = .isFinished
-    }
-
-    let currentOffset = self.contentOffset.y + contentView.contentInsets.top
-    let documentHeight = self.documentView!.frame.size.height
-
-    // Reached the top
-    guard currentOffset >= 0 else { return }
-
-    // Reached the end
-    guard self.documentVisibleRect.maxY <= documentHeight else { return }
+    var scrollViewContentOffset = self.contentOffset
+    var yOffsetOfCurrentSubview: CGFloat = 0.0
 
     for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
-      guard let entry = cache.entry(for: scrollView.documentView!) else { continue }
+      guard let view = scrollView.documentView else { continue }
+      let contentSize: CGSize = contentSizeForView(view)
+      let insets = spaceManager.customInsets(for: view)
       var frame = scrollView.frame
+      yOffsetOfCurrentSubview += insets.top
+
+      let entry: FamilyViewControllerAttributes
+      if let cache = cache.entry(for: view) {
+        entry = cache
+      } else {
+        frame.origin.y = yOffsetOfCurrentSubview
+        frame.origin.x = insets.left
+        frame.size.height = min(visibleRect.height, contentSize.height)
+        frame.size.width = round(self.frame.size.width) - insets.left - insets.right
+        entry = FamilyViewControllerAttributes(view: view,
+                                               origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),
+                                               contentSize: contentSize)
+        cache.add(entry: entry)
+        yOffsetOfCurrentSubview += contentSize.height + insets.bottom
+
+        if !(scrollView.documentView is NSCollectionView) &&
+          view.frame.size != CGSize(width: frame.size.width, height: contentSize.height) {
+          view.frame.size = CGSize(width: frame.size.width, height: contentSize.height)
+        } else if view.frame.size.width != frame.size.width {
+          view.frame.size.width = frame.size.width
+        }
+        cache.state = .isRunning
+      }
+
       var contentOffset = scrollView.contentOffset
+
+      // Constrain the computed offset to be inside of document visible rect.
+      scrollViewContentOffset.y = min(documentVisibleRect.origin.y + contentInsets.top,
+                                      cache.contentSize.height - documentVisibleRect.size.height + contentInsets.top)
 
       if self.contentOffset.y < entry.origin.y {
         contentOffset.y = 0
-        frame.origin.y = round(entry.origin.y)
+        frame.origin.y = abs(entry.origin.y)
       } else {
-        contentOffset.y = self.contentOffset.y - entry.origin.y
-        frame.origin.y = round(self.contentOffset.y)
+        contentOffset.y = abs(scrollViewContentOffset.y - entry.origin.y)
+        frame.origin.y = abs(scrollViewContentOffset.y)
       }
 
-      let remainingBoundsHeight = fmax(self.documentVisibleRect.maxY - frame.minY, 0.0)
+      let remainingBoundsHeight = fmax(documentVisibleRect.maxY - frame.minY, 0.0)
       let remainingContentHeight = fmax(entry.contentSize.height - contentOffset.y, 0.0)
-      var newHeight: CGFloat = floor(fmin(remainingBoundsHeight, remainingContentHeight))
+      var newHeight: CGFloat = abs(fmin(documentVisibleRect.size.height, entry.contentSize.height))
 
-      if newHeight == 0 {
-        newHeight = fmin(contentView.frame.height, scrollView.contentSize.height)
+      if remainingBoundsHeight <= -self.frame.size.height {
+        newHeight = 0
       }
+
+      if remainingContentHeight <= -self.frame.size.height {
+        newHeight = 0
+      }
+
+      frame.size.height = newHeight
 
       // Only scroll if the views content offset is less than its content size height
       // and if the frame is less than the content size height.
       let shouldScroll = contentOffset.y <= entry.contentSize.height &&
         frame.size.height < entry.contentSize.height
 
-      if shouldScroll {
-        scrollView.contentView.scroll(contentOffset)
-        scrollView.frame.origin.y = frame.origin.y
-        scrollView.frame.size.height = newHeight
-      } else if scrollView.frame.origin.y != entry.origin.y {
-        scrollView.frame.origin.y = entry.origin.y
+      if scrollView.frame.origin.x != insets.left {
+        frame.origin.x = insets.left
+      }
+
+      let viewWidth = round(self.frame.size.width) - insets.left - insets.right
+      if scrollView.frame.size.width != viewWidth {
+        frame.size.width = viewWidth
+      }
+
+      if !(entry.view is NSCollectionView) {
+        if self.contentOffset.y < entry.origin.y {
+          scrollView.contentOffset.y = contentOffset.y
+        } else if frame.origin.y != entry.origin.y {
+          frame.origin.y = entry.origin.y
+        }
+      } else if shouldScroll {
+        if scrollView.contentOffset.y != contentOffset.y {
+          scrollView.contentOffset.y = contentOffset.y
+        }
+      } else {
+        if frame.origin.y != entry.origin.y {
+          frame.origin.y = entry.origin.y
+        }
+        // Reset content offset to avoid setting offsets that
+        // look liked `clipsToBounds` bugs.
+        if self.contentOffset.y < entry.maxY && scrollView.contentOffset.y != 0 {
+          scrollView.contentOffset.y = 0
+        }
+      }
+
+      if scrollView.frame != frame {
+        scrollView.frame = frame
       }
     }
+
+    guard cache.state != .isFinished else { return }
+    cache.contentSize = computeContentSize()
+    documentView?.frame.size = cache.contentSize
+    cache.state = .isFinished
   }
 
   private func contentSizeForView(_ view: NSView) -> CGSize {
@@ -360,16 +391,24 @@ public class FamilyScrollView: NSScrollView {
   }
 
   private func computeContentSize() -> CGSize {
-    let computedHeight: CGFloat = subviewsInLayoutOrder
+    let validSubviews = subviewsInLayoutOrder
       .filter({ validateScrollView($0) })
-      .reduce(CGFloat(0), { value, view in
-        let insets = spaceManager.customInsets(for: (view as? FamilyWrapperView)?.view ?? view)
-        return value + (view.documentView?.frame.size.height ?? 0) + insets.top + insets.bottom
-      })
+
+    var computedHeight: CGFloat = validSubviews.reduce(CGFloat(0), { value, view in
+      return value + contentSizeForView(view.documentView ?? view).height
+    })
+
+    let computedInsets: CGFloat = validSubviews.reduce(CGFloat(0), { value, view in
+      let insets = spaceManager.customInsets(for: view.documentView ?? view)
+      return value + insets.top + insets.bottom
+    })
+
+    computedHeight += computedInsets
+
     let minimumContentHeight = bounds.height
     var height = fmax(computedHeight, minimumContentHeight)
 
-    if computedHeight < minimumContentHeight {
+    if computedHeight <= minimumContentHeight {
       height -= contentInsets.top
     }
 
@@ -379,5 +418,13 @@ public class FamilyScrollView: NSScrollView {
     }
 
     return CGSize(width: bounds.size.width, height: height)
+  }
+
+  internal func compare(_ lhs: CGSize, to rhs: CGSize) -> Bool {
+    return (abs(lhs.height - rhs.height) <= 0.001)
+  }
+
+  internal func compare(_ lhs: CGPoint, to rhs: CGPoint) -> Bool {
+    return (abs(lhs.y - rhs.y) <= 0.001)
   }
 }
