@@ -272,7 +272,7 @@ public class FamilyScrollView: NSScrollView {
     var scrollViewContentOffset = self.contentOffset
     var yOffsetOfCurrentSubview: CGFloat = 0.0
 
-    for (offset, scrollView) in subviewsInLayoutOrder.enumerated() where validateScrollView(scrollView) {
+    for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
       guard let view = scrollView.documentView else { continue }
       let contentSize: CGSize = contentSizeForView(view)
       let insets = spaceManager.customInsets(for: view)
