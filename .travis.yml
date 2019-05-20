@@ -1,11 +1,11 @@
 os: osx
-osx_image: xcode10.1
+osx_image: xcode10.2
 language: swift
 
 script:
   - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-macOS" -sdk macosx -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F macOS
-  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-tvOS" -destination 'platform=tvOS Simulator,name=Apple TV,OS=11.4' -enableCodeCoverage YES clean build test | xcpretty
+  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-tvOS" -destination 'platform=tvOS Simulator,name=Apple TV,OS=12.2' -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F tvOS
   - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-iOS" -sdk iphonesimulator -destination name="iPhone 8" -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F iOS
