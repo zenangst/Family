@@ -69,13 +69,6 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 
-  open override func viewDidAppear() {
-    super.viewDidAppear()
-    // Make sure that we do another layout pass when the view controller appears.
-    // It helps ensure that we get the correct sizes on the subviews inside the `FamilyScrollView`.
-    NotificationCenter.default.post(Notification.init(name: NSWindow.didResizeNotification))
-  }
-
   open override func viewDidLayout() {
     super.viewDidLayout()
 
