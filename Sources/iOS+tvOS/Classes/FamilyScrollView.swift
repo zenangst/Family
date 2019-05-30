@@ -84,6 +84,16 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     fatalError("init(coder:) has not been implemented")
   }
 
+  public override func setNeedsLayout() {
+    guard !isDeallocating else { return }
+    super.setNeedsLayout()
+  }
+
+  public override func layoutIfNeeded() {
+    guard !isDeallocating else { return }
+    super.layoutIfNeeded()
+  }
+
   /// Tells the view that its superview changed.
   open override func didMoveToSuperview() {
     super.didMoveToSuperview()
