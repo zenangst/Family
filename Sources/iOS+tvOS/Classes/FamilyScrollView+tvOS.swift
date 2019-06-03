@@ -1,6 +1,11 @@
+#if os(tvOS)
 import UIKit
 
 extension FamilyScrollView {
+  /// The layout algorithm simply lays out the view in linear order vertically
+  /// based on the views index inside `subviewsInLayoutOrder`. This is invoked
+  /// when a view changes size or origin. It also scales the frame of scroll views
+  /// in order to keep dequeuing for table and collection views.
   internal func runLayoutSubviewsAlgorithm() {
     guard cache.state != .isRunning else { return }
 
@@ -37,6 +42,10 @@ extension FamilyScrollView {
           newHeight = fmin(documentView.frame.height, newHeight)
         }
 
+        if newHeight == 0 {
+          newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
+        }
+
         frame.origin.y = yOffsetOfCurrentSubview
         frame.origin.x = insets.left
         frame.size.width = self.frame.size.width - insets.left - insets.right
@@ -69,24 +78,27 @@ extension FamilyScrollView {
 
       if self.contentOffset.y < entry.origin.y {
         contentOffset.y = 0.0
-        frame.origin.y = abs(round(entry.origin.y))
+        frame.origin.y = round(entry.origin.y)
       } else {
         contentOffset.y = self.contentOffset.y - entry.origin.y
-        frame.origin.y = abs(round(self.contentOffset.y))
+        frame.origin.y = round(self.contentOffset.y)
       }
 
-      let remainingBoundsHeight = fmax(bounds.maxY - entry.origin.y, 0.0)
-      let remainingContentHeight = fmax(scrollView.contentSize.height - contentOffset.y, 0.0)
-      var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
+      let remainingBoundsHeight = bounds.maxY - entry.origin.y
+      let remainingContentHeight = entry.contentSize.height - contentOffset.y
+      var newHeight: CGFloat = fmin(documentView.frame.height, scrollView.contentSize.height)
 
-      if scrollView is FamilyWrapperView {
-        newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
-      } else {
-        newHeight = fmin(documentView.frame.height, newHeight)
+      if remainingBoundsHeight <= -self.frame.size.height {
+        newHeight = 0
       }
 
-      let shouldScroll = self.contentOffset.y >= entry.origin.y &&
-        self.contentOffset.y <= entry.maxY
+      if remainingContentHeight <= -self.frame.size.height {
+        newHeight = 0
+      }
+
+      let shouldScroll = (self.contentOffset.y > frame.origin.y &&
+        self.contentOffset.y < entry.maxY) &&
+        frame.height >= documentView.frame.height
 
       if scrollView is FamilyWrapperView {
         if self.contentOffset.y < entry.origin.y {
@@ -107,9 +119,12 @@ extension FamilyScrollView {
 
       frame.size.height = newHeight
 
-      if scrollView.frame != frame {
+      if compare(scrollView.frame.origin, to: frame.origin) ||
+        compare(scrollView.frame.size, to: frame.size) {
         scrollView.frame = frame
       }
     }
+
   }
 }
+#endif
