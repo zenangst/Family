@@ -170,6 +170,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// - Parameter scrollView: The scroll view that will be configured.
   func configureScrollView(_ scrollView: UIScrollView) {
     #if os(iOS)
+    scrollView.isDirectionalLockEnabled = true
     scrollView.scrollsToTop = false
     if let collectionView = scrollView as? UICollectionView,
       (collectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal {
@@ -242,9 +243,9 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         return
       }
 
-      if strongSelf.scrollViewIsHorizontal(scrollView), newValue.y != 0 {
+      if strongSelf.scrollViewIsHorizontal(scrollView), abs(newValue.y) != 0 {
         scrollView.contentOffset.y = 0
-        strongSelf.layoutSubviews()
+        strongSelf.runLayoutSubviewsAlgorithm()
       }
     })
     observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
