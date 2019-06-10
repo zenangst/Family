@@ -6,7 +6,6 @@ import UIKit
 /// adds the controllers view or custom view to view heirarcy inside the
 /// content view of the `FamilyScrollView`.
 open class FamilyViewController: UIViewController, FamilyFriendly {
-
   var registry = [ViewController: (view: View, observer: NSKeyValueObservation)]()
 
   /// A custom implementation of a `UIScrollView` that handles continious scrolling
@@ -121,11 +120,12 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - height: The height that the child controllers should be constrained to.
   ///   - handler: A closure used to resolve a view other than `.view` on controller used
   ///              to render the view controller.
+  @discardableResult
   public func addChild<T: UIViewController>(_ childController: T,
                                             at index: Int? = nil,
-                                            customInsets insets: Insets? = nil,
+                                            insets: Insets? = nil,
                                             height: CGFloat? = nil,
-                                            view handler: ((T) -> UIView)? = nil) {
+                                            view handler: ((T) -> UIView)? = nil) -> Self {
     if childController.parent != nil {
       childController.removeFromParent()
     }
@@ -146,26 +146,30 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       childController.view.autoresizingMask = [.flexibleWidth]
     }
 
-    addView(subview, at: index, customInsets: insets, withHeight: height)
+    addView(subview, at: index, insets: insets, height: height)
     registry[childController] = (subview, observe(childController))
     scrollView.purgeWrapperViews()
     childController.didMove(toParent: self)
+    return self
   }
 
   /// Adds a collection of view controllers as children of the current view controller.
   ///
   /// - Parameter childControllers: The view controllers to be added as children.
-  public func addChildren(_ childControllers: UIViewController ...) {
-    addChildren(childControllers)
+  @discardableResult
+  public func addChildren(_ childControllers: UIViewController ...) -> Self {
+    return addChildren(childControllers)
   }
 
   /// Adds a collection of view controllers as children of the current view controller.
   ///
   /// - Parameter childControllers: The view controllers to be added as children.
-  public func addChildren(_ childControllers: [UIViewController]) {
+  @discardableResult
+  public func addChildren(_ childControllers: [UIViewController]) -> Self {
     for childController in childControllers {
-      addChild(childController)
+      _ = addChild(childController)
     }
+    return self
   }
 
   /// Add a new view to hierarchy.
@@ -175,22 +179,27 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - index: The index that the view should appear.
   ///   - height: An optional height of the view.
   ///   - insets: The insets that should be applied to the view.
+  @discardableResult
   public func addView(_ subview: View,
                       at index: Int? = nil,
-                      customInsets insets: Insets? = nil,
-                      withHeight height: CGFloat? = nil) {
+                      insets: Insets? = nil,
+                      height: CGFloat? = nil) -> Self {
+    var newWidth = view.bounds.size.width
+
+    if let insets = insets {
+      newWidth = newWidth - insets.left - insets.right
+      setCustomInsets(insets, for: subview)
+    }
+
     if let height = height {
-      subview.frame.size.width = view.bounds.size.width
+      subview.frame.size.width = newWidth
       subview.frame.size.height = height
     } else {
-      subview.frame.size.width = view.bounds.width
+      subview.frame.size.width = newWidth
     }
 
     addOrInsertView(subview, at: index)
-
-    if let insets = insets {
-      setCustomInsets(insets, for: subview)
-    }
+    return self
   }
 
   /// Move child view controller to index.
@@ -198,9 +207,11 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameters:
   ///   - childController: The child view controller that should be moved to index.
   ///   - index: The new index of the child view controller.
-  open func moveChild(_ childController: UIViewController, to index: Int) {
-    guard let entry = registry[childController] else { return }
+  @discardableResult
+  open func moveChild(_ childController: UIViewController, to index: Int) -> Self {
+    guard let entry = registry[childController] else { return self }
     addOrInsertView(entry.view, at: index)
+    return self
   }
 
   /// Returns a collection of view controllers in layout order.
@@ -251,14 +262,17 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - handler: The operations that should be performed as a group.
   ///   - completion: A completion handler that is invoked after the view
   ///                 has laid out its views.
+  @discardableResult
   public func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
-                                  completion: ((FamilyViewController) -> Void)? = nil) {
+                                  completion: ((FamilyViewController) -> Void)? = nil) -> Self {
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
     scrollView.layoutViews(withDuration: 0.25) {
       completion?(self)
     }
+
+    return self
   }
 
   /// Check if a view controller is visible on screen.
@@ -296,7 +310,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   }
 
   /// Remove stray views from view hierarchy.
-  public func purgeRemovedViews() {
+  @discardableResult
+  public func purgeRemovedViews() -> Self {
     for (controller, container) in registry where controller.parent == nil {
       if container.view.superview is FamilyWrapperView {
         container.view.superview?.removeFromSuperview()
@@ -306,6 +321,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       container.observer.invalidate()
       registry.removeValue(forKey: controller)
     }
+
+    return self
   }
 
   // MARK: - Private methods

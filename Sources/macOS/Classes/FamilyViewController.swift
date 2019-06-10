@@ -1,7 +1,6 @@
 import Cocoa
 
 open class FamilyViewController: NSViewController, FamilyFriendly {
-
   public lazy var baseView = NSView()
   public lazy var scrollView: FamilyScrollView = .init()
   /// The scroll view constraints.
@@ -102,11 +101,12 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   ///   - height: The height that the child controllers should be constrained to.
   ///   - handler: A closure used to resolve a view other than `.view` on controller used
   ///              to render the view controller.
+  @discardableResult
   public func addChild<T: ViewController>(_ childController: T,
                                           at index: Int? = nil,
-                                          customInsets insets: Insets? = nil,
+                                          insets: Insets? = nil,
                                           height: CGFloat? = nil,
-                                          view handler: ((T) -> View)? = nil) {
+                                          view handler: ((T) -> View)? = nil) -> Self {
     super.addChild(childController)
 
     let subview: View
@@ -121,25 +121,30 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
 
     scrollView.frame = view.bounds
     subview.frame.size.width = view.bounds.width
-    addView(subview, at: index, customInsets: insets, withHeight: height)
+    addView(subview, at: index, insets: insets, height: height)
     registry[childController] = subview
     scrollView.purgeWrapperViews()
+
+    return self
   }
 
   /// Adds a collection of view controllers as children of the current view controller.
   ///
   /// - Parameter childControllers: The view controllers to be added as children.
-  public func addChildren(_ childControllers: NSViewController ...) {
-    addChildren(childControllers)
+  @discardableResult
+  public func addChildren(_ childControllers: NSViewController ...) -> Self {
+    return addChildren(childControllers)
   }
 
   /// Adds a collection of view controllers as children of the current view controller.
   ///
   /// - Parameter childControllers: The view controllers to be added as children.
-  public func addChildren(_ childControllers: [NSViewController]) {
+  @discardableResult
+  public func addChildren(_ childControllers: [NSViewController]) -> Self {
     for childController in childControllers {
       addChild(childController)
     }
+    return self
   }
 
   /// Add a new view to hierarchy.
@@ -149,10 +154,11 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   ///   - index: The index that the view should appear.
   ///   - height: An optional height of the view.
   ///   - insets: The insets that should be applied to the view.
+  @discardableResult
   public func addView(_ subview: View,
                       at index: Int? = nil,
-                      customInsets insets: Insets? = nil,
-                      withHeight height: CGFloat? = nil) {
+                      insets: Insets? = nil,
+                      height: CGFloat? = nil) -> Self {
     if let height = height {
       subview.frame.size.width = view.bounds.size.width
       subview.frame.size.height = height
@@ -165,6 +171,8 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     if let insets = insets {
       setCustomInsets(insets, for: subview)
     }
+
+    return self
   }
 
   /// Move child view controller to index.
@@ -172,9 +180,11 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   /// - Parameters:
   ///   - childController: The child view controller that should be moved to index.
   ///   - index: The new index of the child view controller.
-  open func moveChild(_ childController: ViewController, to index: Int) {
-    guard let view = registry[childController] else { return }
+  @discardableResult
+  open func moveChild(_ childController: ViewController, to index: Int) -> Self {
+    guard let view = registry[childController] else { return self }
     addOrInsertView(view, at: index)
+    return self
   }
 
   /// Returns a collection of view controllers in layout order.
@@ -225,14 +235,16 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   ///   - handler: The operations that should be performed as a group.
   ///   - completion: A completion handler that is invoked after the view
   ///                 has laid out its views.
+  @discardableResult
   public func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
-                                  completion: ((FamilyViewController) -> Void)?) {
+                                  completion: ((FamilyViewController) -> Void)?) -> Self {
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
     scrollView.layoutViews(withDuration: NSAnimationContext.current.duration, force: false) {
       completion?(self)
     }
+    return self
   }
 
   /// Check if a view controller is visible on screen.
@@ -270,11 +282,13 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   }
 
   /// Remove stray views from view hierarchy.
-  func purgeRemovedViews() {
+  @discardableResult
+  func purgeRemovedViews() -> Self {
     for (controller, view) in registry where controller.parent == nil {
       view.enclosingScrollView?.removeFromSuperview()
       registry.removeValue(forKey: controller)
     }
+    return self
   }
 
   // MARK: - Private methods
