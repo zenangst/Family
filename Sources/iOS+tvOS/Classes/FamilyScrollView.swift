@@ -10,6 +10,14 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
+  public override var bounds: CGRect {
+    willSet {
+      if newValue.width != bounds.width {
+        cache.invalidate()
+      }
+    }
+  }
+
   internal var isDeallocating: Bool = false
   internal var isChildViewController: Bool = false
 
@@ -58,7 +66,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
   /// The content view is where all views get added when a view is used
   /// in the `Family` framework.
-  public var documentView: FamilyDocumentView = FamilyDocumentView()
+  public lazy var documentView: FamilyDocumentView = FamilyDocumentView()
 
   deinit {
     subviewsInLayoutOrder.removeAll()
@@ -71,6 +79,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// - Parameter frame: The frame rectangle for the view, measured in points.
   public required override init(frame: CGRect) {
     super.init(frame: frame)
+    autoresizesSubviews = false
     documentView.delegate = self
     documentView.familyScrollView = self
     documentView.autoresizingMask = self.autoresizingMask
@@ -321,19 +330,29 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     // Make sure that wrapper views have the correct width
     // on their wrapped views.
     for case let wrapperView as FamilyWrapperView in subviewsInLayoutOrder {
-      if wrapperView.view.frame.size.width != frame.size.width {
-        wrapperView.view.frame.size.width = frame.size.width
+      let insets = spaceManager.customInsets(for: wrapperView.view)
+      let expectedWidth = frame.size.width - insets.left - insets.right
+
+      if wrapperView.view.frame.origin.x != insets.left {
+        wrapperView.view.frame.origin.x = insets.left
+      }
+      if wrapperView.view.frame.size.width != expectedWidth {
+        wrapperView.view.frame.size.width = expectedWidth
       }
     }
 
-    documentView.frame = bounds
-    documentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
+    if documentView.frame != bounds {
+      documentView.frame = bounds
+      documentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
+    }
 
     let animationDuration: TimeInterval? = subviewsInLayoutOrder
       .compactMap({ $0.layer.resolveAnimationDuration }).first ?? duration
 
     if let duration = animationDuration {
-      let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState]
+      let options: UIView.AnimationOptions = [
+        .allowUserInteraction, .beginFromCurrentState
+      ]
       UIView.animate(withDuration: duration, delay: 0.0, options: options, animations: {
         self.runLayoutSubviewsAlgorithm()
       }, completion: { _ in completion?() })

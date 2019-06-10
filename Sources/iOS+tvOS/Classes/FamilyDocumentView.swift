@@ -18,6 +18,15 @@ public class FamilyDocumentView: UIView {
     return subviews.compactMap { $0 as? UIScrollView }
   }
 
+  public override init(frame: CGRect) {
+    super.init(frame: frame)
+    autoresizesSubviews = false
+  }
+  
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
   /// Adds a view to the end of the receiver’s list of subviews.
   /// If view do not inherit from `UIScrollView`, the view will be
   /// wrapped in a `FamilyWrapperView` that works as a scroll view

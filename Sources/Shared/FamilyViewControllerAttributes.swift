@@ -1,10 +1,10 @@
 import CoreGraphics
 
 public class FamilyViewControllerAttributes: NSObject {
-  let view: View
-  let origin: CGPoint
-  let contentSize: CGSize
-  let maxY: CGFloat
+  public let view: View
+  public let origin: CGPoint
+  public let contentSize: CGSize
+  public let maxY: CGFloat
 
   init(view: View, origin: CGPoint, contentSize: CGSize) {
     self.view = view

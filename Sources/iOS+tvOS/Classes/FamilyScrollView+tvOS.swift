@@ -38,18 +38,23 @@ extension FamilyScrollView {
 
         if scrollView is FamilyWrapperView {
           newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
+          frame.origin.y = yOffsetOfCurrentSubview
+          frame.origin.x = 0
+          frame.size.width = self.frame.size.width
+          frame.size.height = newHeight
         } else {
           newHeight = fmin(documentView.frame.height, newHeight)
+          frame.origin.y = yOffsetOfCurrentSubview
+          frame.origin.x = insets.left
+          frame.size.width = self.frame.size.width - insets.left - insets.right
+          frame.size.height = newHeight
         }
 
         if newHeight == 0 {
           newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
         }
 
-        frame.origin.y = yOffsetOfCurrentSubview
-        frame.origin.x = insets.left
-        frame.size.width = self.frame.size.width - insets.left - insets.right
-        frame.size.height = newHeight
+
 
         if scrollView.frame != frame {
           scrollView.frame = frame
