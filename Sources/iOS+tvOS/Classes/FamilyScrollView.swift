@@ -226,7 +226,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       if self?.compare(newValue, to: oldValue) == false {
         let contentOffset = strongSelf.contentOffset
         strongSelf.cache.invalidate()
-        strongSelf.layoutViews()
+
+        let targetView = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+        let animation = targetView.layer.allAnimationsWithKeys.first
+        strongSelf.layoutViews(animation: animation)
         if !strongSelf.isScrolling {
           strongSelf.setContentOffset(contentOffset, animated: false)
         }
@@ -234,14 +237,16 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     })
     observers.append(Observer(view: view, keyValueObservation: contentSizeObserver))
 
-    let hiddenObserver = view.observe(\.isHidden, options: [.new, .old], changeHandler: { [weak self] (_, value) in
+    let hiddenObserver = view.observe(\.isHidden, options: [.new, .old], changeHandler: { [weak self] (scrollView, value) in
       guard let newValue = value.newValue, let oldValue = value.oldValue else {
         return
       }
 
       if newValue != oldValue {
+        let targetView = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+        let animation = targetView.layer.allAnimationsWithKeys.first
         self?.cache.invalidate()
-        self?.layoutViews()
+        self?.layoutViews(animation: animation)
       }
     })
     observers.append(Observer(view: view, keyValueObservation: hiddenObserver))
@@ -322,6 +327,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   ///                       with animation. It defaults to `nil` and opts
   ///                       out from animating if the view is scroll by the user.
   public func layoutViews(withDuration duration: CFTimeInterval? = nil,
+                          animation: CAAnimation? = nil,
                           completion: (() -> Void)? = nil) {
     guard isPerformingBatchUpdates == false else { return }
 
@@ -346,16 +352,31 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       documentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
     }
 
-    let animationDuration: TimeInterval? = subviewsInLayoutOrder
-      .compactMap({ $0.layer.resolveAnimationDuration }).first ?? duration
+    let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState]
+    let animations = { self.runLayoutSubviewsAlgorithm() }
+    let animationCompletion: (Bool) -> Void = { _ in completion?() }
 
-    if let duration = animationDuration {
-      let options: UIView.AnimationOptions = [
-        .allowUserInteraction, .beginFromCurrentState
-      ]
+    if #available(iOS 9.0, *) {
+      if let animation = animation {
+        switch animation {
+        case let springAnimation as CASpringAnimation:
+          UIView.animate(withDuration: springAnimation.duration, delay: 0.0,
+                         usingSpringWithDamping: springAnimation.damping,
+                         initialSpringVelocity: springAnimation.initialVelocity,
+                         options: options, animations: animations, completion: animationCompletion)
+        default:
+          UIView.animate(withDuration: animation.duration, delay: 0.0, options: options, animations: {
+            self.runLayoutSubviewsAlgorithm()
+          }, completion: animationCompletion)
+        }
+        return
+      }
+    }
+
+    if let duration = duration {
       UIView.animate(withDuration: duration, delay: 0.0, options: options, animations: {
         self.runLayoutSubviewsAlgorithm()
-      }, completion: { _ in completion?() })
+      }, completion: animationCompletion)
     } else {
       runLayoutSubviewsAlgorithm()
       completion?()
