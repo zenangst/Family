@@ -84,6 +84,23 @@ familyController.performBatchUpdates({ controller in
 })
 ```
 
+Adding animations
+
+When adding animations, not that you have to give them a key.
+```swift
+let basicAnimation = CABasicAnimation()
+basicAnimation.duration = 0.5
+controller.view.layer.add(springAnimation, forKey: "Basic Animations")
+
+let springAnimation = CASpringAnimation()
+springAnimation.damping = 0.6
+springAnimation.initialVelocity = 0.6
+springAnimation.mass = 0.4
+springAnimation.duration = 0.6
+springAnimation.isRemovedOnCompletion = false
+controller.view.layer.add(springAnimation, forKey: "Spring Animations")
+```
+
 
 ## Installation
 
