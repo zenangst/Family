@@ -331,7 +331,12 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
                           completion: (() -> Void)? = nil) {
     guard isPerformingBatchUpdates == false else { return }
 
-    guard superview != nil, !isDeallocating else { return }
+    guard !isDeallocating else { return }
+
+    guard superview != nil else {
+      completion?()
+      return
+    }
 
     // Make sure that wrapper views have the correct width
     // on their wrapped views.

@@ -268,8 +268,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - completion: A completion handler that is invoked after the view
   ///                 has laid out its views.
   @discardableResult
-  public func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
-                                  completion: ((FamilyViewController) -> Void)? = nil) -> Self {
+  open func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
+                                completion: ((FamilyViewController) -> Void)? = nil) -> Self {
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
