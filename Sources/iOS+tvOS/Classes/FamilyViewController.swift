@@ -79,11 +79,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
         scrollView.scrollIndicatorInsets.bottom = scrollView.contentInset.bottom
       }
     }
-
-    if let navigationController = self.navigationController, navigationController.navigationBar.isTranslucent {
-      scrollView.contentInset.top = navigationController.navigationBar.frame.size.height
-      scrollView.scrollIndicatorInsets.top = scrollView.contentInset.top
-    }
   }
 
   open override func viewWillLayoutSubviews() {
