@@ -3,13 +3,23 @@ import Cocoa
 public class FamilyScrollView: NSScrollView {
   public override var isFlipped: Bool { return true }
   public lazy var familyDocumentView: FamilyDocumentView = .init()
-  public var insets: Insets {
-    get { return spaceManager.insets }
+  public var margins: Insets {
+    get { return spaceManager.defaultMargins }
     set {
-      spaceManager.insets = newValue
+      spaceManager.defaultMargins = newValue
       cache.invalidate()
     }
   }
+
+  public var padding: Insets {
+    get { return spaceManager.defaultPadding }
+    set {
+      spaceManager.defaultPadding = newValue
+      cache.invalidate()
+    }
+  }
+
+  internal var backgrounds = [NSView: NSView]()
 
   @objc(scrollEnabled)
   public var isScrollEnabled: Bool = true
@@ -22,8 +32,16 @@ public class FamilyScrollView: NSScrollView {
   var isScrollingByProxy: Bool = false
   internal var isPerformingBatchUpdates: Bool = false
   private var subviewsInLayoutOrder = [NSScrollView]()
-  private lazy var spaceManager = FamilySpaceManager()
+  internal lazy var spaceManager = FamilySpaceManager()
   lazy var cache = FamilyCache()
+
+  override public var frame: CGRect {
+    willSet {
+      if newValue.width != frame.width {
+        cache.invalidate()
+      }
+    }
+  }
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -57,6 +75,33 @@ public class FamilyScrollView: NSScrollView {
 
     guard !layoutIsRunning || !force else {
       return
+    }
+
+    for case let scrollView in subviewsInLayoutOrder {
+      guard let documentView = scrollView.documentView else {
+        continue
+      }
+
+      let padding = spaceManager.padding(for: documentView)
+      let margins = spaceManager.margins(for: documentView)
+
+      let expectedWidth = frame.size.width - margins.left - margins.right
+      let expectedWrappedWidth = frame.size.width - margins.left - margins.right - padding.left - padding.right
+
+      if scrollView.frame.origin.x != margins.left {
+        scrollView.frame.origin.x = margins.left
+      }
+
+      if scrollView.frame.size.width != expectedWidth {
+        scrollView.frame.size.width = expectedWidth
+      }
+
+      if documentView.frame.origin.x != padding.left {
+        documentView.frame.origin.x = padding.left
+      }
+      if documentView.frame.size.width != expectedWrappedWidth {
+        documentView.frame.size.width = expectedWrappedWidth
+      }
     }
 
     if let duration = duration, duration > 0 {
@@ -183,6 +228,18 @@ public class FamilyScrollView: NSScrollView {
     }
   }
 
+  func addBackground(_ backgroundView: NSView, to view: NSView) {
+    if backgrounds[view] != nil {
+      backgrounds[view]?.removeFromSuperview()
+    }
+    backgrounds[view] = backgroundView
+    addSubview(backgroundView)
+    addSubview(backgroundView, positioned: .below,
+               relativeTo: documentView)
+    cache.invalidate()
+    layoutViews(withDuration: nil, force: false, completion: nil)
+  }
+
   func didAddScrollViewToContainer(_ scrollView: NSScrollView) {
     if familyDocumentView.scrollViews.firstIndex(of: scrollView) != nil {
       rebuildSubviewsInLayoutOrder()
@@ -198,16 +255,28 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func didRemoveScrollViewToContainer(_ subview: NSView) {
+    backgrounds[subview]?.removeFromSuperview()
     cache.invalidate()
   }
 
-  public func customInsets(for view: View) -> Insets {
-    return spaceManager.customInsets(for: view)
+  public func padding(for view: View) -> Insets {
+    return spaceManager.padding(for: view)
   }
 
-  public func setCustomInsets(_ insets: Insets, for view: View) {
-    spaceManager.setCustomInsets(insets, for: view)
+  public func addPadding(_ insets: Insets, for view: View) {
+    spaceManager.addPadding(insets, for: view)
     cache.invalidate()
+    layoutViews(withDuration: nil, force: false, completion: nil)
+  }
+
+  public func margins(for view: View) -> Insets {
+    return spaceManager.margins(for: view)
+  }
+
+  public func addMargins(_ insets: Insets, for view: View) {
+    spaceManager.addMargins(insets, for: view)
+    cache.invalidate()
+    layoutViews(withDuration: nil, force: false, completion: nil)
   }
 
   /// Remove wrapper views that don't own their underlaying views.
@@ -264,6 +333,20 @@ public class FamilyScrollView: NSScrollView {
     return scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0)
   }
 
+  fileprivate func positionBackgroundView(_ scrollView: NSScrollView, _ frame: NSRect, _ margins: Insets, _ padding: Insets, _ backgroundView: NSView, _ view: NSView) {
+    if scrollView.contentSize.height > 0 {
+      var backgroundFrame = frame
+      backgroundFrame.origin.x = margins.left
+      backgroundFrame.origin.y = frame.origin.y
+      backgroundFrame.size.height = scrollView.contentSize.height + padding.top + padding.bottom
+      backgroundFrame.size.width = self.frame.size.width - margins.left - margins.right
+      backgroundView.frame = backgroundFrame
+      backgroundView.isHidden = false
+    } else {
+      backgrounds[view]?.isHidden = true
+    }
+  }
+
   private func runLayoutSubviewsAlgorithm() {
     guard isPerformingBatchUpdates == false,
       !isDeallocating,
@@ -275,29 +358,46 @@ public class FamilyScrollView: NSScrollView {
     for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
       guard let view = scrollView.documentView else { continue }
       let contentSize: CGSize = contentSizeForView(view)
-      let insets = spaceManager.customInsets(for: view)
+      let padding = spaceManager.padding(for: view)
+      let margins = spaceManager.margins(for: view)
       var frame = scrollView.frame
-      yOffsetOfCurrentSubview += insets.top
+      yOffsetOfCurrentSubview += margins.top
 
       let entry: FamilyViewControllerAttributes
       if let cache = cache.entry(for: view) {
         entry = cache
       } else {
+        view.frame.origin.y = margins.top
+
         frame.origin.y = yOffsetOfCurrentSubview
-        frame.origin.x = insets.left
+        frame.origin.x = margins.left
         frame.size.height = min(visibleRect.height, contentSize.height)
-        frame.size.width = round(self.frame.size.width) - insets.left - insets.right
+
+        if frame.size.height > 0 {
+          frame.size.height += padding.top + padding.bottom
+        }
+
+        frame.size.width = round(self.frame.size.width) - margins.left - margins.right
         entry = FamilyViewControllerAttributes(view: view,
                                                origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),
                                                contentSize: contentSize)
         cache.add(entry: entry)
-        yOffsetOfCurrentSubview += contentSize.height + insets.bottom
+
+        if let backgroundView = backgrounds[view] {
+          positionBackgroundView(scrollView, frame, margins, padding, backgroundView, view)
+        }
+
+        if scrollView.contentSize.height > 0 {
+          yOffsetOfCurrentSubview += contentSize.height + margins.bottom + padding.top + padding.bottom
+        }
+
+        let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
 
         if !(scrollView.documentView is NSCollectionView) &&
-          view.frame.size != CGSize(width: frame.size.width, height: contentSize.height) {
-          view.frame.size = CGSize(width: frame.size.width, height: contentSize.height)
-        } else if view.frame.size.width != frame.size.width {
-          view.frame.size.width = frame.size.width
+          view.frame.size != CGSize(width: constrainedWidth, height: contentSize.height) {
+          view.frame.size = CGSize(width: constrainedWidth, height: contentSize.height)
+        } else if view.frame.size.width != constrainedWidth {
+          view.frame.size.width = constrainedWidth
         }
         cache.state = .isRunning
       }
@@ -335,15 +435,6 @@ public class FamilyScrollView: NSScrollView {
       let shouldScroll = contentOffset.y <= entry.contentSize.height &&
         frame.size.height < entry.contentSize.height
 
-      if scrollView.frame.origin.x != insets.left {
-        frame.origin.x = insets.left
-      }
-
-      let viewWidth = round(self.frame.size.width) - insets.left - insets.right
-      if scrollView.frame.size.width != viewWidth {
-        frame.size.width = viewWidth
-      }
-
       if !(entry.view is NSCollectionView) {
         if self.contentOffset.y < entry.origin.y {
           scrollView.contentOffset.y = contentOffset.y
@@ -371,8 +462,18 @@ public class FamilyScrollView: NSScrollView {
     }
 
     guard cache.state != .isFinished else { return }
-    cache.contentSize = computeContentSize()
-    documentView?.frame.size = cache.contentSize
+
+    let computedHeight = yOffsetOfCurrentSubview
+    let minimumContentHeight = bounds.height - (contentInsets.top + contentInsets.bottom)
+    var height = fmax(computedHeight, minimumContentHeight)
+    cache.contentSize = CGSize(width: bounds.size.width, height: yOffsetOfCurrentSubview)
+
+    if isChildViewController {
+      height = computedHeight
+      superview?.frame.size.height = cache.contentSize.height
+    }
+
+    documentView?.frame.size = CGSize(width: cache.contentSize.width, height: height)
     cache.state = .isFinished
   }
 
@@ -388,36 +489,6 @@ public class FamilyScrollView: NSScrollView {
     }
 
     return contentSize
-  }
-
-  private func computeContentSize() -> CGSize {
-    let validSubviews = subviewsInLayoutOrder
-      .filter({ validateScrollView($0) })
-
-    var computedHeight: CGFloat = validSubviews.reduce(CGFloat(0), { value, view in
-      return value + contentSizeForView(view.documentView ?? view).height
-    })
-
-    let computedInsets: CGFloat = validSubviews.reduce(CGFloat(0), { value, view in
-      let insets = spaceManager.customInsets(for: view.documentView ?? view)
-      return value + insets.top + insets.bottom
-    })
-
-    computedHeight += computedInsets
-
-    let minimumContentHeight = bounds.height
-    var height = fmax(computedHeight, minimumContentHeight)
-
-    if computedHeight <= minimumContentHeight {
-      height -= contentInsets.top
-    }
-
-    if isChildViewController {
-      height = computedHeight
-      superview?.frame.size.height = computedHeight
-    }
-
-    return CGSize(width: bounds.size.width, height: height)
   }
 
   internal func compare(_ lhs: CGSize, to rhs: CGSize) -> Bool {

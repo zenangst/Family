@@ -10,18 +10,19 @@ extension FamilyScrollView {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
       for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-        let insets = spaceManager.customInsets(for: view)
+        let padding = spaceManager.padding(for: view)
+        let margins = spaceManager.margins(for: view)
         if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
           continue
         }
 
-        yOffsetOfCurrentSubview += insets.top
+        yOffsetOfCurrentSubview += margins.top
 
         var frame = scrollView.frame
         var contentOffset = scrollView.contentOffset
 
         if self.contentOffset.y < yOffsetOfCurrentSubview {
-          contentOffset.y = 0
+          contentOffset.y = 0.0
           frame.origin.y = round(yOffsetOfCurrentSubview)
         } else {
           contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
@@ -34,17 +35,14 @@ extension FamilyScrollView {
 
         if scrollView is FamilyWrapperView {
           newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
-          frame.origin.y = yOffsetOfCurrentSubview
-          frame.origin.x = 0
-          frame.size.width = self.frame.size.width
-          frame.size.height = newHeight
+          frame.origin.x = margins.left
         } else {
           newHeight = fmin(documentView.frame.height, newHeight)
-          frame.origin.y = yOffsetOfCurrentSubview
-          frame.origin.x = insets.left
-          frame.size.width = self.frame.size.width - insets.left - insets.right
-          frame.size.height = newHeight
+          frame.origin.x = margins.left + padding.left
         }
+
+        frame.size.width = self.frame.size.width - margins.left - margins.right
+        frame.size.height = newHeight
 
         if scrollView.frame != frame {
           scrollView.frame = frame
@@ -54,15 +52,34 @@ extension FamilyScrollView {
                                                         origin: CGPoint(x: frame.origin.x,
                                                                         y: yOffsetOfCurrentSubview),
                                                         contentSize: scrollView.contentSize))
-        yOffsetOfCurrentSubview += scrollView.contentSize.height + insets.bottom
+
+        if let backgroundView = backgrounds[view] {
+          frame.origin.y = yOffsetOfCurrentSubview
+          positionBackgroundView(scrollView, frame, margins, padding, backgroundView, view)
+        }
+
+        if scrollView.contentSize.height > 0 {
+          yOffsetOfCurrentSubview += scrollView.contentSize.height + margins.bottom + padding.top + padding.bottom
+        }
       }
-      cache.contentSize = computeContentSize()
+
+      let computedHeight = yOffsetOfCurrentSubview
+      let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
+      var height = fmax(computedHeight, minimumContentHeight)
+      cache.contentSize = CGSize(width: bounds.size.width, height: yOffsetOfCurrentSubview)
+
+      if isChildViewController {
+        height = computedHeight
+        superview?.frame.size.height = cache.contentSize.height
+      }
+
       cache.state = .isFinished
-      contentSize = cache.contentSize
+      contentSize = CGSize(width: cache.contentSize.width, height: height)
     }
 
     for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
       let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+      let padding = spaceManager.padding(for: view)
       guard let entry = cache.entry(for: view) else { continue }
       if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
         continue
@@ -80,7 +97,7 @@ extension FamilyScrollView {
       }
 
       let remainingBoundsHeight = bounds.maxY - entry.origin.y
-      let remainingContentHeight = entry.contentSize.height - contentOffset.y
+      let remainingContentHeight = entry.contentSize.height - contentOffset.y + padding.top + padding.bottom
       var newHeight: CGFloat = fmin(documentView.frame.height, scrollView.contentSize.height)
 
       if remainingBoundsHeight <= -self.frame.size.height {

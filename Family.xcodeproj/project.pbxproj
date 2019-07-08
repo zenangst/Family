@@ -43,7 +43,16 @@
 		BD7629BE20349CA300C917BB /* FamilyFriendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629BD20349CA300C917BB /* FamilyFriendly.swift */; };
 		BD7629BF20349CA300C917BB /* FamilyFriendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629BD20349CA300C917BB /* FamilyFriendly.swift */; };
 		BD7629C020349CA300C917BB /* FamilyFriendly.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7629BD20349CA300C917BB /* FamilyFriendly.swift */; };
+		BD7C17B422CD57BC001D3615 /* UIViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7C17B322CD57BC001D3615 /* UIViewController+Extensions.swift */; };
+		BD7C17B522CD57BC001D3615 /* UIViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7C17B322CD57BC001D3615 /* UIViewController+Extensions.swift */; };
 		BD92595E22A5388900E584A5 /* FamilyScrollView+tvOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAC588221BA613A00412766 /* FamilyScrollView+tvOS.swift */; };
+		BDAA8EEA22D270ED00ECF0B1 /* BackgroundKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAA8EE922D270ED00ECF0B1 /* BackgroundKind.swift */; };
+		BDAA8EEB22D2711100ECF0B1 /* BackgroundKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAA8EE922D270ED00ECF0B1 /* BackgroundKind.swift */; };
+		BDAA8EEC22D2711100ECF0B1 /* BackgroundKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAA8EE922D270ED00ECF0B1 /* BackgroundKind.swift */; };
+		BDAA8EEE22D271C800ECF0B1 /* NSViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAA8EED22D271C800ECF0B1 /* NSViewController+Extensions.swift */; };
+		BDAA8EF022D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAA8EEF22D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift */; };
+		BDAA8EF122D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAA8EEF22D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift */; };
+		BDAA8EF222D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAA8EEF22D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift */; };
 		BDAC586E21B9916E00412766 /* FamilyCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD02F56621B43E5E006ECE48 /* FamilyCache.swift */; };
 		BDAC586F21B9916E00412766 /* FamilyCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD02F56621B43E5E006ECE48 /* FamilyCache.swift */; };
 		BDAC587021B9916E00412766 /* FamilyViewControllerAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD02F56821B43E7F006ECE48 /* FamilyViewControllerAttributes.swift */; };
@@ -109,10 +118,14 @@
 		BD7055E82044007300C2C5CB /* NSScrollViewExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSScrollViewExtensionsTests.swift; sourceTree = "<group>"; };
 		BD7629B920349C2500C917BB /* TypeAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeAlias.swift; sourceTree = "<group>"; };
 		BD7629BD20349CA300C917BB /* FamilyFriendly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyFriendly.swift; sourceTree = "<group>"; };
+		BD7C17B322CD57BC001D3615 /* UIViewController+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extensions.swift"; sourceTree = "<group>"; };
 		BD93C37F2221C1AA003100D1 /* .swift-version */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-version"; sourceTree = "<group>"; };
 		BD93C3802221C1AA003100D1 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		BD93C3812221C1AA003100D1 /* .travis.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .travis.yml; sourceTree = "<group>"; };
 		BD93C3832221C1AA003100D1 /* codecov.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = codecov.yml; sourceTree = "<group>"; };
+		BDAA8EE922D270ED00ECF0B1 /* BackgroundKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundKind.swift; sourceTree = "<group>"; };
+		BDAA8EED22D271C800ECF0B1 /* NSViewController+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSViewController+Extensions.swift"; sourceTree = "<group>"; };
+		BDAA8EEF22D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewControllerSharedTests.swift; sourceTree = "<group>"; };
 		BDAC588221BA613A00412766 /* FamilyScrollView+tvOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FamilyScrollView+tvOS.swift"; sourceTree = "<group>"; };
 		BDAC588421BA61CA00412766 /* FamilyScrollView+iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FamilyScrollView+iOS.swift"; sourceTree = "<group>"; };
 		BDAC588821BA63B800412766 /* FamilyScrollViewTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyScrollViewTests.swift; sourceTree = "<group>"; };
@@ -195,6 +208,7 @@
 				BD7629B920349C2500C917BB /* TypeAlias.swift */,
 				BD7629BD20349CA300C917BB /* FamilyFriendly.swift */,
 				BD535E152079269200AA2EC4 /* FamilySpaceManager.swift */,
+				BDAA8EE922D270ED00ECF0B1 /* BackgroundKind.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -215,6 +229,7 @@
 			isa = PBXGroup;
 			children = (
 				BD2236E22034B12A00C465E4 /* NSScrollView+Extensions.swift */,
+				BDAA8EED22D271C800ECF0B1 /* NSViewController+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -254,6 +269,7 @@
 			isa = PBXGroup;
 			children = (
 				BD5A803B2030A9D9006A5EBB /* CALayer+Extensions.swift */,
+				BD7C17B322CD57BC001D3615 /* UIViewController+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -282,6 +298,7 @@
 			isa = PBXGroup;
 			children = (
 				BD5A80512030ACFD006A5EBB /* CALayerExtensionTests.swift */,
+				BDAA8EEF22D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -620,8 +637,10 @@
 			files = (
 				BD7629BC20349C2C00C917BB /* TypeAlias.swift in Sources */,
 				BD5A80412030A9D9006A5EBB /* FamilyWrapperView.swift in Sources */,
+				BDAA8EEC22D2711100ECF0B1 /* BackgroundKind.swift in Sources */,
 				BD5A80432030A9D9006A5EBB /* FamilyScrollView.swift in Sources */,
 				BD5A803F2030A9D9006A5EBB /* FamilyViewController.swift in Sources */,
+				BD7C17B522CD57BC001D3615 /* UIViewController+Extensions.swift in Sources */,
 				BDAC586F21B9916E00412766 /* FamilyCache.swift in Sources */,
 				BD0FCCD720794AFB00D813EC /* FamilySpaceManager.swift in Sources */,
 				BDAC588321BA613A00412766 /* FamilyScrollView+tvOS.swift in Sources */,
@@ -636,6 +655,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDAA8EF222D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift in Sources */,
 				BD5A804D2030AC9F006A5EBB /* FamilyWrapperViewTests.swift in Sources */,
 				BD5A804A2030AC84006A5EBB /* FamilyViewControllerTests.swift in Sources */,
 				D284B13E1F7907AD00D94AF3 /* tvOSTests.swift in Sources */,
@@ -649,7 +669,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD7629BA20349C2500C917BB /* TypeAlias.swift in Sources */,
+				BDAA8EEA22D270ED00ECF0B1 /* BackgroundKind.swift in Sources */,
 				BD5A80402030A9D9006A5EBB /* FamilyWrapperView.swift in Sources */,
+				BD7C17B422CD57BC001D3615 /* UIViewController+Extensions.swift in Sources */,
 				BD5A80422030A9D9006A5EBB /* FamilyScrollView.swift in Sources */,
 				BD5A803E2030A9D9006A5EBB /* FamilyViewController.swift in Sources */,
 				BDAC586E21B9916E00412766 /* FamilyCache.swift in Sources */,
@@ -667,6 +689,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDAA8EF022D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift in Sources */,
 				BD5A804C2030AC9F006A5EBB /* FamilyWrapperViewTests.swift in Sources */,
 				BD5A80492030AC83006A5EBB /* FamilyViewControllerTests.swift in Sources */,
 				BD5A804F2030ACBA006A5EBB /* FamilyScrollViewTests.swift in Sources */,
@@ -680,6 +703,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD2236E32034B12A00C465E4 /* NSScrollView+Extensions.swift in Sources */,
+				BDAA8EEE22D271C800ECF0B1 /* NSViewController+Extensions.swift in Sources */,
+				BDAA8EEB22D2711100ECF0B1 /* BackgroundKind.swift in Sources */,
 				BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */,
 				BD7629BF20349CA300C917BB /* FamilyFriendly.swift in Sources */,
 				BD4C7FE420349B030037D3E5 /* FamilyDocumentView.swift in Sources */,
@@ -697,6 +722,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDAA8EF122D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift in Sources */,
 				BDEE363920436B1100120E35 /* FamilyScrollViewTests.swift in Sources */,
 				BD7055E92044007300C2C5CB /* NSScrollViewExtensionsTests.swift in Sources */,
 				BDEE3637204369F200120E35 /* FamilyContentViewTests.swift in Sources */,

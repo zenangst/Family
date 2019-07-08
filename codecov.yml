@@ -22,11 +22,9 @@ flags:
       - Sources/Shared
   tvOS:
     paths:
-      - Sources/tvOS
       - Sources/iOS+tvOS
       - Sources/Shared
   iOS:
     paths:
-      - Sources/iOS
       - Sources/iOS+tvOS
       - Sources/Shared

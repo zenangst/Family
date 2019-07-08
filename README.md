@@ -38,6 +38,17 @@ If you are interested in the origin story behind Family, then you can read this 
 
 ## Usage
 
+The new public API:
+
+```swift
+body(withDuration: 0) {
+  add(detailViewController)
+  .background(.view(backgroundView))
+  .padding(.init(top: 20, left: 20, bottom: 20, right: 20))
+  .margin(.init(top: 20, left: 0, bottom: 20, right: 0))
+}
+```
+
 Add a regular child view controller:
 
 ```swift
@@ -73,7 +84,7 @@ Move a view controller:
 familyController.moveChild(customController, to: 1)
 ```
 
-Perform batch updates:
+Perform batch updates (it is encouraged to use performBatchUpdates when updaing more than one view controller):
 
 ```swift
 familyController.performBatchUpdates({ controller in

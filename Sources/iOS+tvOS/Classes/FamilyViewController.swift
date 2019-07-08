@@ -92,6 +92,87 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
   // MARK: - Public methods
 
+  /// Perform batch updates using a closure.
+  ///
+  /// - Parameters:
+  ///   - duration: The animated duration of the update, this is used to animate any
+  ///               changes to the view hierarchy.
+  ///   - closure: A closure that will be invoked inside of the batch update context.
+  public func body(withDuration duration: Double = 0.25, _ closure: () -> Void) {
+    performBatchUpdates(withDuration: duration, { _ in
+      closure()
+    })
+  }
+
+  /// A syntactic sugar for adding view controllers to the view hierarchy.
+  ///
+  /// - Parameter childController: The view controller that should be added as a
+  ///                              child view controller.
+  /// - Returns: The child view controller that was added.
+  @discardableResult
+  public func add<T: UIViewController>(_ childController: T) -> T {
+    addChild(childController)
+    return childController
+  }
+
+  /// Add a background to a view controllers view.
+  /// This will add another view (depending on the kind) that will
+  /// share the same size as the view controllers view, resizing
+  /// and adapting as the parent view changes.
+  ///
+  /// - Parameters:
+  ///   - kind: Either a view or a color, see `BackgroundKind` for more information.
+  ///   - viewController: The child view controller that should be used as the master
+  ///                     view.
+  /// - Returns: The view controller that should gain a background view.
+  @discardableResult
+  public func addBackground<T: UIViewController>(_ kind: BackgroundKind, to viewController: T) -> T {
+    guard let entry = registry[viewController] else {
+      assertionFailure("Unable to find view controller \(type(of: viewController.self))")
+      return viewController
+    }
+
+    if let wrapperView = entry.view.superview as? FamilyWrapperView {
+      switch kind {
+      case .color(let newColor):
+        wrapperView.backgroundColor = newColor
+      case .view(let backgroundView):
+        scrollView.addBackground(backgroundView, to: entry.view)
+      }
+    } else if let collectionView = entry.view as? UICollectionView {
+      switch kind {
+      case .color(let newColor):
+        collectionView.backgroundColor = newColor
+      case .view(let backgroundView):
+        collectionView.backgroundColor = .clear
+        scrollView.addBackground(backgroundView, to: entry.view)
+      }
+    } else {
+      assertionFailure("Setting background for \(type(of: entry.view.self)) is not supported.")
+    }
+
+    return viewController
+  }
+
+  /// Add padding to a view controller, works similar to adding margins, except that
+  /// background views opt-out from gaining any margins. Adding padding expands the inset
+  /// inside the views regular size.
+  ///
+  /// - Parameters:
+  ///   - insets: The amount of insets that should be used as padding.
+  ///   - viewController: The view controller that should gain padding.
+  /// - Returns: The target view controller.
+  @discardableResult func addPadding<T: UIViewController>(_ insets: UIEdgeInsets, to viewController: T) -> T {
+    guard let entry = registry[viewController] else {
+      assertionFailure("Cannot set padding to \(type(of: T.self)) because it has no superview.")
+      return viewController
+    }
+
+    scrollView.addPadding(insets, for: entry.view)
+
+    return viewController
+  }
+
   /// Adds the specified view controller as a child of the current view controller.
   ///
   /// - Parameter childController: The view controller to be added as a child.
@@ -188,7 +269,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
     if let insets = insets {
       newWidth = newWidth - insets.left - insets.right
-      setCustomInsets(insets, for: subview)
+      addMargins(insets, for: subview)
     }
 
     if let height = height {
@@ -241,8 +322,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameter view: The target view which is used to lookup insets.
   /// - Returns: The insets for the view, it defaults to the scroll views
   ///            generic insets.
-  public func customInsets(for view: View) -> Insets {
-    return scrollView.customInsets(for: view)
+  public func margins(for view: View) -> Insets {
+    return scrollView.margins(for: view)
   }
 
   /// Set custom insets to a view.
@@ -250,8 +331,26 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameters:
   ///   - insets: The custom insets for the view.
   ///   - view: The target view that should get custom insets.
-  public func setCustomInsets(_ insets: Insets, for view: View) {
-    scrollView.setCustomInsets(insets, for: view)
+  public func addMargins(_ insets: Insets, for view: View) {
+    scrollView.addMargins(insets, for: view)
+  }
+
+  /// Get custom insets for a specific view.
+  ///
+  /// - Parameter view: The target view which is used to lookup insets.
+  /// - Returns: The insets for the view, it defaults to the scroll views
+  ///            generic insets.
+  public func padding(for view: View) -> Insets {
+    return scrollView.padding(for: view)
+  }
+
+  /// Set custom insets to a view.
+  ///
+  /// - Parameters:
+  ///   - insets: The custom insets for the view.
+  ///   - view: The target view that should get custom insets.
+  public func addPadding(_ insets: Insets, for view: View) {
+    scrollView.addPadding(insets, for: view)
   }
 
   /// Animates view hierarchy operations as a group.
@@ -263,12 +362,13 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - completion: A completion handler that is invoked after the view
   ///                 has laid out its views.
   @discardableResult
-  open func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
+  open func performBatchUpdates(withDuration duration: Double = 0.25,
+                                _ handler: (FamilyViewController) -> Void,
                                 completion: ((FamilyViewController) -> Void)? = nil) -> Self {
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
-    scrollView.layoutViews(withDuration: 0.25) {
+    scrollView.layoutViews(withDuration: duration) {
       completion?(self)
     }
 

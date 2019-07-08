@@ -2,13 +2,23 @@ import UIKit
 
 public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestureRecognizerDelegate {
   /// The amount of insets that should be inserted inbetween views.
-  public var insets: Insets {
-    get { return spaceManager.insets }
+  public var margins: Insets {
+    get { return spaceManager.defaultMargins }
     set {
-      spaceManager.insets = newValue
+      spaceManager.defaultMargins = newValue
       cache.invalidate()
     }
   }
+
+  public var padding: Insets {
+    get { return spaceManager.defaultPadding }
+    set {
+      spaceManager.defaultPadding = newValue
+      cache.invalidate()
+    }
+  }
+
+  internal var backgrounds = [UIView: UIView]()
 
   public override var bounds: CGRect {
     willSet {
@@ -68,6 +78,14 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// in the `Family` framework.
   public lazy var documentView: FamilyDocumentView = FamilyDocumentView()
 
+  override public var frame: CGRect {
+    willSet {
+      if newValue.width != frame.width {
+        cache.invalidate()
+      }
+    }
+  }
+
   deinit {
     subviewsInLayoutOrder.removeAll()
     observers.removeAll()
@@ -80,6 +98,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   public required override init(frame: CGRect) {
     super.init(frame: frame)
     autoresizesSubviews = false
+    documentView.backgroundColor = .clear
     documentView.delegate = self
     documentView.familyScrollView = self
     documentView.autoresizingMask = self.autoresizingMask
@@ -119,6 +138,17 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   func familyDocumentView(_ view: FamilyDocumentView,
                           didAddScrollView scrollView: UIScrollView) {
     didAddScrollViewToContainer(scrollView)
+  }
+
+  func addBackground(_ backgroundView: UIView, to view: UIView) {
+    if backgrounds[view] != nil {
+      backgrounds[view]?.removeFromSuperview()
+    }
+    backgrounds[view] = backgroundView
+    addSubview(backgroundView)
+    sendSubviewToBack(backgroundView)
+    cache.invalidate()
+    layoutViews()
   }
 
   /// This configures observers and configures the scroll views
@@ -163,6 +193,13 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
     for scrollView in documentView.scrollViews {
       configureScrollView(scrollView)
+    }
+
+    if let wrapperView = subview as? FamilyWrapperView,
+      let backgroundView = backgrounds[wrapperView.view] {
+      backgroundView.removeFromSuperview()
+    } else if let backgroundView = backgrounds[subview] {
+      backgroundView.removeFromSuperview()
     }
 
     spaceManager.removeView(subview)
@@ -226,7 +263,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       if self?.compare(newValue, to: oldValue) == false {
         let contentOffset = strongSelf.contentOffset
         strongSelf.cache.invalidate()
-
         let targetView = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         let animation = targetView.layer.allAnimationsWithKeys.first
         strongSelf.layoutViews(animation: animation)
@@ -264,24 +300,21 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
   }
 
-  /// Computes the content size for the collection view based on
-  /// combined content size of all the underlaying scroll views.
-  internal func computeContentSize() -> CGSize {
-    let computedHeight = subviewsInLayoutOrder
-      .filter({ $0.isHidden == false || ($0 as? FamilyWrapperView)?.view.isHidden == false })
-      .reduce(CGFloat(0), { value, view in
-        let insets = spaceManager.customInsets(for: (view as? FamilyWrapperView)?.view ?? view)
-        return value + view.contentSize.height + insets.top + insets.bottom
-      })
-    let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
-    var height = fmax(computedHeight, minimumContentHeight)
+  func positionBackgroundView(_ scrollView: UIScrollView, _ frame: CGRect, _ margins: Insets, _ padding: Insets, _ backgroundView: UIView, _ view: UIView) {
+    if scrollView.contentSize.height > 0 {
+      var backgroundFrame = frame
+      backgroundFrame.origin.x = margins.left
+      backgroundFrame.origin.y = frame.origin.y
+      backgroundFrame.size.height = scrollView.contentSize.height + padding.top + padding.bottom
+      backgroundFrame.size.width = self.frame.size.width - margins.left - margins.right
 
-    if isChildViewController {
-      height = computedHeight
-      superview?.frame.size.height = computedHeight
+      UIView.performWithoutAnimation {
+        backgroundView.frame = backgroundFrame
+        backgroundView.isHidden = false
+      }
+    } else {
+      backgrounds[view]?.isHidden = true
     }
-
-    return CGSize(width: bounds.size.width, height: height)
   }
 
   /// This method will call the layout algorithm without duration
@@ -294,12 +327,22 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     layoutViews()
   }
 
-  public func customInsets(for view: View) -> Insets {
-    return spaceManager.customInsets(for: view)
+  public func padding(for view: View) -> Insets {
+    return spaceManager.padding(for: view)
   }
 
-  public func setCustomInsets(_ insets: Insets, for view: View) {
-    spaceManager.setCustomInsets(insets, for: view)
+  public func addPadding(_ insets: Insets, for view: View) {
+    spaceManager.addPadding(insets, for: view)
+    cache.invalidate()
+    layoutViews()
+  }
+
+  public func margins(for view: View) -> Insets {
+    return spaceManager.margins(for: view)
+  }
+
+  public func addMargins(_ insets: Insets, for view: View) {
+    spaceManager.addMargins(insets, for: view)
     cache.invalidate()
     layoutViews()
   }
@@ -326,7 +369,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   ///                       if the layout algorithm should be performed
   ///                       with animation. It defaults to `nil` and opts
   ///                       out from animating if the view is scroll by the user.
-  public func layoutViews(withDuration duration: CFTimeInterval? = nil,
+  public func layoutViews(withDuration duration: Double? = nil,
                           animation: CAAnimation? = nil,
                           completion: (() -> Void)? = nil) {
     guard isPerformingBatchUpdates == false else { return }
@@ -340,15 +383,44 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
     // Make sure that wrapper views have the correct width
     // on their wrapped views.
-    for case let wrapperView as FamilyWrapperView in subviewsInLayoutOrder {
-      let insets = spaceManager.customInsets(for: wrapperView.view)
-      let expectedWidth = frame.size.width - insets.left - insets.right
+    for case let scrollView in subviewsInLayoutOrder {
+      let wrapperView = scrollView as? FamilyWrapperView
+      let padding = spaceManager.padding(for: wrapperView?.view ?? scrollView)
+      let margins = spaceManager.margins(for: wrapperView?.view ?? scrollView)
 
-      if wrapperView.view.frame.origin.x != insets.left {
-        wrapperView.view.frame.origin.x = insets.left
-      }
-      if wrapperView.view.frame.size.width != expectedWidth {
-        wrapperView.view.frame.size.width = expectedWidth
+      if let wrapperView = wrapperView {
+        let expectedWidth = frame.size.width - margins.left - margins.right
+        let expectedWrappedWidth = frame.size.width - margins.left - margins.right - padding.left - padding.right
+
+        if scrollView.frame.origin.x != margins.left {
+          scrollView.frame.origin.x = margins.left
+        }
+
+        if scrollView.frame.size.width != expectedWidth {
+          scrollView.frame.size.width = expectedWidth
+        }
+
+        if wrapperView.view.frame.origin.x != padding.left {
+          wrapperView.view.frame.origin.x = padding.left
+        }
+
+        if wrapperView.view.frame.origin.y != padding.top {
+          wrapperView.view.frame.origin.y = padding.top
+        }
+
+        if wrapperView.view.frame.size.width != expectedWrappedWidth {
+          wrapperView.view.frame.size.width = expectedWrappedWidth
+        }
+      } else {
+        let expectedWidth = frame.size.width - padding.left - padding.right - margins.left - margins.right
+
+        if scrollView.frame.origin.x != margins.left {
+          scrollView.frame.origin.x = margins.left + padding.left
+        }
+
+        if scrollView.frame.size.width != expectedWidth {
+          scrollView.frame.size.width = expectedWidth
+        }
       }
     }
 
@@ -378,7 +450,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
     }
 
-    if let duration = duration {
+    if let duration = duration, duration > 0.0 {
       UIView.animate(withDuration: duration, delay: 0.0, options: options, animations: {
         self.runLayoutSubviewsAlgorithm()
       }, completion: animationCompletion)
@@ -394,5 +466,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
   internal func compare(_ lhs: CGPoint, to rhs: CGPoint) -> Bool {
     return (abs(lhs.y - rhs.y) <= 0.001)
+  }
+
+  @objc func injected() {
+    cache.invalidate()
+    layoutViews()
   }
 }

@@ -79,6 +79,59 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
 
   // MARK: - Public methods
 
+  public func body(withDuration duration: Double = 0.25,
+                   _ closure: () -> Void) {
+    performBatchUpdates(withDuration: duration, { _ in
+      closure()
+    }, completion: { _ in })
+  }
+
+  @discardableResult
+  public func add<T: ViewController>(_ childController: T) -> T {
+    addChild(childController)
+    return childController
+  }
+
+  @discardableResult
+  public func addBackground<T: ViewController>(_ kind: BackgroundKind, to viewController: T) -> T {
+    guard let view = registry[viewController] else {
+      assertionFailure("Unable to find view controller \(type(of: viewController.self))")
+      return viewController
+    }
+
+    if let wrapperView = view.superview as? FamilyClipView {
+      switch kind {
+      case .color(let newColor):
+        wrapperView.backgroundColor = newColor
+      case .view(let backgroundView):
+        scrollView.addBackground(backgroundView, to: view)
+      }
+    } else if let collectionView = view as? NSCollectionView {
+      switch kind {
+      case .color(let newColor):
+        collectionView.backgroundColors = [newColor]
+      case .view(let backgroundView):
+        collectionView.backgroundColors = [NSColor.clear]
+        scrollView.addBackground(backgroundView, to: view)
+      }
+    } else {
+      assertionFailure("Setting background for \(type(of: view.self)) is not supported.")
+    }
+
+    return viewController
+  }
+
+  @discardableResult func addPadding<T: ViewController>(_ insets: Insets, to viewController: T) -> T {
+    guard let view = registry[viewController] else {
+      assertionFailure("Cannot set padding to \(type(of: T.self)) because it has no superview.")
+      return viewController
+    }
+
+    scrollView.addPadding(insets, for: view)
+
+    return viewController
+  }
+
   /// Adds the specified view controller as a child of the current view controller.
   ///
   /// - Parameter childController: The view controller to be added as a child.
@@ -169,7 +222,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     scrollView.frame = view.bounds
 
     if let insets = insets {
-      setCustomInsets(insets, for: subview)
+      addMargins(insets, for: subview)
     }
 
     return self
@@ -215,16 +268,43 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   /// - Returns: The insets for the view, it defaults to the scroll views
   ///            generic insets.
   public func customInsets(for view: View) -> Insets {
-    return scrollView.customInsets(for: view)
+    return scrollView.margins(for: view)
   }
 
-  /// Set custom insets to a view.
+  /// Get margins for a specific view.
+  ///
+  /// - Parameter view: The target view which is used to lookup insets.
+  /// - Returns: The insets for the view, it defaults to the scroll views
+  ///            generic insets.
+  public func margins(for view: View) -> Insets {
+    return scrollView.margins(for: view)
+  }
+
+  /// Set margins to a view.
   ///
   /// - Parameters:
   ///   - insets: The custom insets for the view.
   ///   - view: The target view that should get custom insets.
-  public func setCustomInsets(_ insets: Insets, for view: View) {
-    scrollView.setCustomInsets(insets, for: view)
+  public func addMargins(_ insets: Insets, for view: View) {
+    scrollView.addMargins(insets, for: view)
+  }
+
+  /// Get padding for a specific view.
+  ///
+  /// - Parameter view: The target view which is used to lookup insets.
+  /// - Returns: The insets for the view, it defaults to the scroll views
+  ///            generic insets.
+  public func padding(for view: View) -> Insets {
+    return scrollView.padding(for: view)
+  }
+
+  /// Set padding to a view.
+  ///
+  /// - Parameters:
+  ///   - insets: The custom insets for the view.
+  ///   - view: The target view that should get custom insets.
+  public func addPadding(_ insets: Insets, for view: View) {
+    scrollView.addPadding(insets, for: view)
   }
 
   /// Animates view hierarchy operations as a group.
@@ -236,12 +316,13 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   ///   - completion: A completion handler that is invoked after the view
   ///                 has laid out its views.
   @discardableResult
-  public func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
+  public func performBatchUpdates(withDuration duration: Double = 0.0,
+                                  _ handler: (FamilyViewController) -> Void,
                                   completion: ((FamilyViewController) -> Void)?) -> Self {
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
-    scrollView.layoutViews(withDuration: NSAnimationContext.current.duration, force: false) {
+    scrollView.layoutViews(withDuration: duration, force: false) {
       completion?(self)
     }
     return self
