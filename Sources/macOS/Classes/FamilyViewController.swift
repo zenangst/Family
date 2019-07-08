@@ -87,8 +87,8 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   }
 
   @discardableResult
-  public func add<T: ViewController>(_ childController: T) -> T {
-    addChild(childController)
+  public func add<T: ViewController>(_ childController: T, view handler: ((T) -> View)? = nil) -> T {
+    addChild(childController, view: handler)
     return childController
   }
 
