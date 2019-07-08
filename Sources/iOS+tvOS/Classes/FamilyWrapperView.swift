@@ -41,8 +41,8 @@ class FamilyWrapperView: UIScrollView {
   }
 
   private func configureObservers() {
-    frameObserver = view.observe(\.frame, options: [.initial, .new]) { [weak self] (view, value) in
-      if let rect = value.newValue {
+    frameObserver = view.observe(\.frame, options: [.initial, .new, .old]) { [weak self] (view, value) in
+      if let rect = value.newValue, rect != value.oldValue {
         self?.setWrapperFrameSize(rect)
       }
     }
