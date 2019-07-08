@@ -50,7 +50,7 @@ extension FamilyScrollView {
 
         cache.add(entry: FamilyViewControllerAttributes(view: view,
                                                         origin: CGPoint(x: frame.origin.x,
-                                                                        y: yOffsetOfCurrentSubview),
+                                                                        y: yOffsetOfCurrentSubview + padding.top),
                                                         contentSize: scrollView.contentSize))
 
         if let backgroundView = backgrounds[view] {

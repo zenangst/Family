@@ -379,7 +379,7 @@ public class FamilyScrollView: NSScrollView {
 
         frame.size.width = round(self.frame.size.width) - margins.left - margins.right
         entry = FamilyViewControllerAttributes(view: view,
-                                               origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview),
+                                               origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview + padding.top),
                                                contentSize: contentSize)
         cache.add(entry: entry)
 
