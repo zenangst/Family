@@ -255,6 +255,7 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func didRemoveScrollViewToContainer(_ subview: NSView) {
+    backgrounds[subview]?.removeFromSuperview()
     cache.invalidate()
   }
 

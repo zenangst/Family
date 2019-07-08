@@ -195,6 +195,13 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       configureScrollView(scrollView)
     }
 
+    if let wrapperView = subview as? FamilyWrapperView,
+      let backgroundView = backgrounds[wrapperView.view] {
+      backgroundView.removeFromSuperview()
+    } else if let backgroundView = backgrounds[subview] {
+      backgroundView.removeFromSuperview()
+    }
+
     spaceManager.removeView(subview)
     cache.invalidate()
     layoutIfNeeded()
