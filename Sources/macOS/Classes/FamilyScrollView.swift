@@ -96,9 +96,14 @@ public class FamilyScrollView: NSScrollView {
         scrollView.frame.size.width = expectedWidth
       }
 
+      if documentView.frame.origin.y != padding.top {
+        documentView.frame.origin.y = padding.top
+      }
+
       if documentView.frame.origin.x != padding.left {
         documentView.frame.origin.x = padding.left
       }
+
       if documentView.frame.size.width != expectedWrappedWidth {
         documentView.frame.size.width = expectedWrappedWidth
       }
@@ -367,8 +372,6 @@ public class FamilyScrollView: NSScrollView {
       if let cache = cache.entry(for: view) {
         entry = cache
       } else {
-        view.frame.origin.y = margins.top
-
         frame.origin.y = yOffsetOfCurrentSubview
         frame.origin.x = margins.left
         frame.size.height = min(visibleRect.height, contentSize.height)
@@ -439,7 +442,7 @@ public class FamilyScrollView: NSScrollView {
         if self.contentOffset.y < entry.origin.y {
           scrollView.contentOffset.y = contentOffset.y
         } else if frame.origin.y != entry.origin.y {
-          frame.origin.y = entry.origin.y
+          frame.origin.y = abs(round(entry.origin.y))
         }
       } else if shouldScroll {
         if scrollView.contentOffset.y != contentOffset.y {
@@ -497,5 +500,10 @@ public class FamilyScrollView: NSScrollView {
 
   internal func compare(_ lhs: CGPoint, to rhs: CGPoint) -> Bool {
     return (abs(lhs.y - rhs.y) <= 0.001)
+  }
+
+  @objc func injected() {
+    cache.invalidate()
+    layoutViews(withDuration: nil, force: true, completion: nil)
   }
 }
