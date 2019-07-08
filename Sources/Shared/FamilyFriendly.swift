@@ -14,7 +14,8 @@ protocol FamilyFriendly: class {
                insets: Insets?,
                height: CGFloat?) -> Self
   func moveChild(_ childController: ViewController, to index: Int)  -> Self
-  func performBatchUpdates(_ handler: (FamilyViewController) -> Void,
+  func performBatchUpdates(withDuration duration: Double,
+                           _ handler: (FamilyViewController) -> Void,
                            completion: ((FamilyViewController) -> Void)?) -> Self
   func purgeRemovedViews() -> Self
 }

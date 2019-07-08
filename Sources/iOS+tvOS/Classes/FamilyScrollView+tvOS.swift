@@ -14,18 +14,19 @@ extension FamilyScrollView {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
       for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
         let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-        let insets = spaceManager.customInsets(for: view)
+        let padding = spaceManager.padding(for: view)
+        let margins = spaceManager.margins(for: view)
         if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
           continue
         }
 
-        yOffsetOfCurrentSubview += insets.top
+        yOffsetOfCurrentSubview += margins.top
 
         var frame = scrollView.frame
         var contentOffset = scrollView.contentOffset
 
         if self.contentOffset.y < yOffsetOfCurrentSubview {
-          contentOffset.y = insets.top
+          contentOffset.y = padding.top
           frame.origin.y = round(yOffsetOfCurrentSubview)
         } else {
           contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
@@ -38,23 +39,23 @@ extension FamilyScrollView {
 
         if scrollView is FamilyWrapperView {
           newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
-          frame.origin.y = yOffsetOfCurrentSubview
-          frame.origin.x = 0
-          frame.size.width = self.frame.size.width
-          frame.size.height = newHeight
+          frame.origin.x = margins.left
         } else {
           newHeight = fmin(documentView.frame.height, newHeight)
-          frame.origin.y = yOffsetOfCurrentSubview
-          frame.origin.x = insets.left
-          frame.size.width = self.frame.size.width - insets.left - insets.right
-          frame.size.height = newHeight
+          frame.origin.x = padding.left
         }
+
+        frame.origin.y = yOffsetOfCurrentSubview
+        frame.size.width = self.frame.size.width - margins.left - margins.right
+        frame.size.height = newHeight
 
         if newHeight == 0 {
           newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
         }
 
-
+        if newHeight > 0 {
+          newHeight += margins.top + margins.bottom
+        }
 
         if scrollView.frame != frame {
           scrollView.frame = frame
@@ -64,7 +65,24 @@ extension FamilyScrollView {
                                                         origin: CGPoint(x: frame.origin.x,
                                                                         y: yOffsetOfCurrentSubview),
                                                         contentSize: scrollView.contentSize))
-        yOffsetOfCurrentSubview += scrollView.contentSize.height + insets.bottom
+
+        if scrollView.contentSize.height > 0 {
+          var backgroundFrame = frame
+          backgroundFrame.origin.x = margins.left
+          backgroundFrame.origin.y = frame.origin.y - padding.top
+          backgroundFrame.size.height = scrollView.contentSize.height + padding.top + padding.bottom
+          backgroundFrame.size.width = self.frame.size.width - margins.left - margins.right
+          UIView.performWithoutAnimation {
+            backgrounds[view]?.frame = backgroundFrame
+            backgrounds[view]?.isHidden = false
+          }
+        } else {
+          backgrounds[view]?.isHidden = true
+        }
+
+        if scrollView.contentSize.height > 0 {
+          yOffsetOfCurrentSubview += scrollView.contentSize.height + margins.bottom + padding.bottom
+        }
       }
       cache.contentSize = computeContentSize()
       cache.state = .isFinished
