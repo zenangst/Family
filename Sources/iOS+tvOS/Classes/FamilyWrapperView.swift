@@ -62,10 +62,7 @@ class FamilyWrapperView: UIScrollView {
   /// - Parameter rect: The frame rectangle for the view, measured in points.
   ///                   This is the frame of the view that is wrapped inside the view.
   private func setWrapperFrameSize(_ rect: CGRect) {
-    var size = rect.size
-    let padding = parentDocumentView?.familyScrollView?.spaceManager.padding(for: view) ?? .zero
-    size.height += padding.top + padding.bottom
-    frame.size = size
-    contentSize = size
+    frame.size = rect.size
+    contentSize = rect.size
   }
 }

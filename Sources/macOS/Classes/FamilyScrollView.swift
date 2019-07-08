@@ -236,6 +236,8 @@ public class FamilyScrollView: NSScrollView {
     addSubview(backgroundView)
     addSubview(backgroundView, positioned: .below,
                relativeTo: documentView)
+    cache.invalidate()
+    layoutViews(withDuration: nil, force: false, completion: nil)
   }
 
   func didAddScrollViewToContainer(_ scrollView: NSScrollView) {
@@ -330,6 +332,20 @@ public class FamilyScrollView: NSScrollView {
     return scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0)
   }
 
+  fileprivate func positionBackgroundView(_ scrollView: NSScrollView, _ frame: NSRect, _ margins: Insets, _ padding: Insets, _ backgroundView: NSView, _ view: NSView) {
+    if scrollView.contentSize.height > 0 {
+      var backgroundFrame = frame
+      backgroundFrame.origin.x = margins.left
+      backgroundFrame.origin.y = frame.origin.y
+      backgroundFrame.size.height = scrollView.contentSize.height + padding.top + padding.bottom
+      backgroundFrame.size.width = self.frame.size.width - margins.left - margins.right
+      backgroundView.frame = backgroundFrame
+      backgroundView.isHidden = false
+    } else {
+      backgrounds[view]?.isHidden = true
+    }
+  }
+
   private func runLayoutSubviewsAlgorithm() {
     guard isPerformingBatchUpdates == false,
       !isDeallocating,
@@ -366,20 +382,12 @@ public class FamilyScrollView: NSScrollView {
                                                contentSize: contentSize)
         cache.add(entry: entry)
 
-        if scrollView.contentSize.height > 0 {
-          var backgroundFrame = frame
-          backgroundFrame.origin.x = margins.left
-          backgroundFrame.origin.y = frame.origin.y - padding.top
-          backgroundFrame.size.height = scrollView.contentSize.height + padding.top + padding.bottom
-          backgroundFrame.size.width = self.frame.size.width - margins.left - margins.right
-          backgrounds[view]?.frame = backgroundFrame
-          backgrounds[view]?.isHidden = false
-        } else {
-          backgrounds[view]?.isHidden = true
+        if let backgroundView = backgrounds[view] {
+          positionBackgroundView(scrollView, frame, margins, padding, backgroundView, view)
         }
 
         if scrollView.contentSize.height > 0 {
-          yOffsetOfCurrentSubview += contentSize.height + margins.bottom + padding.bottom
+          yOffsetOfCurrentSubview += contentSize.height + margins.bottom + padding.top + padding.bottom
         }
 
         let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
@@ -417,10 +425,6 @@ public class FamilyScrollView: NSScrollView {
 
       if remainingContentHeight <= -self.frame.size.height {
         newHeight = 0
-      }
-
-      if newHeight > 0 {
-        newHeight += padding.top + padding.bottom
       }
 
       frame.size.height = newHeight

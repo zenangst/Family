@@ -22,7 +22,7 @@ extension FamilyScrollView {
         var contentOffset = scrollView.contentOffset
 
         if self.contentOffset.y < yOffsetOfCurrentSubview {
-          contentOffset.y = padding.top
+          contentOffset.y = 0.0
           frame.origin.y = round(yOffsetOfCurrentSubview)
         } else {
           contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
@@ -41,11 +41,6 @@ extension FamilyScrollView {
           frame.origin.x = margins.left + padding.left
         }
 
-        if newHeight > 0 {
-          newHeight += margins.top + margins.bottom
-        }
-
-        frame.origin.y = yOffsetOfCurrentSubview
         frame.size.width = self.frame.size.width - margins.left - margins.right
         frame.size.height = newHeight
 
@@ -58,22 +53,13 @@ extension FamilyScrollView {
                                                                         y: yOffsetOfCurrentSubview),
                                                         contentSize: scrollView.contentSize))
 
-        if scrollView.contentSize.height > 0 {
-          var backgroundFrame = frame
-          backgroundFrame.origin.x = margins.left
-          backgroundFrame.origin.y = frame.origin.y - padding.top
-          backgroundFrame.size.height = scrollView.contentSize.height + padding.top + padding.bottom
-          backgroundFrame.size.width = self.frame.size.width - margins.left - margins.right
-          UIView.performWithoutAnimation {
-            backgrounds[view]?.frame = backgroundFrame
-            backgrounds[view]?.isHidden = false
-          }
-        } else {
-          backgrounds[view]?.isHidden = true
+        if let backgroundView = backgrounds[view] {
+          frame.origin.y = yOffsetOfCurrentSubview
+          positionBackgroundView(scrollView, frame, margins, padding, backgroundView, view)
         }
 
         if scrollView.contentSize.height > 0 {
-          yOffsetOfCurrentSubview += scrollView.contentSize.height + margins.bottom + padding.bottom
+          yOffsetOfCurrentSubview += scrollView.contentSize.height + margins.bottom + padding.top + padding.bottom
         }
       }
       cache.contentSize = computeContentSize()

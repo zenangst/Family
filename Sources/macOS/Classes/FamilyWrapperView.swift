@@ -85,10 +85,7 @@ class FamilyWrapperView: NSScrollView {
 
   private func setWrapperFrameSize(_ rect: CGRect) {
     let oldValue = frame
-    var newValue = rect
-    let padding = parentDocumentView?.familyScrollView?.spaceManager.padding(for: view) ?? Insets(top: 0, left: 0, bottom: 0, right: 0)
-
-    newValue.size.height += padding.top + padding.bottom
+    let newValue = rect
 
     frame.size = newValue.size
 

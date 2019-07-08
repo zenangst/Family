@@ -46,15 +46,15 @@ class FamilyViewControllerSharedTests: XCTestCase {
 
     #if os(macOS)
     XCTAssertEqual(childViewController.view.enclosingScrollView?.frame, CGRect(origin: .init(x: 10, y: 10),
-                                                                               size: CGSize(width: 480, height: 520)))
+                                                                               size: CGSize(width: 480, height: 500)))
     #else
     XCTAssertEqual(childViewController.view.superview?.frame, CGRect(origin: .init(x: 10, y: 10),
-                                                                     size: CGSize(width: 480, height: 520)))
+                                                                     size: CGSize(width: 480, height: 500)))
     #endif
 
 
-    XCTAssertEqual(backgroundView.frame, CGRect(origin: .init(x: 10, y: 0),
-                                                size: CGSize(width: 480, height: 540)))
+    XCTAssertEqual(backgroundView.frame, CGRect(origin: .init(x: 10, y: 10),
+                                                size: CGSize(width: 480, height: 520)))
   }
 }
 

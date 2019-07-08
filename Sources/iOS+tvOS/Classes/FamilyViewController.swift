@@ -168,7 +168,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       return viewController
     }
 
-    scrollView.spaceManager.addPadding(insets, for: entry.view)
+    scrollView.addPadding(insets, for: entry.view)
 
     return viewController
   }

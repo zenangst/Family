@@ -147,6 +147,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     backgrounds[view] = backgroundView
     addSubview(backgroundView)
     sendSubviewToBack(backgroundView)
+    cache.invalidate()
+    layoutViews()
   }
 
   /// This configures observers and configures the scroll views
@@ -254,7 +256,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       if self?.compare(newValue, to: oldValue) == false {
         let contentOffset = strongSelf.contentOffset
         strongSelf.cache.invalidate()
-
         let targetView = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         let animation = targetView.layer.allAnimationsWithKeys.first
         strongSelf.layoutViews(animation: animation)
@@ -290,6 +291,23 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
     })
     observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
+  }
+
+  func positionBackgroundView(_ scrollView: UIScrollView, _ frame: CGRect, _ margins: Insets, _ padding: Insets, _ backgroundView: UIView, _ view: UIView) {
+    if scrollView.contentSize.height > 0 {
+      var backgroundFrame = frame
+      backgroundFrame.origin.x = margins.left
+      backgroundFrame.origin.y = frame.origin.y
+      backgroundFrame.size.height = scrollView.contentSize.height + padding.top + padding.bottom
+      backgroundFrame.size.width = self.frame.size.width - margins.left - margins.right
+
+      UIView.performWithoutAnimation {
+        backgroundView.frame = backgroundFrame
+        backgroundView.isHidden = false
+      }
+    } else {
+      backgrounds[view]?.isHidden = true
+    }
   }
 
   /// Computes the content size for the collection view based on
@@ -462,5 +480,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
   internal func compare(_ lhs: CGPoint, to rhs: CGPoint) -> Bool {
     return (abs(lhs.y - rhs.y) <= 0.001)
+  }
+
+  @objc func injected() {
+    cache.invalidate()
+    layoutViews()
   }
 }
