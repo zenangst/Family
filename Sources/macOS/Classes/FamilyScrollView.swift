@@ -461,8 +461,18 @@ public class FamilyScrollView: NSScrollView {
     }
 
     guard cache.state != .isFinished else { return }
-    cache.contentSize = computeContentSize()
-    documentView?.frame.size = cache.contentSize
+
+    let computedHeight = yOffsetOfCurrentSubview
+    let minimumContentHeight = bounds.height - (contentInsets.top + contentInsets.bottom)
+    var height = fmax(computedHeight, minimumContentHeight)
+    cache.contentSize = CGSize(width: bounds.size.width, height: yOffsetOfCurrentSubview)
+
+    if isChildViewController {
+      height = computedHeight
+      superview?.frame.size.height = cache.contentSize.height
+    }
+
+    documentView?.frame.size = CGSize(width: cache.contentSize.width, height: height)
     cache.state = .isFinished
   }
 
@@ -478,29 +488,6 @@ public class FamilyScrollView: NSScrollView {
     }
 
     return contentSize
-  }
-
-  private func computeContentSize() -> CGSize {
-    let computedHeight = subviewsInLayoutOrder
-      .filter({ validateScrollView($0) })
-      .reduce(CGFloat(0), { value, view in
-        let margins = spaceManager.margins(for: view.documentView ?? view)
-        return value + view.contentSize.height + margins.top + margins.bottom
-      })
-
-    let minimumContentHeight = bounds.height - (contentInsets.top + contentInsets.bottom)
-    var height = fmax(computedHeight, minimumContentHeight)
-
-    if computedHeight <= minimumContentHeight {
-      height -= contentInsets.top
-    }
-
-    if isChildViewController {
-      height = computedHeight
-      superview?.frame.size.height = computedHeight
-    }
-
-    return CGSize(width: bounds.size.width, height: height)
   }
 
   internal func compare(_ lhs: CGSize, to rhs: CGSize) -> Bool {

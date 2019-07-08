@@ -62,9 +62,19 @@ extension FamilyScrollView {
           yOffsetOfCurrentSubview += scrollView.contentSize.height + margins.bottom + padding.top + padding.bottom
         }
       }
-      cache.contentSize = computeContentSize()
+
+      let computedHeight = yOffsetOfCurrentSubview
+      let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
+      var height = fmax(computedHeight, minimumContentHeight)
+      cache.contentSize = CGSize(width: bounds.size.width, height: yOffsetOfCurrentSubview)
+
+      if isChildViewController {
+        height = computedHeight
+        superview?.frame.size.height = cache.contentSize.height
+      }
+
       cache.state = .isFinished
-      contentSize = cache.contentSize
+      contentSize = CGSize(width: cache.contentSize.width, height: height)
     }
 
     for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
