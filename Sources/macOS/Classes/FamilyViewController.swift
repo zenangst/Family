@@ -115,7 +115,13 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
         scrollView.addBackground(backgroundView, to: view)
       }
     } else {
-      assertionFailure("Setting background for \(type(of: view.self)) is not supported.")
+      switch kind {
+      case .color(let newColor):
+        view.wantsLayer = true
+        view.layer?.backgroundColor = newColor.cgColor
+      case .view(let backgroundView):
+        scrollView.addBackground(backgroundView, to: view)
+      }
     }
 
     return viewController

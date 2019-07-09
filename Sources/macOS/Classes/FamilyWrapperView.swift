@@ -1,6 +1,7 @@
 import Cocoa
 
 class FamilyWrapperView: NSScrollView {
+  override var isFlipped: Bool { return true }
   weak var parentDocumentView: FamilyDocumentView?
   var isScrolling: Bool = false
   var view: NSView
@@ -25,7 +26,6 @@ class FamilyWrapperView: NSScrollView {
     self.autoresizesSubviews = false
     self.contentView = clipView
     self.documentView = wrappedView
-    self.hasHorizontalScroller = true
     self.hasVerticalScroller = false
     self.postsBoundsChangedNotifications = true
     self.verticalScrollElasticity = .none
@@ -88,7 +88,6 @@ class FamilyWrapperView: NSScrollView {
     let newValue = rect
 
     frame.size = newValue.size
-
     familyScrollView?.wrapperViewDidChangeFrame(view, from: oldValue, to: newValue)
     guard view is NSCollectionView else { return }
     NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(delayedUpdate), object: nil)

@@ -13,12 +13,13 @@ extension FamilyScrollView {
       cache.state = .isRunning
       var yOffsetOfCurrentSubview: CGFloat = 0.0
       for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
-        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-        let padding = spaceManager.padding(for: view)
-        let margins = spaceManager.margins(for: view)
         if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
           continue
         }
+
+        let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
+        let padding = spaceManager.padding(for: view)
+        let margins = spaceManager.margins(for: view)
 
         yOffsetOfCurrentSubview += margins.top
 
@@ -113,6 +114,10 @@ extension FamilyScrollView {
 
       if remainingContentHeight <= -self.frame.size.height {
         newHeight = 0
+      }
+
+      if newHeight > 0 {
+        newHeight += padding.top + padding.bottom
       }
 
       let shouldScroll = (self.contentOffset.y > frame.origin.y &&
