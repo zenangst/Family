@@ -48,10 +48,10 @@ public class FamilyScrollView: NSScrollView {
     self.documentView = familyDocumentView
     self.drawsBackground = false
     self.familyDocumentView.familyScrollView = self
-    configureObservers()
-    hasVerticalScroller = true
-    contentView.postsBoundsChangedNotifications = true
-    familyDocumentView.autoresizingMask = [.width]
+    self.configureObservers()
+    self.hasVerticalScroller = true
+    self.contentView.postsBoundsChangedNotifications = true
+    self.familyDocumentView.autoresizingMask = [.width]
   }
 
   required public init?(coder: NSCoder) {
@@ -77,34 +77,6 @@ public class FamilyScrollView: NSScrollView {
       return
     }
 
-//    for case let scrollView in subviewsInLayoutOrder {
-//      guard let documentView = scrollView.documentView else {
-//          continue
-//      }
-//
-//      let padding = spaceManager.padding(for: documentView)
-//      let margins = spaceManager.margins(for: documentView)
-//
-//      var expectedScrollviewFrame = scrollView.frame
-//      expectedScrollviewFrame.origin.x = margins.left
-//
-//      var expectedDocumentFrame = documentView.frame
-//      expectedDocumentFrame.origin.x = padding.left
-//
-//      if (documentView as? NSCollectionView)?.isHorizontal == false {
-//        expectedScrollviewFrame.size.width = frame.size.width - margins.left - margins.right
-//        expectedDocumentFrame.size.width = frame.size.width - margins.left - margins.right - padding.left - padding.right
-//      }
-//
-//      if scrollView.frame != expectedScrollviewFrame {
-//        scrollView.frame = expectedScrollviewFrame
-//      }
-//
-//      if documentView.frame != expectedDocumentFrame {
-//        documentView.frame = expectedDocumentFrame
-//      }
-//    }
-
     if let duration = duration, duration > 0 {
       layoutIsRunning = true
       NSAnimationContext.runAnimationGroup({ (context) in
@@ -120,7 +92,12 @@ public class FamilyScrollView: NSScrollView {
       NSAnimationContext.beginGrouping()
       NSAnimationContext.current.duration = 0.0
       NSAnimationContext.current.allowsImplicitAnimation = false
+      layoutIsRunning = true
+      runLayoutSubviewsAlgorithm()
+      layoutIsRunning = false
+      completion?()
       NSAnimationContext.endGrouping()
+      return
     }
 
     layoutIsRunning = true
@@ -355,8 +332,12 @@ public class FamilyScrollView: NSScrollView {
       let padding = spaceManager.padding(for: view)
       let margins = spaceManager.margins(for: view)
       let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
+
       var frame = scrollView.frame
       var viewFrame = frame
+      var contentOffset = scrollView.contentOffset
+      var currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : 0
+
       yOffsetOfCurrentSubview += margins.top
 
       let entry: FamilyViewControllerAttributes
@@ -394,9 +375,6 @@ public class FamilyScrollView: NSScrollView {
 
         cache.state = .isRunning
       }
-
-      var contentOffset = scrollView.contentOffset
-      var currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : 0
 
       // Constrain the computed offset to be inside of document visible rect.
       scrollViewContentOffset.y = min(documentVisibleRect.origin.y + contentInsets.top,
