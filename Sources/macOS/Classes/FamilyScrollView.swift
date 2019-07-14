@@ -350,7 +350,7 @@ public class FamilyScrollView: NSScrollView {
         frame.size.width = round(self.frame.size.width) - margins.left - margins.right
 
         viewFrame.origin.x = padding.left
-        viewFrame.origin.y = 0
+        viewFrame.origin.y = padding.top
         viewFrame.size.width = scrollView.isHorizontal ? contentSize.width : constrainedWidth
         viewFrame.size.height = contentSize.height
         view.frame = viewFrame
