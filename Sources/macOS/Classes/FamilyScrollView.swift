@@ -357,7 +357,7 @@ public class FamilyScrollView: NSScrollView {
 
         entry = FamilyViewControllerAttributes(view: view,
                                                origin: CGPoint(x: frame.origin.x,
-                                                               y: yOffsetOfCurrentSubview + padding.top),
+                                                               y: yOffsetOfCurrentSubview),
                                                contentSize: contentSize)
 
         cache.add(entry: entry)

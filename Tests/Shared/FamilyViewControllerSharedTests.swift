@@ -45,7 +45,7 @@ class FamilyViewControllerSharedTests: XCTestCase {
 
     #if os(macOS)
     XCTAssertEqual(backgroundView.superview, container.scrollView.documentView!)
-    XCTAssertEqual(childViewController.view.enclosingScrollView?.frame, CGRect(origin: .init(x: 10, y: 20),
+    XCTAssertEqual(childViewController.view.enclosingScrollView?.frame, CGRect(origin: .init(x: 10, y: 10),
                                                                                size: CGSize(width: 480, height: 520)))
     #else
     XCTAssertEqual(backgroundView.superview, container.scrollView)
