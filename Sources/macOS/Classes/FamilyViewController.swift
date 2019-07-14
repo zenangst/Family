@@ -102,6 +102,8 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     if let wrapperView = view.superview as? FamilyClipView {
       switch kind {
       case .color(let newColor):
+        wrapperView.wantsLayer = true
+        wrapperView.drawsBackground = true
         wrapperView.backgroundColor = newColor
       case .view(let backgroundView):
         scrollView.addBackground(backgroundView, to: view)
