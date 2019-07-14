@@ -39,17 +39,18 @@ class FamilyViewControllerSharedTests: XCTestCase {
     XCTAssertEqual(padding.right, insets.right)
     XCTAssertEqual(padding.bottom, insets.bottom)
 
-    XCTAssertEqual(backgroundView.superview, container.scrollView)
     XCTAssertEqual(container.scrollView.bounds, CGRect(origin: .zero, size: CGSize(width: 500, height: 1000)))
     XCTAssertEqual(childViewController.view.frame, CGRect(origin: .init(x: 10, y: 10),
                                                           size: CGSize(width: 460, height: 500)))
 
     #if os(macOS)
-    XCTAssertEqual(childViewController.view.enclosingScrollView?.frame, CGRect(origin: .init(x: 10, y: 20),
-                                                                               size: CGSize(width: 480, height: 500)))
+    XCTAssertEqual(backgroundView.superview, container.scrollView.documentView!)
+    XCTAssertEqual(childViewController.view.enclosingScrollView?.frame, CGRect(origin: .init(x: 10, y: 10),
+                                                                               size: CGSize(width: 480, height: 520)))
     #else
+    XCTAssertEqual(backgroundView.superview, container.scrollView)
     XCTAssertEqual(childViewController.view.superview?.frame, CGRect(origin: .init(x: 10, y: 20),
-                                                                     size: CGSize(width: 480, height: 500)))
+                                                                     size: CGSize(width: 480, height: 520)))
     #endif
 
 

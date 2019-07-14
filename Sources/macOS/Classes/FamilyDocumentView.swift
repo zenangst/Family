@@ -17,6 +17,13 @@ public class FamilyDocumentView: NSView {
   public override func addSubview(_ view: NSView) {
     // Remove wrapper view to avoid duplicates.
     (view.enclosingScrollView as? FamilyWrapperView)?.removeFromSuperview()
+
+    if let backgrounds = familyScrollView?.backgrounds.values,
+      backgrounds.contains(view) {
+      super.addSubview(view)
+      return
+    }
+
     let subview = wrapViewIfNeeded(view)
     super.addSubview(subview)
   }
@@ -24,6 +31,13 @@ public class FamilyDocumentView: NSView {
   public func insertSubview(_ view: View, at index: Int) {
     // Remove wrapper view to avoid duplicates.
     (view.enclosingScrollView as? FamilyWrapperView)?.removeFromSuperview()
+
+    if let backgrounds = familyScrollView?.backgrounds.values,
+      backgrounds.contains(view) {
+      super.addSubview(view)
+      return
+    }
+
     let subview = wrapViewIfNeeded(view)
     if !subviews.contains(subview) {
       subviews.insert(subview, at: index)

@@ -48,10 +48,10 @@ public class FamilyScrollView: NSScrollView {
     self.documentView = familyDocumentView
     self.drawsBackground = false
     self.familyDocumentView.familyScrollView = self
-    configureObservers()
-    hasVerticalScroller = true
-    contentView.postsBoundsChangedNotifications = true
-    familyDocumentView.autoresizingMask = [.width]
+    self.configureObservers()
+    self.hasVerticalScroller = true
+    self.contentView.postsBoundsChangedNotifications = true
+    self.familyDocumentView.autoresizingMask = [.width]
   }
 
   required public init?(coder: NSCoder) {
@@ -77,38 +77,6 @@ public class FamilyScrollView: NSScrollView {
       return
     }
 
-    for case let scrollView in subviewsInLayoutOrder {
-      guard let documentView = scrollView.documentView else {
-        continue
-      }
-
-      let padding = spaceManager.padding(for: documentView)
-      let margins = spaceManager.margins(for: documentView)
-
-      let expectedWidth = frame.size.width - margins.left - margins.right
-      let expectedWrappedWidth = frame.size.width - margins.left - margins.right - padding.left - padding.right
-
-      if scrollView.frame.origin.x != margins.left {
-        scrollView.frame.origin.x = margins.left
-      }
-
-      if scrollView.frame.size.width != expectedWidth {
-        scrollView.frame.size.width = expectedWidth
-      }
-
-      if documentView.frame.origin.y != padding.top {
-        documentView.frame.origin.y = padding.top
-      }
-
-      if documentView.frame.origin.x != padding.left {
-        documentView.frame.origin.x = padding.left
-      }
-
-      if documentView.frame.size.width != expectedWrappedWidth {
-        documentView.frame.size.width = expectedWrappedWidth
-      }
-    }
-
     if let duration = duration, duration > 0 {
       layoutIsRunning = true
       NSAnimationContext.runAnimationGroup({ (context) in
@@ -124,7 +92,12 @@ public class FamilyScrollView: NSScrollView {
       NSAnimationContext.beginGrouping()
       NSAnimationContext.current.duration = 0.0
       NSAnimationContext.current.allowsImplicitAnimation = false
+      layoutIsRunning = true
+      runLayoutSubviewsAlgorithm()
+      layoutIsRunning = false
+      completion?()
       NSAnimationContext.endGrouping()
+      return
     }
 
     layoutIsRunning = true
@@ -238,9 +211,7 @@ public class FamilyScrollView: NSScrollView {
       backgrounds[view]?.removeFromSuperview()
     }
     backgrounds[view] = backgroundView
-    addSubview(backgroundView)
-    addSubview(backgroundView, positioned: .below,
-               relativeTo: documentView)
+    familyDocumentView.addSubview(backgroundView, positioned: .below, relativeTo: view)
     cache.invalidate()
     layoutViews(withDuration: nil, force: false, completion: nil)
   }
@@ -338,17 +309,12 @@ public class FamilyScrollView: NSScrollView {
     return scrollView.documentView?.isHidden == false && (scrollView.documentView?.alphaValue ?? 1.0) > CGFloat(0.0)
   }
 
-  fileprivate func positionBackgroundView(_ scrollView: NSScrollView, _ frame: NSRect, _ margins: Insets, _ padding: Insets, _ backgroundView: NSView, _ view: NSView) {
-    if scrollView.contentSize.height > 0 {
-      var backgroundFrame = frame
-      backgroundFrame.origin.x = margins.left
-      backgroundFrame.origin.y = frame.origin.y
-      backgroundFrame.size.height = scrollView.contentSize.height + padding.top + padding.bottom
-      backgroundFrame.size.width = self.frame.size.width - margins.left - margins.right
-      backgroundView.frame = backgroundFrame
+  fileprivate func positionBackgroundView(_ frame: NSRect, _ backgroundView: NSView) {
+    if frame.height > 0 {
+      backgroundView.frame = frame
       backgroundView.isHidden = false
     } else {
-      backgrounds[view]?.isHidden = true
+      backgroundView.isHidden = true
     }
   }
 
@@ -365,7 +331,13 @@ public class FamilyScrollView: NSScrollView {
       let contentSize: CGSize = contentSizeForView(view)
       let padding = spaceManager.padding(for: view)
       let margins = spaceManager.margins(for: view)
+      let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
+
       var frame = scrollView.frame
+      var viewFrame = frame
+      var contentOffset = scrollView.contentOffset
+      let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : 0
+
       yOffsetOfCurrentSubview += margins.top
 
       let entry: FamilyViewControllerAttributes
@@ -375,37 +347,34 @@ public class FamilyScrollView: NSScrollView {
         frame.origin.y = yOffsetOfCurrentSubview
         frame.origin.x = margins.left
         frame.size.height = min(visibleRect.height, contentSize.height)
-
-        if frame.size.height > 0 {
-          frame.size.height += padding.top + padding.bottom
-        }
-
         frame.size.width = round(self.frame.size.width) - margins.left - margins.right
+
+        viewFrame.origin.x = padding.left
+        viewFrame.origin.y = padding.top
+        viewFrame.size.width = scrollView.isHorizontal ? contentSize.width : constrainedWidth
+        viewFrame.size.height = contentSize.height
+        view.frame = viewFrame
+
         entry = FamilyViewControllerAttributes(view: view,
-                                               origin: CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview + padding.top),
+                                               origin: CGPoint(x: frame.origin.x,
+                                                               y: yOffsetOfCurrentSubview),
                                                contentSize: contentSize)
+
         cache.add(entry: entry)
 
         if let backgroundView = backgrounds[view] {
-          positionBackgroundView(scrollView, frame, margins, padding, backgroundView, view)
+          let backgroundFrame = CGRect(origin: CGPoint(x: margins.left, y: yOffsetOfCurrentSubview),
+                                       size: CGSize(width: round(self.frame.size.width) - margins.left - margins.right,
+                                                    height: contentSize.height + padding.top + padding.bottom))
+          positionBackgroundView(backgroundFrame, backgroundView)
         }
 
-        if scrollView.contentSize.height > 0 {
+        if contentSize.height > 0 {
           yOffsetOfCurrentSubview += contentSize.height + margins.bottom + padding.top + padding.bottom
         }
 
-        let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
-
-        if !(scrollView.documentView is NSCollectionView) &&
-          view.frame.size != CGSize(width: constrainedWidth, height: contentSize.height) {
-          view.frame.size = CGSize(width: constrainedWidth, height: contentSize.height)
-        } else if view.frame.size.width != constrainedWidth {
-          view.frame.size.width = constrainedWidth
-        }
         cache.state = .isRunning
       }
-
-      var contentOffset = scrollView.contentOffset
 
       // Constrain the computed offset to be inside of document visible rect.
       scrollViewContentOffset.y = min(documentVisibleRect.origin.y + contentInsets.top,
@@ -419,8 +388,8 @@ public class FamilyScrollView: NSScrollView {
         frame.origin.y = abs(scrollViewContentOffset.y)
       }
 
-      let remainingBoundsHeight = fmax(documentVisibleRect.maxY - frame.minY, 0.0)
-      let remainingContentHeight = fmax(entry.contentSize.height - contentOffset.y, 0.0)
+      let remainingBoundsHeight = abs(fmax(documentVisibleRect.maxY - frame.minY, 0.0))
+      let remainingContentHeight = abs(fmax(entry.contentSize.height - contentOffset.y, 0.0))
       var newHeight: CGFloat = abs(fmin(documentVisibleRect.size.height, entry.contentSize.height))
 
       if remainingBoundsHeight <= -self.frame.size.height {
@@ -429,6 +398,10 @@ public class FamilyScrollView: NSScrollView {
 
       if remainingContentHeight <= -self.frame.size.height {
         newHeight = 0
+      }
+
+      if newHeight > 0 {
+        newHeight += padding.top + padding.bottom
       }
 
       frame.size.height = newHeight
@@ -440,13 +413,13 @@ public class FamilyScrollView: NSScrollView {
 
       if !(entry.view is NSCollectionView) {
         if self.contentOffset.y < entry.origin.y {
-          scrollView.contentOffset.y = contentOffset.y
+          scrollView.contentOffset = CGPoint(x: currentXOffset, y: contentOffset.y)
         } else if frame.origin.y != entry.origin.y {
           frame.origin.y = abs(round(entry.origin.y))
         }
       } else if shouldScroll {
         if scrollView.contentOffset.y != contentOffset.y {
-          scrollView.contentOffset.y = contentOffset.y
+          scrollView.contentOffset = CGPoint(x: currentXOffset, y: contentOffset.y)
         }
       } else {
         if frame.origin.y != entry.origin.y {
@@ -455,12 +428,16 @@ public class FamilyScrollView: NSScrollView {
         // Reset content offset to avoid setting offsets that
         // look liked `clipsToBounds` bugs.
         if self.contentOffset.y < entry.maxY && scrollView.contentOffset.y != 0 {
-          scrollView.contentOffset.y = 0
+          scrollView.contentOffset = CGPoint(x: currentXOffset, y: 0)
         }
       }
 
       if scrollView.frame != frame {
         scrollView.frame = frame
+      }
+
+      if cache.state == .isRunning {
+        scrollView.contentOffset = CGPoint(x: currentXOffset, y: contentOffset.y)
       }
     }
 
@@ -468,7 +445,7 @@ public class FamilyScrollView: NSScrollView {
 
     let computedHeight = yOffsetOfCurrentSubview
     let minimumContentHeight = bounds.height - (contentInsets.top + contentInsets.bottom)
-    var height = fmax(computedHeight, minimumContentHeight)
+    var height = abs(fmax(computedHeight, minimumContentHeight))
     cache.contentSize = CGSize(width: bounds.size.width, height: yOffsetOfCurrentSubview)
 
     if isChildViewController {
@@ -505,5 +482,17 @@ public class FamilyScrollView: NSScrollView {
   @objc func injected() {
     cache.invalidate()
     layoutViews(withDuration: nil, force: true, completion: nil)
+  }
+}
+
+fileprivate extension NSCollectionView {
+  var isHorizontal: Bool {
+    return (collectionViewLayout as? NSCollectionViewFlowLayout)?.scrollDirection == .horizontal
+  }
+}
+
+fileprivate extension NSScrollView {
+  var isHorizontal: Bool {
+    return (documentView as? NSCollectionView)?.isHorizontal ?? false
   }
 }
