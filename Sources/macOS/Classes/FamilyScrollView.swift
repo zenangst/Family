@@ -336,7 +336,7 @@ public class FamilyScrollView: NSScrollView {
       var frame = scrollView.frame
       var viewFrame = frame
       var contentOffset = scrollView.contentOffset
-      var currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : 0
+      let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : 0
 
       yOffsetOfCurrentSubview += margins.top
 
@@ -363,7 +363,7 @@ public class FamilyScrollView: NSScrollView {
         cache.add(entry: entry)
 
         if let backgroundView = backgrounds[view] {
-          var backgroundFrame = CGRect(origin: CGPoint(x: margins.left, y: yOffsetOfCurrentSubview),
+          let backgroundFrame = CGRect(origin: CGPoint(x: margins.left, y: yOffsetOfCurrentSubview),
                                        size: CGSize(width: round(self.frame.size.width) - margins.left - margins.right,
                                                     height: contentSize.height + padding.top + padding.bottom))
           positionBackgroundView(backgroundFrame, backgroundView)
