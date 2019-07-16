@@ -408,8 +408,8 @@ public class FamilyScrollView: NSScrollView {
 
       // Only scroll if the views content offset is less than its content size height
       // and if the frame is less than the content size height.
-      let shouldScroll = contentOffset.y <= entry.contentSize.height &&
-        frame.size.height < entry.contentSize.height
+      let shouldScroll = round(contentOffset.y) <= round(entry.contentSize.height) &&
+        round(frame.size.height) < round(entry.contentSize.height)
 
       if !(entry.view is NSCollectionView) {
         if self.contentOffset.y < entry.origin.y {
