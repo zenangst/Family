@@ -412,9 +412,8 @@ public class FamilyScrollView: NSScrollView {
         round(frame.size.height) < round(entry.contentSize.height)
 
       if !(entry.view is NSCollectionView) {
-        if self.contentOffset.y < entry.origin.y {
-          scrollView.contentOffset = CGPoint(x: currentXOffset, y: contentOffset.y)
-        } else if frame.origin.y != entry.origin.y {
+        scrollView.contentOffset = CGPoint(x: 0, y: 0)
+        if frame.origin.y != abs(round(entry.origin.y)) {
           frame.origin.y = abs(round(entry.origin.y))
         }
       } else if shouldScroll {
@@ -434,13 +433,6 @@ public class FamilyScrollView: NSScrollView {
 
       if scrollView.frame != frame {
         scrollView.frame = frame
-      }
-
-      // Exclude collection views from getting new content offsets, if they do they might
-      // get the wrong offset when they appear which could cause it to render off screen until
-      // the user starts scrolling in the scroll view.
-      if cache.state == .isRunning, !(view is NSCollectionView) {
-        scrollView.contentOffset = CGPoint(x: currentXOffset, y: contentOffset.y)
       }
     }
 

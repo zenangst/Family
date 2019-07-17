@@ -6,10 +6,6 @@ class FamilyClipView: NSClipView {
   var scrollView: FamilyScrollView? { return wrapperView?.enclosingScrollView as? FamilyScrollView }
 
   override func scroll(to newOrigin: NSPoint) {
-    var newOrigin = newOrigin
-    if wrapperView?.isHorizontal == false {
-      newOrigin.x = 0
-    }
     super.scroll(to: newOrigin)
     guard let familyScrollView = scrollView else { return }
     familyScrollView.isScrollingByProxy = true
