@@ -39,6 +39,11 @@ class FamilyWrapperView: UIScrollView {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+  
+  deinit {
+    frameObserver?.invalidate()
+    hiddenObserver?.invalidate()
+  }
 
   private func configureObservers() {
     frameObserver = view.observe(\.frame, options: [.initial, .new, .old]) { [weak self] (view, value) in
