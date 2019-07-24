@@ -2,7 +2,7 @@ import Cocoa
 
 public class FamilyScrollView: NSScrollView {
   public override var isFlipped: Bool { return true }
-  public lazy var familyDocumentView: FamilyDocumentView = .init()
+
   public var margins: Insets {
     get { return spaceManager.defaultMargins }
     set {
@@ -19,21 +19,20 @@ public class FamilyScrollView: NSScrollView {
     }
   }
 
-  internal var backgrounds = [NSView: NSView]()
-
   @objc(scrollEnabled)
+  public lazy var familyDocumentView = FamilyDocumentView()
   public var isScrollEnabled: Bool = true
+  internal lazy var spaceManager = FamilySpaceManager()
+  internal lazy var cache = FamilyCache()
+  internal var backgrounds = [NSView: NSView]()
   internal var isDeallocating: Bool = false
   internal var isChildViewController: Bool = false
-
-  var layoutIsRunning: Bool = false
-  var isScrollingWithWheel: Bool = false
-  var isScrolling: Bool = false
-  var isScrollingByProxy: Bool = false
+  internal var layoutIsRunning: Bool = false
+  internal var isScrollingWithWheel: Bool = false
+  internal var isScrolling: Bool = false
+  internal var isScrollingByProxy: Bool = false
   internal var isPerformingBatchUpdates: Bool = false
   private var subviewsInLayoutOrder = [NSScrollView]()
-  internal lazy var spaceManager = FamilySpaceManager()
-  lazy var cache = FamilyCache()
 
   override public var frame: CGRect {
     willSet {
@@ -109,40 +108,29 @@ public class FamilyScrollView: NSScrollView {
   // MARK: - Observers
 
   private func configureObservers() {
-    NotificationCenter.default.addObserver(
+    let center = NotificationCenter.default
+
+    center.addObserver(
       self, selector: #selector(contentViewBoundsDidChange(_:)),
-      name: NSView.boundsDidChangeNotification, object: contentView
-    )
+      name: NSView.boundsDidChangeNotification, object: contentView)
 
-    NotificationCenter.default.addObserver(
-      self,selector: #selector(windowDidResize(_:)),
-      name: NSWindow.didResizeNotification, object: nil
-    )
+    center.addObserver(self,selector: #selector(windowDidResize(_:)),
+                       name: NSWindow.didResizeNotification, object: nil)
 
-    NotificationCenter.default.addObserver(
-      self, selector: #selector(windowDidResize(_:)),
-      name: NSSplitView.didResizeSubviewsNotification, object: nil
-    )
+    center.addObserver(self, selector: #selector(windowDidResize(_:)),
+                       name: NSSplitView.didResizeSubviewsNotification, object: nil)
 
-    NotificationCenter.default.addObserver(
-      self, selector: #selector(windowDidResize(_:)),
-      name: NSSplitView.willResizeSubviewsNotification, object: nil
-    )
+    center.addObserver(self, selector: #selector(windowDidResize(_:)),
+                       name: NSSplitView.willResizeSubviewsNotification, object: nil)
 
-    NotificationCenter.default.addObserver(
-      self, selector: #selector(windowDidEndLiveResize(_:)),
-      name: NSWindow.didEndLiveResizeNotification, object: nil
-    )
+    center.addObserver(self, selector: #selector(windowDidEndLiveResize(_:)),
+                       name: NSWindow.didEndLiveResizeNotification, object: nil)
 
-    NotificationCenter.default.addObserver(
-      self, selector: #selector(didLiveScroll),
-      name: NSScrollView.didLiveScrollNotification, object: nil
-    )
+    center.addObserver(self, selector: #selector(didLiveScroll),
+                       name: NSScrollView.didLiveScrollNotification, object: nil)
 
-    NotificationCenter.default.addObserver(
-      self, selector: #selector(didEndLiveScroll),
-      name: NSScrollView.didEndLiveScrollNotification, object: nil
-    )
+    center.addObserver(self, selector: #selector(didEndLiveScroll),
+                       name: NSScrollView.didEndLiveScrollNotification, object: nil)
   }
 
   @objc func didLiveScroll() { isScrolling = true }
@@ -150,8 +138,7 @@ public class FamilyScrollView: NSScrollView {
 
   @objc func contentViewBoundsDidChange(_ notification: NSNotification) {
     if (notification.object as? NSClipView) === contentView,
-      let window = window,
-      !window.inLiveResize,
+      let window = window, !window.inLiveResize,
       !isScrollingWithWheel {
       layoutViews(withDuration: 0.0, force: false, completion: nil)
     }
@@ -159,8 +146,7 @@ public class FamilyScrollView: NSScrollView {
 
   func scrollTo(_ point: CGPoint, in view: NSView) {
     let shouldScrollByProxy = isScrollingByProxy &&
-      !isScrolling &&
-      !layoutIsRunning &&
+      !isScrolling && !layoutIsRunning &&
       view.window?.isVisible == true
     defer { isScrollingByProxy = false }
     guard shouldScrollByProxy, let entry = cache.entry(for: view) else {
@@ -199,7 +185,6 @@ public class FamilyScrollView: NSScrollView {
 
   public override func viewWillMove(toSuperview newSuperview: NSView?) {
     super.viewWillMove(toSuperview: newSuperview)
-
     if let newSuperview = newSuperview {
       frame.size = newSuperview.frame.size
       documentView?.frame.size = .zero
@@ -207,9 +192,7 @@ public class FamilyScrollView: NSScrollView {
   }
 
   func addBackground(_ backgroundView: NSView, to view: NSView) {
-    if backgrounds[view] != nil {
-      backgrounds[view]?.removeFromSuperview()
-    }
+    if backgrounds[view] != nil { backgrounds[view]?.removeFromSuperview() }
     backgrounds[view] = backgroundView
     familyDocumentView.addSubview(backgroundView, positioned: .below, relativeTo: view)
     cache.invalidate()
@@ -257,10 +240,8 @@ public class FamilyScrollView: NSScrollView {
 
   /// Remove wrapper views that don't own their underlaying views.
   func purgeWrapperViews() {
-    for case let wrapperView as FamilyWrapperView in familyDocumentView.subviews {
-      if wrapperView != wrapperView.view.enclosingScrollView {
-        wrapperView.removeFromSuperview()
-      }
+    for case let wrapperView as FamilyWrapperView in familyDocumentView.subviews where wrapperView != wrapperView.view.enclosingScrollView {
+      wrapperView.removeFromSuperview()
     }
 
     spaceManager.removeViewsWithoutSuperview()
@@ -319,8 +300,7 @@ public class FamilyScrollView: NSScrollView {
   }
 
   private func runLayoutSubviewsAlgorithm() {
-    guard isPerformingBatchUpdates == false,
-      !isDeallocating,
+    guard isPerformingBatchUpdates == false, !isDeallocating,
       cache.state != .isRunning else { return }
 
     var scrollViewContentOffset = self.contentOffset
@@ -400,6 +380,7 @@ public class FamilyScrollView: NSScrollView {
         newHeight = 0
       }
 
+      // Only add padding if the new height exceeds zero.
       if newHeight > 0 {
         newHeight += padding.top + padding.bottom
       }
@@ -416,27 +397,25 @@ public class FamilyScrollView: NSScrollView {
         if frame.origin.y != abs(round(entry.origin.y)) {
           frame.origin.y = abs(round(entry.origin.y))
         }
-      } else if shouldScroll {
-        if scrollView.contentOffset.y != contentOffset.y {
-          scrollView.contentOffset = CGPoint(x: currentXOffset, y: contentOffset.y)
-        }
+      } else if shouldScroll && scrollView.contentOffset.y != contentOffset.y {
+        scrollView.contentOffset = CGPoint(x: currentXOffset, y: contentOffset.y)
       } else {
-        if frame.origin.y != entry.origin.y {
+        if (abs(frame.origin.y - frame.origin.y) <= 0.001) {
           frame.origin.y = entry.origin.y
         }
         // Reset content offset to avoid setting offsets that
-        // look liked `clipsToBounds` bugs.
+        // look like `clipsToBounds` bugs.
         if self.contentOffset.y < entry.maxY && scrollView.contentOffset.y != 0 {
           scrollView.contentOffset = CGPoint(x: currentXOffset, y: 0)
         }
       }
 
-      if scrollView.frame != frame {
+      if compare(scrollView.frame, to: frame) == false {
         scrollView.frame = frame
       }
     }
 
-    guard cache.state != .isFinished else { return }
+    guard cache.state == .isRunning else { return }
 
     let computedHeight = yOffsetOfCurrentSubview
     let minimumContentHeight = bounds.height - (contentInsets.top + contentInsets.bottom)
@@ -466,12 +445,11 @@ public class FamilyScrollView: NSScrollView {
     return contentSize
   }
 
-  internal func compare(_ lhs: CGSize, to rhs: CGSize) -> Bool {
-    return (abs(lhs.height - rhs.height) <= 0.001)
-  }
-
-  internal func compare(_ lhs: CGPoint, to rhs: CGPoint) -> Bool {
-    return (abs(lhs.y - rhs.y) <= 0.001)
+  internal func compare(_ lhs: CGRect, to rhs: CGRect) -> Bool {
+    return (abs(lhs.size.height - rhs.size.height) <= 0.001) &&
+      (abs(lhs.size.width - rhs.size.width) <= 0.001) &&
+      (abs(lhs.origin.y - rhs.origin.y) <= 0.001) &&
+      (abs(lhs.origin.x - rhs.origin.x) <= 0.001)
   }
 
   @objc func injected() {
