@@ -397,8 +397,10 @@ public class FamilyScrollView: NSScrollView {
         if frame.origin.y != abs(round(entry.origin.y)) {
           frame.origin.y = abs(round(entry.origin.y))
         }
-      } else if shouldScroll && scrollView.contentOffset.y != contentOffset.y {
-        scrollView.contentOffset = CGPoint(x: currentXOffset, y: contentOffset.y)
+      } else if shouldScroll {
+        if scrollView.contentOffset.y != contentOffset.y {
+          scrollView.contentOffset = CGPoint(x: currentXOffset, y: contentOffset.y)
+        }
       } else {
         if (abs(frame.origin.y - frame.origin.y) <= 0.001) {
           frame.origin.y = entry.origin.y
