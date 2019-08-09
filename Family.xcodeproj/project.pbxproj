@@ -13,6 +13,9 @@
 		BD0FCCD720794AFB00D813EC /* FamilySpaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD535E152079269200AA2EC4 /* FamilySpaceManager.swift */; };
 		BD2236E32034B12A00C465E4 /* NSScrollView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2236E22034B12A00C465E4 /* NSScrollView+Extensions.swift */; };
 		BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */; };
+		BD4515BE22FDAC4500731DF6 /* BinarySearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4515BD22FDAC4500731DF6 /* BinarySearch.swift */; };
+		BD4515BF22FDAC4500731DF6 /* BinarySearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4515BD22FDAC4500731DF6 /* BinarySearch.swift */; };
+		BD4515C022FDAC4500731DF6 /* BinarySearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4515BD22FDAC4500731DF6 /* BinarySearch.swift */; };
 		BD46A25021B5D0E10042AD06 /* FamilyClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD46A24F21B5D0E10042AD06 /* FamilyClipView.swift */; };
 		BD4C7FE020349AA10037D3E5 /* FamilyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */; };
 		BD4C7FE220349ACE0037D3E5 /* FamilyScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */; };
@@ -99,6 +102,7 @@
 		BD02F56821B43E7F006ECE48 /* FamilyViewControllerAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewControllerAttributes.swift; sourceTree = "<group>"; };
 		BD2236E22034B12A00C465E4 /* NSScrollView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSScrollView+Extensions.swift"; sourceTree = "<group>"; };
 		BD44980D2034A09700ED83D4 /* FamilyWrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyWrapperView.swift; sourceTree = "<group>"; };
+		BD4515BD22FDAC4500731DF6 /* BinarySearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinarySearch.swift; sourceTree = "<group>"; };
 		BD46A24F21B5D0E10042AD06 /* FamilyClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyClipView.swift; sourceTree = "<group>"; };
 		BD4C7FDF20349AA10037D3E5 /* FamilyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewController.swift; sourceTree = "<group>"; };
 		BD4C7FE120349ACE0037D3E5 /* FamilyScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyScrollView.swift; sourceTree = "<group>"; };
@@ -209,6 +213,7 @@
 				BD7629BD20349CA300C917BB /* FamilyFriendly.swift */,
 				BD535E152079269200AA2EC4 /* FamilySpaceManager.swift */,
 				BDAA8EE922D270ED00ECF0B1 /* BackgroundKind.swift */,
+				BD4515BD22FDAC4500731DF6 /* BinarySearch.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -638,6 +643,7 @@
 				BD5A80412030A9D9006A5EBB /* FamilyWrapperView.swift in Sources */,
 				BDAA8EEC22D2711100ECF0B1 /* BackgroundKind.swift in Sources */,
 				BD5A80432030A9D9006A5EBB /* FamilyScrollView.swift in Sources */,
+				BD4515C022FDAC4500731DF6 /* BinarySearch.swift in Sources */,
 				BD5A803F2030A9D9006A5EBB /* FamilyViewController.swift in Sources */,
 				BD7C17B522CD57BC001D3615 /* UIViewController+Extensions.swift in Sources */,
 				BDAC586F21B9916E00412766 /* FamilyCache.swift in Sources */,
@@ -681,6 +687,7 @@
 				BD92595E22A5388900E584A5 /* FamilyScrollView+tvOS.swift in Sources */,
 				BD7629BE20349CA300C917BB /* FamilyFriendly.swift in Sources */,
 				BDAC587021B9916E00412766 /* FamilyViewControllerAttributes.swift in Sources */,
+				BD4515BE22FDAC4500731DF6 /* BinarySearch.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -705,6 +712,7 @@
 				BDAA8EEE22D271C800ECF0B1 /* NSViewController+Extensions.swift in Sources */,
 				BDAA8EEB22D2711100ECF0B1 /* BackgroundKind.swift in Sources */,
 				BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */,
+				BD4515BF22FDAC4500731DF6 /* BinarySearch.swift in Sources */,
 				BD7629BF20349CA300C917BB /* FamilyFriendly.swift in Sources */,
 				BD4C7FE420349B030037D3E5 /* FamilyDocumentView.swift in Sources */,
 				BD46A25021B5D0E10042AD06 /* FamilyClipView.swift in Sources */,

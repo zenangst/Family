@@ -299,6 +299,21 @@ public class FamilyScrollView: NSScrollView {
     }
   }
 
+  func validAttributes() -> [FamilyViewControllerAttributes] {
+    let binarySearch = BinarySearch()
+    let rect = CGRect(origin: self.contentOffset, size: bounds.size)
+    let upper: (FamilyViewControllerAttributes) -> Bool = { attributes in attributes.frame.maxY >= rect.minY }
+    let lower: (FamilyViewControllerAttributes) -> Bool = { attributes in attributes.frame.minY <= rect.maxY }
+    let less: (FamilyViewControllerAttributes) -> Bool =  { attributes in attributes.frame.maxY <= rect.minY }
+    let attributes = cache.collection
+    let validAttributes = binarySearch.findElements(in: attributes,
+                                                    upper: upper,
+                                                    lower: lower,
+                                                    less: less,
+                                                    match: { $0.frame.intersects(rect) })
+    return validAttributes
+  }
+
   private func runLayoutSubviewsAlgorithm() {
     guard isPerformingBatchUpdates == false, !isDeallocating,
       cache.state != .isRunning else { return }
@@ -306,24 +321,19 @@ public class FamilyScrollView: NSScrollView {
     var scrollViewContentOffset = self.contentOffset
     var yOffsetOfCurrentSubview: CGFloat = 0.0
 
-    for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
-      guard let view = scrollView.documentView else { continue }
-      let contentSize: CGSize = contentSizeForView(view)
-      let padding = spaceManager.padding(for: view)
-      let margins = spaceManager.margins(for: view)
-      let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
+    if cache.state == .empty {
+      for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
+        guard let view = scrollView.documentView else { continue }
+        let contentSize: CGSize = contentSizeForView(view)
+        let padding = spaceManager.padding(for: view)
+        let margins = spaceManager.margins(for: view)
+        let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
 
-      var frame = scrollView.frame
-      var viewFrame = frame
-      var contentOffset = scrollView.contentOffset
-      let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : 0
+        var frame = scrollView.frame
+        var viewFrame = frame
 
-      yOffsetOfCurrentSubview += margins.top
+        yOffsetOfCurrentSubview += margins.top
 
-      let entry: FamilyViewControllerAttributes
-      if let cache = cache.entry(for: view) {
-        entry = cache
-      } else {
         frame.origin.y = yOffsetOfCurrentSubview
         frame.origin.x = margins.left
         frame.size.height = min(visibleRect.height, contentSize.height)
@@ -334,11 +344,11 @@ public class FamilyScrollView: NSScrollView {
         viewFrame.size.width = scrollView.isHorizontal ? contentSize.width : constrainedWidth
         viewFrame.size.height = contentSize.height
         view.frame = viewFrame
-
-        entry = FamilyViewControllerAttributes(view: view,
-                                               origin: CGPoint(x: frame.origin.x,
-                                                               y: yOffsetOfCurrentSubview),
-                                               contentSize: contentSize)
+        
+        let entry: FamilyViewControllerAttributes = FamilyViewControllerAttributes(view: view,
+                                                                                   origin: CGPoint(x: frame.origin.x,
+                                                                                                   y: yOffsetOfCurrentSubview),
+                                                                                   contentSize: contentSize)
 
         cache.add(entry: entry)
 
@@ -355,6 +365,19 @@ public class FamilyScrollView: NSScrollView {
 
         cache.state = .isRunning
       }
+    }
+
+    for attributes in validAttributes() where validateScrollView(attributes.scrollView) {
+      let scrollView = attributes.scrollView
+      let view = attributes.view
+      guard let entry: FamilyViewControllerAttributes = cache.entry(for: view) else { continue }
+      let padding = spaceManager.padding(for: view)
+      let margins = spaceManager.margins(for: view)
+      let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : 0
+      var frame = scrollView.frame
+      var contentOffset = scrollView.contentOffset
+
+      yOffsetOfCurrentSubview += margins.top
 
       // Constrain the computed offset to be inside of document visible rect.
       scrollViewContentOffset.y = min(documentVisibleRect.origin.y + contentInsets.top,

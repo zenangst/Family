@@ -222,9 +222,9 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       childController.view.isHidden = true
       subview = handler(childController)
     } else {
-      subview = childController.view
-      childController.view.translatesAutoresizingMaskIntoConstraints = true
-      childController.view.autoresizingMask = [.flexibleWidth]
+      subview = viewToAdd(from: childController)
+      subview.translatesAutoresizingMaskIntoConstraints = true
+      subview.autoresizingMask = [.flexibleWidth]
     }
 
     addView(subview, at: index, insets: insets, height: height)

@@ -1,7 +1,7 @@
 import UIKit
 import Family
 
-class ViewController: UIViewController {
+class ContainerController: FamilViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()

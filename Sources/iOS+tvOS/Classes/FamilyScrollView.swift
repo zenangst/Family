@@ -460,6 +460,21 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
+  func validAttributes() -> [FamilyViewControllerAttributes] {
+    let binarySearch = BinarySearch()
+    let rect = CGRect(origin: self.contentOffset, size: bounds.size)
+    let upper: (FamilyViewControllerAttributes) -> Bool = { attributes in attributes.frame.maxY >= rect.minY }
+    let lower: (FamilyViewControllerAttributes) -> Bool = { attributes in attributes.frame.minY <= rect.maxY }
+    let less: (FamilyViewControllerAttributes) -> Bool =  { attributes in attributes.frame.maxY <= rect.minY }
+    let attributes = cache.collection
+    let validAttributes = binarySearch.findElements(in: attributes,
+                                                    upper: upper,
+                                                    lower: lower,
+                                                    less: less,
+                                                    match: { $0.frame.intersects(rect) })
+    return validAttributes
+  }
+
   internal func compare(_ lhs: CGSize, to rhs: CGSize) -> Bool {
     return (abs(lhs.height - rhs.height) <= 0.001)
   }
