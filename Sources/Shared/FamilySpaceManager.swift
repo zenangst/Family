@@ -20,6 +20,16 @@ class FamilySpaceManager {
     return margins[targetView] ?? defaultMargins
   }
 
+  /// Get margins for the attributes, if the view does not have custom insets
+  /// then the general spacing will be returned.
+  ///
+  /// - Parameter attributes: The attributes for a view controller.
+  /// - Returns: The amount of insets that should appear after the view, either
+  ///            custom insets or the general insets.
+  func margins(for attributes: FamilyViewControllerAttributes) -> Insets {
+    return margins[attributes.view] ?? defaultMargins
+  }
+
   /// Get padding for the view, if the view does not have custom insets
   /// then the general spacing will be returned.
   ///
@@ -29,6 +39,16 @@ class FamilySpaceManager {
   func padding(for view: View) -> Insets {
     let targetView = (view as? FamilyWrapperView)?.view ?? view
     return padding[targetView] ?? defaultPadding
+  }
+
+  /// Get padding for the attributes, if the view does not have custom insets
+  /// then the general spacing will be returned.
+  ///
+  /// - Parameter attributes: The attributes for a view controller.
+  /// - Returns: The amount of insets that should appear after the view, either
+  ///            custom insets or the general insets.
+  func padding(for attributes: FamilyViewControllerAttributes) -> Insets {
+    return padding[attributes.view] ?? defaultPadding
   }
 
   /// Set margins for view.
