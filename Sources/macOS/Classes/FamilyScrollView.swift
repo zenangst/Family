@@ -281,7 +281,7 @@ public class FamilyScrollView: NSScrollView {
   private func validateScrollView(_ scrollView: NSScrollView) -> Bool {
     guard scrollView.documentView != nil else { return false }
 
-    // Exlucde empty collection views.
+    // Exclude empty collection views.
     if let collectionView = scrollView.documentView as? NSCollectionView,
       collectionView.dataSource?.collectionView(collectionView, numberOfItemsInSection: 0) == 0 {
       return false
@@ -328,14 +328,14 @@ public class FamilyScrollView: NSScrollView {
         let padding = spaceManager.padding(for: view)
         let margins = spaceManager.margins(for: view)
         let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
-
+        let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : margins.left
         var frame = scrollView.frame
         var viewFrame = frame
 
         yOffsetOfCurrentSubview += margins.top
 
         frame.origin.y = yOffsetOfCurrentSubview
-        frame.origin.x = margins.left
+        frame.origin.x = currentXOffset
         frame.size.height = min(visibleRect.height, contentSize.height)
         frame.size.width = round(self.frame.size.width) - margins.left - margins.right
 
@@ -345,8 +345,8 @@ public class FamilyScrollView: NSScrollView {
         viewFrame.size.height = contentSize.height
         view.frame = viewFrame
 
-        scrollView.frame.size = frame.size
-        
+        scrollView.frame = frame
+
         let entry: FamilyViewControllerAttributes = FamilyViewControllerAttributes(view: view,
                                                                                    origin: CGPoint(x: frame.origin.x,
                                                                                                    y: yOffsetOfCurrentSubview),
@@ -374,8 +374,7 @@ public class FamilyScrollView: NSScrollView {
       let view = attributes.view
       let padding = spaceManager.padding(for: view)
       let margins = spaceManager.margins(for: view)
-      let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : margins.left
-
+      let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : 0
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
 
@@ -410,7 +409,6 @@ public class FamilyScrollView: NSScrollView {
         newHeight += padding.top + padding.bottom
       }
 
-      frame.origin.x = currentXOffset
       frame.size.height = newHeight
 
       // Only scroll if the views content offset is less than its content size height
