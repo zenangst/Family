@@ -222,9 +222,9 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       childController.view.isHidden = true
       subview = handler(childController)
     } else {
-      subview = childController.view
-      childController.view.translatesAutoresizingMaskIntoConstraints = true
-      childController.view.autoresizingMask = [.flexibleWidth]
+      subview = viewToAdd(from: childController)
+      subview.translatesAutoresizingMaskIntoConstraints = true
+      subview.autoresizingMask = [.flexibleWidth]
     }
 
     addView(subview, at: index, insets: insets, height: height)
@@ -379,11 +379,11 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///
   /// - Parameter viewController: The target view controller
   /// - Returns: True if the view controller is visible on screen
-  public func viewControllerIsVisible(_ viewController: UIViewController) -> Bool {
-    guard let entry = registry[viewController] else { return false }
-    let view = wrappedViewIfNeeded(entry.view)
-    if view.frame.size.height == 0 { return false }
-    return view.frame.intersects(documentVisibleRect)
+  public func viewControllerIsVisible(_ viewController: ViewController) -> Bool {
+    guard let attributes = scrollView.validAttributes().first(where: { $0.view == viewController.view && $0.view.frame.size.height != 0 }) else {
+      return false
+    }
+    return attributes.scrollView.frame.intersects(documentVisibleRect)
   }
 
   /// Check if a view controller is fully visible on screen.
@@ -391,10 +391,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameter viewController: The target view controller
   /// - Returns: True if the view controller is fully visible on screen
   public func viewControllerIsFullyVisible(_ viewController: UIViewController) -> Bool {
-    guard let entry = registry[viewController] else { return false }
-    let view = wrappedViewIfNeeded(entry.view)
-    if view.frame.size.height == 0 { return false }
-    let convertedFrame = scrollView.documentView.convert(view.frame,
+    guard let attributes = scrollView.validAttributes().first(where: { $0.view == viewController.view && $0.view.frame.size.height != 0 }) else {
+      return false
+    }
+    let convertedFrame = scrollView.documentView.convert(attributes.scrollView.frame,
                                                          to: scrollView.documentView)
     return documentVisibleRect.contains(convertedFrame)
   }

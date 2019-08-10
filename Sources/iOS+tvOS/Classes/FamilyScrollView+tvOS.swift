@@ -86,14 +86,15 @@ extension FamilyScrollView {
       contentSize = CGSize(width: cache.contentSize.width, height: height)
     }
 
-    for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
-      let view = (scrollView as? FamilyWrapperView)?.view ?? scrollView
-      let padding = spaceManager.padding(for: view)
+    for attributes in validAttributes() where attributes.scrollView.isHidden == false  {
+      let view = attributes.view
+      let scrollView = attributes.scrollView
       guard let entry = cache.entry(for: view) else { continue }
       if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
         continue
       }
 
+      let padding = spaceManager.padding(for: view)
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
 

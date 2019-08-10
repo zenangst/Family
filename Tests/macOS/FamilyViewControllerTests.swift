@@ -129,12 +129,12 @@ class FamilyViewControllerTests: XCTestCase {
     let controller3 = MockViewController()
     let controller4 = MockViewController()
 
-    [controller1, controller2, controller3].forEach {
+    [controller1, controller2, controller3, controller4].forEach {
       $0.view.frame.size = CGSize(width: 375, height: 667)
     }
 
     familyViewController.addChildren([
-      controller1, controller2, controller3
+      controller1, controller2, controller3, controller4
       ])
 
     XCTAssertTrue(familyViewController.viewControllerIsVisible(controller1))
@@ -146,6 +146,9 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertFalse(familyViewController.viewControllerIsVisible(controller3))
     XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller3))
 
+    XCTAssertFalse(familyViewController.viewControllerIsVisible(controller4))
+    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller4))
+
     familyViewController.scrollView.contentOffset = .init(x: 0, y: 667 / 2)
 
     XCTAssertTrue(familyViewController.viewControllerIsVisible(controller1))
@@ -156,6 +159,9 @@ class FamilyViewControllerTests: XCTestCase {
 
     XCTAssertFalse(familyViewController.viewControllerIsVisible(controller3))
     XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller3))
+
+    XCTAssertFalse(familyViewController.viewControllerIsVisible(controller4))
+    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller4))
 
     familyViewController.scrollView.contentOffset = .init(x: 0, y: 667)
 

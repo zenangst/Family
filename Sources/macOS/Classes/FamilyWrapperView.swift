@@ -87,7 +87,7 @@ class FamilyWrapperView: NSScrollView {
     let oldValue = frame
     let newValue = rect
 
-    frame.size = newValue.size
+    frame.size.height = newValue.size.height
     familyScrollView?.wrapperViewDidChangeFrame(view, from: oldValue, to: newValue)
     guard view is NSCollectionView else { return }
     NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(delayedUpdate), object: nil)
