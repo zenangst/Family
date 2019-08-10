@@ -134,7 +134,7 @@ class FamilyViewControllerTests: XCTestCase {
     }
 
     familyViewController.addChildren([
-      controller1, controller2, controller3
+      controller1, controller2, controller3, controller4
       ])
 
     XCTAssertTrue(familyViewController.viewControllerIsVisible(controller1))

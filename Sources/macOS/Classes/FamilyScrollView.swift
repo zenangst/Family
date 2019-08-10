@@ -344,6 +344,8 @@ public class FamilyScrollView: NSScrollView {
         viewFrame.size.width = scrollView.isHorizontal ? contentSize.width : constrainedWidth
         viewFrame.size.height = contentSize.height
         view.frame = viewFrame
+
+        scrollView.frame.size = frame.size
         
         let entry: FamilyViewControllerAttributes = FamilyViewControllerAttributes(view: view,
                                                                                    origin: CGPoint(x: frame.origin.x,
@@ -372,7 +374,7 @@ public class FamilyScrollView: NSScrollView {
       let view = attributes.view
       let padding = spaceManager.padding(for: view)
       let margins = spaceManager.margins(for: view)
-      let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : 0
+      let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : margins.left
 
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
@@ -408,6 +410,7 @@ public class FamilyScrollView: NSScrollView {
         newHeight += padding.top + padding.bottom
       }
 
+      frame.origin.x = currentXOffset
       frame.size.height = newHeight
 
       // Only scroll if the views content offset is less than its content size height
