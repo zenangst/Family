@@ -78,7 +78,8 @@ extension FamilyScrollView {
       contentSize = CGSize(width: cache.contentSize.width, height: height)
     }
 
-    for attributes in validAttributes() where attributes.view.isHidden == false  {
+    let rect = CGRect(origin: self.contentOffset, size: bounds.size)
+    for attributes in validAttributes(in: rect) where attributes.view.isHidden == false  {
       let scrollView = attributes.scrollView
       let padding = spaceManager.padding(for: attributes)
       var frame = scrollView.frame
