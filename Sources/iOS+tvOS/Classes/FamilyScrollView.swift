@@ -460,7 +460,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
-  func getValidAttributes(in rect: CGRect) -> [FamilyViewControllerAttributes] {
+  func validAttributes(in rect: CGRect) -> [FamilyViewControllerAttributes] {
     let binarySearch = BinarySearch()
     let upper: (FamilyViewControllerAttributes) -> Bool = { attributes in
       attributes.frame.maxY >= rect.minY ||

@@ -380,13 +380,11 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameter viewController: The target view controller
   /// - Returns: True if the view controller is visible on screen
   public func viewControllerIsVisible(_ viewController: ViewController) -> Bool {
-    guard let attributes = scrollView.getValidAttributes(in: scrollView.documentVisibleRect)
+    guard let attributes = scrollView.validAttributes(in: scrollView.documentVisibleRect)
       .first(where: { $0.view == viewController.view && $0.view.frame.size.height != 0 }) else {
       return false
     }
-    var frame = attributes.scrollView.frame
-    frame.size.height = attributes.contentSize.height
-    return frame.intersects(documentVisibleRect)
+    return attributes.scrollView.frame.intersects(documentVisibleRect)
   }
 
   /// Check if a view controller is fully visible on screen.
@@ -394,13 +392,12 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameter viewController: The target view controller
   /// - Returns: True if the view controller is fully visible on screen
   public func viewControllerIsFullyVisible(_ viewController: UIViewController) -> Bool {
-    guard let attributes = scrollView.getValidAttributes(in: scrollView.documentVisibleRect)
+    guard let attributes = scrollView.validAttributes(in: scrollView.documentVisibleRect)
       .first(where: { $0.view == viewController.view && $0.view.frame.size.height != 0 }) else {
       return false
     }
-    var convertedFrame = scrollView.documentView.convert(attributes.scrollView.frame,
+    let convertedFrame = scrollView.documentView.convert(attributes.scrollView.frame,
                                                          to: scrollView.documentView)
-    convertedFrame.size.height = attributes.contentSize.height
     return documentVisibleRect.contains(convertedFrame)
   }
 
