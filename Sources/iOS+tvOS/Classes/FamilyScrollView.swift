@@ -60,7 +60,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   internal lazy var spaceManager = FamilySpaceManager()
   internal var isPerformingBatchUpdates: Bool = false
   lazy var cache = FamilyCache()
-  private var isScrolling: Bool { return isTracking || isDragging || isDecelerating }
+  var isScrolling: Bool { return isTracking || isDragging || isDecelerating }
 
   /// The custom distance that the content view is inset from the safe area or scroll view edges.
   open override var contentInset: UIEdgeInsets {
@@ -460,19 +460,22 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
-  func validAttributes(in rect: CGRect) -> [FamilyViewControllerAttributes] {
+  func getValidAttributes(in rect: CGRect) -> [FamilyViewControllerAttributes] {
     let binarySearch = BinarySearch()
     let upper: (FamilyViewControllerAttributes) -> Bool = { attributes in
-      attributes.frame.maxY >= rect.minY ||
-      attributes.scrollView.frame.maxY >= rect.minY
+      let frame = attributes.scrollView.layer.presentation()?.frame ?? attributes.scrollView.frame
+      return attributes.frame.maxY >= rect.minY ||
+        frame.maxY >= rect.minY
     }
     let lower: (FamilyViewControllerAttributes) -> Bool = { attributes in
-      attributes.frame.minY <= rect.maxY ||
-      attributes.scrollView.frame.minY <= rect.maxY
+      let frame = attributes.scrollView.layer.presentation()?.frame ?? attributes.scrollView.frame
+      return attributes.frame.minY <= rect.maxY ||
+        frame.minY <= rect.maxY
     }
     let less: (FamilyViewControllerAttributes) -> Bool =  { attributes in
-      attributes.frame.maxY < rect.minY ||
-      attributes.scrollView.frame.maxY < rect.minY
+      let frame = attributes.scrollView.layer.presentation()?.frame ?? attributes.scrollView.frame
+      return attributes.frame.maxY < rect.minY ||
+        frame.maxY < rect.minY
     }
     let attributes = cache.collection
     let validAttributes = binarySearch.findElements(in: attributes,

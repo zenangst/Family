@@ -49,13 +49,11 @@ extension FamilyScrollView {
         frame.size.width = self.frame.size.width - margins.left - margins.right
         frame.size.height = newHeight
 
-        if newHeight == 0 {
-          newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
-        }
-
-        if scrollView.frame != frame {
+        if scrollView.frame != frame && frame.intersects(documentVisibleRect) {
           scrollView.frame = frame
         }
+
+        scrollView.frame.origin.y = yOffsetOfCurrentSubview
 
         cache.add(entry: FamilyViewControllerAttributes(view: view,
                                                         origin: CGPoint(x: frame.origin.x,
@@ -86,23 +84,31 @@ extension FamilyScrollView {
       contentSize = CGSize(width: cache.contentSize.width, height: height)
     }
 
-    let rect = CGRect(origin: CGPoint(x: self.contentOffset.x, y: max(self.contentOffset.y - bounds.size.height / 2, 0)),
-                      size: CGSize(width: bounds.size.width, height: bounds.size.height + bounds.size.height / 2))
-    for attributes in validAttributes(in: rect) where attributes.view.isHidden == false  {
+    var validRect = documentVisibleRect
+    let validOffset = bounds.size.height * 4
+    validRect.origin.y = max(self.contentOffset.y - validOffset, 0)
+    validRect.size.height = bounds.size.height + validOffset
+    var discardableRect = documentVisibleRect
+    let discardOffset = bounds.size.height * 2
+    discardableRect.origin.y = max(self.contentOffset.y - discardOffset, 0)
+    discardableRect.size.height = bounds.size.height + discardOffset
+
+    let validAttributes = getValidAttributes(in: validRect)
+    for attributes in validAttributes where attributes.view.isHidden == false  {
       let scrollView = attributes.scrollView
       let padding = spaceManager.padding(for: attributes)
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
 
-      if self.contentOffset.y < attributes.origin.y {
+      if self.contentOffset.y < scrollView.frame.origin.y {
         contentOffset.y = 0.0
-        frame.origin.y = round(attributes.origin.y)
+        frame.origin.y = round(scrollView.frame.origin.y)
       } else {
-        contentOffset.y = self.contentOffset.y - attributes.origin.y
+        contentOffset.y = self.contentOffset.y - scrollView.frame.origin.y
         frame.origin.y = round(self.contentOffset.y)
       }
 
-      let remainingBoundsHeight = bounds.maxY - attributes.origin.y
+      let remainingBoundsHeight = bounds.maxY - scrollView.frame.minY
       let remainingContentHeight = attributes.contentSize.height - contentOffset.y
       var newHeight: CGFloat = fmin(documentView.frame.height, scrollView.contentSize.height)
 
@@ -123,10 +129,10 @@ extension FamilyScrollView {
         round(frame.height) >= round(documentView.frame.height)
 
       if scrollView is FamilyWrapperView {
-        if self.contentOffset.y < attributes.origin.y {
+        if scrollView.contentOffset.y != contentOffset.y && self.contentOffset.y < scrollView.frame.origin.y {
           scrollView.contentOffset.y = contentOffset.y
         } else {
-          frame.origin.y = attributes.origin.y
+          frame.origin.y = attributes.frame.origin.y
         }
       } else if shouldScroll {
         scrollView.contentOffset.y = contentOffset.y
@@ -139,13 +145,16 @@ extension FamilyScrollView {
         }
       }
 
+      if !attributes.frame.intersects(discardableRect) {
+        newHeight = 0
+      }
+
       frame.size.height = newHeight
 
       if scrollView.frame != frame {
         scrollView.frame = frame
       }
     }
-
   }
 }
 #endif
