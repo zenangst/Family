@@ -49,7 +49,7 @@ class FamilyViewControllerSharedTests: XCTestCase {
                                                                                size: CGSize(width: 480, height: 520)))
     #else
     XCTAssertEqual(backgroundView.superview, container.scrollView)
-    XCTAssertEqual(childViewController.view.superview?.frame, CGRect(origin: .init(x: 10, y: 20),
+    XCTAssertEqual(childViewController.view.superview?.frame, CGRect(origin: .init(x: 10, y: 10),
                                                                      size: CGSize(width: 480, height: 520)))
     #endif
 
