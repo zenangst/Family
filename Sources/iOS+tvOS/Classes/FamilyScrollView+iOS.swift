@@ -47,9 +47,9 @@ extension FamilyScrollView {
 
         if scrollView.frame != frame && frame.intersects(documentVisibleRect) {
           scrollView.frame = frame
-        } else {
-          scrollView.frame.size.height = 0
         }
+
+        scrollView.frame.origin.y = yOffsetOfCurrentSubview
 
         cache.add(entry: FamilyViewControllerAttributes(view: view,
                                                         origin: CGPoint(x: frame.origin.x,
@@ -125,7 +125,7 @@ extension FamilyScrollView {
         round(frame.height) >= round(documentView.frame.height)
 
       if scrollView is FamilyWrapperView {
-        if self.contentOffset.y < scrollView.frame.origin.y {
+        if scrollView.contentOffset.y != contentOffset.y && self.contentOffset.y < scrollView.frame.origin.y {
           scrollView.contentOffset.y = contentOffset.y
         } else {
           frame.origin.y = attributes.frame.origin.y
