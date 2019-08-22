@@ -12,7 +12,7 @@ class ContainerController: FamilyViewController {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     performBatchUpdates(withDuration: 0, { _ in
-      for x in 0..<75 {
+      for x in 0..<25 {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = .init(top: 10, left: 10, bottom: 10, right: 10)
         layout.minimumLineSpacing = 10
@@ -28,7 +28,6 @@ class ContainerController: FamilyViewController {
 
         add(viewController)
         title = "Loaded \(x)"
-        CATransaction.flush()
       }
     }) { (_) in
       self.title = "All done!"
