@@ -122,7 +122,7 @@ extension FamilyScrollView {
 
       let shouldScroll = (round(self.contentOffset.y) >= round(frame.origin.y) &&
         round(self.contentOffset.y) < round(attributes.maxY)) &&
-        round(frame.height) >= round(documentView.frame.height)
+        round(frame.height) > round(documentView.frame.height)
 
       if scrollView is FamilyWrapperView {
         if scrollView.contentOffset.y != contentOffset.y && self.contentOffset.y < scrollView.frame.origin.y {
