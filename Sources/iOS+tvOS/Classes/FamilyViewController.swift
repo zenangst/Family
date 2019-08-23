@@ -98,8 +98,9 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///   - duration: The animated duration of the update, this is used to animate any
   ///               changes to the view hierarchy.
   ///   - closure: A closure that will be invoked inside of the batch update context.
-  public func body(withDuration duration: Double = 0.25, _ closure: () -> Void) {
-    performBatchUpdates(withDuration: duration, { _ in
+  public func body(withDuration duration: Double = 0.25,
+                   animation: CAAnimation? = nil, _ closure: () -> Void) {
+    performBatchUpdates(withDuration: duration, animation: animation, { _ in
       closure()
     })
   }
@@ -359,16 +360,18 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///
   /// - Parameters:
   ///   - handler: The operations that should be performed as a group.
+  ///   - animation: A CAAnimation that will be used when performing the batch update.
   ///   - completion: A completion handler that is invoked after the view
   ///                 has laid out its views.
   @discardableResult
   open func performBatchUpdates(withDuration duration: Double = 0.25,
+                                animation: CAAnimation? = nil,
                                 _ handler: (FamilyViewController) -> Void,
                                 completion: ((FamilyViewController) -> Void)? = nil) -> Self {
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
-    scrollView.layoutViews(withDuration: duration) {
+    scrollView.layoutViews(withDuration: duration, animation: animation) {
       completion?(self)
     }
 
