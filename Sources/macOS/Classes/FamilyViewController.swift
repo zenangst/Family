@@ -341,7 +341,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   /// - Parameter viewController: The target view controller
   /// - Returns: True if the view controller is visible on screen
   public func viewControllerIsVisible(_ viewController: ViewController) -> Bool {
-    guard let attributes = scrollView.validAttributes().first(where: { $0.view == viewController.view && $0.view.frame.size.height != 0 }) else {
+    guard let attributes = scrollView.getValidAttributes(in: scrollView.documentVisibleRect).first(where: { $0.view == viewController.view && $0.view.frame.size.height != 0 }) else {
       return false
     }
     return attributes.scrollView.frame.intersects(documentVisibleRect)
@@ -352,7 +352,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   /// - Parameter viewController: The target view controller
   /// - Returns: True if the view controller is fully visible on screen
   public func viewControllerIsFullyVisible(_ viewController: ViewController) -> Bool {
-    guard let attributes = scrollView.validAttributes().first(where: { $0.view == viewController.view && $0.view.frame.size.height != 0 }) else {
+    guard let attributes = scrollView.getValidAttributes(in: scrollView.documentVisibleRect).first(where: { $0.view == viewController.view && $0.view.frame.size.height != 0 }) else {
       return false
     }
     let convertedFrame = scrollView.familyDocumentView.convert(attributes.scrollView.frame,

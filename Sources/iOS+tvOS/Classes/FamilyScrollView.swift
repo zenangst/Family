@@ -526,6 +526,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     layoutViews()
   }
 
+  // MARK: - Layout Algorithm
+
   /// The layout algorithm simply lays out the view in linear order vertically
   /// based on the views index inside `subviewsInLayoutOrder`. This is invoked
   /// when a view changes size or origin. It also scales the frame of scroll views
@@ -546,7 +548,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     if cache.state == .empty {
       cache.state = .isRunning
       var yOffsetOfCurrentSubview: CGFloat = 0.0
-
       for scrollView in subviewsInLayoutOrder where scrollView.isHidden == false {
         if (scrollView as? FamilyWrapperView)?.view.isHidden == true {
           continue
@@ -641,6 +642,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         newHeight = 0
       }
 
+      // Only add padding if the new height exceeds zero.
       if newHeight > 0 {
         newHeight += padding.top + padding.bottom
       }
