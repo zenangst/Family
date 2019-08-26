@@ -299,12 +299,25 @@ public class FamilyScrollView: NSScrollView {
     }
   }
 
-  func validAttributes() -> [FamilyViewControllerAttributes] {
+  // MARK: - Layout Algorithm
+
+  func getValidAttributes(in rect: CGRect) -> [FamilyViewControllerAttributes] {
     let binarySearch = BinarySearch()
-    let rect = CGRect(origin: self.contentOffset, size: bounds.size)
-    let upper: (FamilyViewControllerAttributes) -> Bool = { attributes in attributes.frame.maxY >= rect.minY }
-    let lower: (FamilyViewControllerAttributes) -> Bool = { attributes in attributes.frame.minY <= rect.maxY }
-    let less: (FamilyViewControllerAttributes) -> Bool =  { attributes in attributes.frame.maxY <= rect.minY }
+    let upper: (FamilyViewControllerAttributes) -> Bool = { attributes in
+      let frame = attributes.scrollView.layer?.presentation()?.frame ?? attributes.scrollView.frame
+      return attributes.frame.maxY >= rect.minY ||
+        frame.maxY >= rect.minY
+    }
+    let lower: (FamilyViewControllerAttributes) -> Bool = { attributes in
+      let frame = attributes.scrollView.layer?.presentation()?.frame ?? attributes.scrollView.frame
+      return attributes.frame.minY <= rect.maxY ||
+        frame.minY <= rect.maxY
+    }
+    let less: (FamilyViewControllerAttributes) -> Bool =  { attributes in
+      let frame = attributes.scrollView.layer?.presentation()?.frame ?? attributes.scrollView.frame
+      return attributes.frame.maxY < rect.minY ||
+        frame.maxY < rect.minY
+    }
     let attributes = cache.collection
     let validAttributes = binarySearch.findElements(in: attributes,
                                                     upper: upper,
@@ -319,9 +332,18 @@ public class FamilyScrollView: NSScrollView {
       cache.state != .isRunning else { return }
 
     var scrollViewContentOffset = self.contentOffset
-    var yOffsetOfCurrentSubview: CGFloat = 0.0
+    var validRect = documentVisibleRect
+    let validOffset = bounds.size.height * 2
+    validRect.origin.y = max(self.contentOffset.y - (validOffset / 2), 0)
+    validRect.size.height = bounds.size.height + validOffset
+
+    var discardableRect = documentVisibleRect
+    let discardOffset = bounds.size.height * 2.5
+    discardableRect.origin.y = max(self.contentOffset.y - (discardOffset / 2), 0)
+    discardableRect.size.height = bounds.size.height + discardOffset
 
     if cache.state == .empty {
+      var yOffsetOfCurrentSubview: CGFloat = 0.0
       for scrollView in subviewsInLayoutOrder where validateScrollView(scrollView) {
         guard let view = scrollView.documentView else { continue }
         let contentSize: CGSize = contentSizeForView(view)
@@ -339,18 +361,32 @@ public class FamilyScrollView: NSScrollView {
         frame.size.height = min(visibleRect.height, contentSize.height)
         frame.size.width = round(self.frame.size.width) - margins.left - margins.right
 
-        viewFrame.origin.x = padding.left
-        viewFrame.origin.y = padding.top
+        if !frame.intersects(documentVisibleRect) {
+          frame.size.height = 0
+        }
+
+        if view is NSCollectionView {
+          viewFrame.origin.x = padding.left
+          viewFrame.origin.y = padding.top
+        } else {
+          scrollView.automaticallyAdjustsContentInsets = false
+          scrollView.contentInsets = padding
+          frame.size.height += padding.top + padding.bottom
+        }
+
         viewFrame.size.width = scrollView.isHorizontal ? contentSize.width : constrainedWidth
         viewFrame.size.height = contentSize.height
-        view.frame = viewFrame
 
+        view.frame = viewFrame
         scrollView.frame = frame
 
-        let entry: FamilyViewControllerAttributes = FamilyViewControllerAttributes(view: view,
-                                                                                   origin: CGPoint(x: frame.origin.x,
-                                                                                                   y: yOffsetOfCurrentSubview),
-                                                                                   contentSize: contentSize)
+        let origin = CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview)
+        let entry = FamilyViewControllerAttributes(view: view, origin: origin,
+                                                   contentSize: contentSize)
+
+        if scrollView.frame != frame {
+          scrollView.frame = frame
+        }
 
         cache.add(entry: entry)
 
@@ -366,19 +402,33 @@ public class FamilyScrollView: NSScrollView {
         }
 
         cache.state = .isRunning
+
+        let previousContentOffset = self.contentOffset
+        self.contentOffset = previousContentOffset
       }
+
+      let computedHeight = yOffsetOfCurrentSubview
+      let minimumContentHeight = bounds.height - (contentInsets.top + contentInsets.bottom)
+      var height = abs(fmax(computedHeight, minimumContentHeight))
+      cache.contentSize = CGSize(width: bounds.size.width, height: yOffsetOfCurrentSubview)
+
+      if isChildViewController {
+        height = computedHeight
+        superview?.frame.size.height = cache.contentSize.height
+      }
+
+      documentView?.frame.size = CGSize(width: cache.contentSize.width, height: height)
+      cache.state = .isFinished
     }
 
-    for attributes in validAttributes() where validateScrollView(attributes.scrollView) {
+    let validAttributes = getValidAttributes(in: discardableRect)
+    for attributes in validAttributes where validateScrollView(attributes.scrollView) {
       let scrollView = attributes.scrollView
       let view = attributes.view
       let padding = spaceManager.padding(for: view)
-      let margins = spaceManager.margins(for: view)
       let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : 0
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
-
-      yOffsetOfCurrentSubview += margins.top
 
       // Constrain the computed offset to be inside of document visible rect.
       scrollViewContentOffset.y = min(documentVisibleRect.origin.y + contentInsets.top,
@@ -392,15 +442,9 @@ public class FamilyScrollView: NSScrollView {
         frame.origin.y = abs(scrollViewContentOffset.y)
       }
 
-      let remainingBoundsHeight = abs(fmax(documentVisibleRect.maxY - frame.minY, 0.0))
-      let remainingContentHeight = abs(fmax(attributes.contentSize.height - contentOffset.y, 0.0))
       var newHeight: CGFloat = abs(fmin(documentVisibleRect.size.height, attributes.contentSize.height))
 
-      if remainingBoundsHeight <= -self.frame.size.height {
-        newHeight = 0
-      }
-
-      if remainingContentHeight <= -self.frame.size.height {
+      if !attributes.frame.intersects(validRect) {
         newHeight = 0
       }
 
@@ -409,15 +453,12 @@ public class FamilyScrollView: NSScrollView {
         newHeight += padding.top + padding.bottom
       }
 
-      frame.size.height = newHeight
-
       // Only scroll if the views content offset is less than its content size height
       // and if the frame is less than the content size height.
       let shouldScroll = round(contentOffset.y) <= round(attributes.contentSize.height) &&
         round(frame.size.height) < round(attributes.contentSize.height)
 
       if !(attributes.view is NSCollectionView) {
-        scrollView.contentOffset = CGPoint(x: 0, y: 0)
         if frame.origin.y != abs(round(attributes.origin.y)) {
           frame.origin.y = abs(round(attributes.origin.y))
         }
@@ -436,25 +477,11 @@ public class FamilyScrollView: NSScrollView {
         }
       }
 
-      if compare(scrollView.frame, to: frame) == false {
+      frame.size.height = newHeight
+      if scrollView.frame != frame {
         scrollView.frame = frame
       }
     }
-
-    guard cache.state == .isRunning else { return }
-
-    let computedHeight = yOffsetOfCurrentSubview
-    let minimumContentHeight = bounds.height - (contentInsets.top + contentInsets.bottom)
-    var height = abs(fmax(computedHeight, minimumContentHeight))
-    cache.contentSize = CGSize(width: bounds.size.width, height: yOffsetOfCurrentSubview)
-
-    if isChildViewController {
-      height = computedHeight
-      superview?.frame.size.height = cache.contentSize.height
-    }
-
-    documentView?.frame.size = CGSize(width: cache.contentSize.width, height: height)
-    cache.state = .isFinished
   }
 
   private func contentSizeForView(_ view: NSView) -> CGSize {

@@ -37,8 +37,14 @@ class FamilyWrapperView: NSScrollView {
     })
 
     self.alphaObserver = view.observe(\.alphaValue, options: [.new, .old]) { [weak self] (_, value) in
-      guard value.newValue != value.oldValue, let newValue = value.newValue else { return }
+      guard value.newValue != value.oldValue,
+        let newValue = value.newValue,
+        let oldValue = value.oldValue else { return }
+
       self?.alphaValue = newValue
+
+      let shouldInvalidate = oldValue == 0 || newValue == 0
+      guard shouldInvalidate else { return }
       self?.invalidateFamilyScrollView(needsDisplay: false)
     }
 

@@ -40,15 +40,23 @@ class FamilyViewControllerSharedTests: XCTestCase {
     XCTAssertEqual(padding.bottom, insets.bottom)
 
     XCTAssertEqual(container.scrollView.bounds, CGRect(origin: .zero, size: CGSize(width: 500, height: 1000)))
-    XCTAssertEqual(childViewController.view.frame, CGRect(origin: .init(x: 10, y: 10),
-                                                          size: CGSize(width: 460, height: 500)))
+
 
     #if os(macOS)
+    XCTAssertEqual(childViewController.view.frame, CGRect(origin: .init(x: 0, y: 0),
+                                                          size: CGSize(width: 460, height: 500)))
+
+    XCTAssertEqual(childViewController.view.enclosingScrollView?.contentInsets.top, padding.top)
+    XCTAssertEqual(childViewController.view.enclosingScrollView?.contentInsets.left, padding.left)
+    XCTAssertEqual(childViewController.view.enclosingScrollView?.contentInsets.right, padding.right)
+    XCTAssertEqual(childViewController.view.enclosingScrollView?.contentInsets.bottom, padding.bottom)
     XCTAssertEqual(backgroundView.superview, container.scrollView.documentView!)
     XCTAssertEqual(childViewController.view.enclosingScrollView?.frame, CGRect(origin: .init(x: 10, y: 10),
                                                                                size: CGSize(width: 480, height: 520)))
     #else
     XCTAssertEqual(backgroundView.superview, container.scrollView)
+    XCTAssertEqual(childViewController.view.frame, CGRect(origin: .init(x: 10, y: 10),
+                                                          size: CGSize(width: 460, height: 500)))
     XCTAssertEqual(childViewController.view.superview?.frame, CGRect(origin: .init(x: 10, y: 20),
                                                                      size: CGSize(width: 480, height: 520)))
     #endif
