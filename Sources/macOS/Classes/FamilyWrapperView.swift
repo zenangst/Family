@@ -32,8 +32,17 @@ class FamilyWrapperView: NSScrollView {
     self.drawsBackground = false
 
     self.frameObserver = view.observe(\.frame, options: [.initial, .new, .old], changeHandler: { [weak self] (_, value) in
-      guard let newValue = value.newValue, newValue != value.oldValue else { return }
+      guard let newValue = value.newValue else { return }
+
+      if let collectionView = wrappedView as? NSCollectionView,
+        let layout = collectionView.collectionViewLayout {
+        guard newValue != value.oldValue || layout.collectionViewContentSize != newValue.size else { return }
+      } else {
+        guard newValue != value.oldValue else { return }
+      }
+
       self?.setWrapperFrameSize(newValue)
+      self?.invalidateFamilyScrollView(needsDisplay: false)
     })
 
     self.alphaObserver = view.observe(\.alphaValue, options: [.new, .old]) { [weak self] (_, value) in
@@ -89,13 +98,5 @@ class FamilyWrapperView: NSScrollView {
 
     frame.size.height = newValue.size.height
     familyScrollView?.wrapperViewDidChangeFrame(view, from: oldValue, to: newValue)
-    guard view is NSCollectionView else { return }
-    NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(delayedUpdate), object: nil)
-    perform(#selector(delayedUpdate), with: nil, afterDelay: NSAnimationContext.current.duration)
-  }
-
-  /// This method is invoked when a collection view has received a new size.
-  @objc private func delayedUpdate() {
-    invalidateFamilyScrollView(needsDisplay: true)
   }
 }
