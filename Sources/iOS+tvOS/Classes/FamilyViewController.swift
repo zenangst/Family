@@ -248,9 +248,11 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Parameter childControllers: The view controllers to be added as children.
   @discardableResult
   public func addChildren(_ childControllers: [UIViewController]) -> Self {
-    for childController in childControllers {
-      _ = addChild(childController)
-    }
+    performBatchUpdates({ _ in
+      for childController in childControllers {
+        _ = addChild(childController)
+      }
+    })
     return self
   }
 
