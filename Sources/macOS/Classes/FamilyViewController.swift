@@ -202,9 +202,12 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   /// - Parameter childControllers: The view controllers to be added as children.
   @discardableResult
   public func addChildren(_ childControllers: [NSViewController]) -> Self {
-    for childController in childControllers {
-      addChild(childController)
-    }
+    performBatchUpdates({ _ in
+      for childController in childControllers {
+        addChild(childController)
+      }
+    }, completion: nil)
+
     return self
   }
 
