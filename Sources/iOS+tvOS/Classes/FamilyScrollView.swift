@@ -31,6 +31,22 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   internal var isDeallocating: Bool = false
   internal var isChildViewController: Bool = false
 
+  internal var validRect: CGRect {
+    var rect = documentVisibleRect
+    let offset = bounds.size.height * 2
+    rect.origin.y = max(self.contentOffset.y - (offset / 2), 0)
+    rect.size.height = bounds.size.height + offset
+    return rect
+  }
+
+  internal var discardableRect: CGRect {
+    var rect = documentVisibleRect
+    let offset = bounds.size.height * 2.5
+    rect.origin.y = max(self.contentOffset.y - (offset / 2), 0)
+    rect.size.height = bounds.size.height + offset
+    return rect
+  }
+
   lazy var visibleRectLayer: UIView = {
     let view = UIView()
     view.isUserInteractionEnabled = false
@@ -399,6 +415,15 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   public func layoutViews(withDuration duration: Double? = nil,
                           animation: CAAnimation? = nil,
                           completion: (() -> Void)? = nil) {
+    defer {
+      // Clean up invalid views.
+      if !isScrolling {
+        for scrollView in subviewsInLayoutOrder where scrollView.frame.size.height != 0 && !scrollView.frame.intersects(discardableRect) {
+          scrollView.frame.size.height = 0
+        }
+      }
+    }
+
     guard isPerformingBatchUpdates == false else { return }
 
     guard !isDeallocating else { return }
@@ -410,6 +435,45 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
     // Make sure that wrapper views have the correct width
     // on their wrapped views.
+    if cache.state == .empty { adjustViewsWithPaddingAndMargins() }
+
+    if documentView.frame != bounds {
+      documentView.frame = bounds
+      documentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
+    }
+
+    let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState]
+    let animations = { self.runLayoutSubviewsAlgorithm() }
+    let animationCompletion: (Bool) -> Void = { _ in completion?() }
+
+    if #available(iOS 9.0, *) {
+      if let animation = animation {
+        switch animation {
+        case let springAnimation as CASpringAnimation:
+          UIView.animate(withDuration: springAnimation.duration, delay: 0.0,
+                         usingSpringWithDamping: springAnimation.damping,
+                         initialSpringVelocity: springAnimation.initialVelocity,
+                         options: options, animations: animations, completion: animationCompletion)
+        default:
+          UIView.animate(withDuration: animation.duration, delay: 0.0, options: options, animations: {
+            self.runLayoutSubviewsAlgorithm()
+          }, completion: animationCompletion)
+        }
+        return
+      }
+    }
+
+    if let duration = duration, duration > 0.0 {
+      UIView.animate(withDuration: duration, delay: 0.0, options: options, animations: {
+        self.runLayoutSubviewsAlgorithm()
+      }, completion: animationCompletion)
+    } else {
+      runLayoutSubviewsAlgorithm()
+      completion?()
+    }
+  }
+
+  func adjustViewsWithPaddingAndMargins() {
     for case let scrollView in subviewsInLayoutOrder {
       let wrapperView = scrollView as? FamilyWrapperView
       let padding = spaceManager.padding(for: wrapperView?.view ?? scrollView)
@@ -449,41 +513,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
           scrollView.frame.size.width = expectedWidth
         }
       }
-    }
-
-    if documentView.frame != bounds {
-      documentView.frame = bounds
-      documentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
-    }
-
-    let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState]
-    let animations = { self.runLayoutSubviewsAlgorithm() }
-    let animationCompletion: (Bool) -> Void = { _ in completion?() }
-
-    if #available(iOS 9.0, *) {
-      if let animation = animation {
-        switch animation {
-        case let springAnimation as CASpringAnimation:
-          UIView.animate(withDuration: springAnimation.duration, delay: 0.0,
-                         usingSpringWithDamping: springAnimation.damping,
-                         initialSpringVelocity: springAnimation.initialVelocity,
-                         options: options, animations: animations, completion: animationCompletion)
-        default:
-          UIView.animate(withDuration: animation.duration, delay: 0.0, options: options, animations: {
-            self.runLayoutSubviewsAlgorithm()
-          }, completion: animationCompletion)
-        }
-        return
-      }
-    }
-
-    if let duration = duration, duration > 0.0 {
-      UIView.animate(withDuration: duration, delay: 0.0, options: options, animations: {
-        self.runLayoutSubviewsAlgorithm()
-      }, completion: animationCompletion)
-    } else {
-      runLayoutSubviewsAlgorithm()
-      completion?()
     }
   }
 
@@ -534,16 +563,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// in order to keep dequeuing for table and collection views.
   internal func runLayoutSubviewsAlgorithm() {
     guard cache.state != .isRunning else { return }
-
-    var validRect = documentVisibleRect
-    let validOffset = bounds.size.height * 2
-    validRect.origin.y = max(self.contentOffset.y - (validOffset / 2), 0)
-    validRect.size.height = bounds.size.height + validOffset
-
-    var discardableRect = documentVisibleRect
-    let discardOffset = bounds.size.height * 2.5
-    discardableRect.origin.y = max(self.contentOffset.y - (discardOffset / 2), 0)
-    discardableRect.size.height = bounds.size.height + discardOffset
 
     if cache.state == .empty {
       cache.state = .isRunning
