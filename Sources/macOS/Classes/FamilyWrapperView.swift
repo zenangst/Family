@@ -94,7 +94,7 @@ class FamilyWrapperView: NSScrollView {
                                   force: true,
                                   completion: nil)
     guard needsDisplay else { return }
-    familyScrollView?.needsDisplay = true
+    familyScrollView?.setNeedsDisplay(frame)
     familyScrollView?.layoutSubtreeIfNeeded()
   }
 
