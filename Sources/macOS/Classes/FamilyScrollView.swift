@@ -19,6 +19,22 @@ public class FamilyScrollView: NSScrollView {
     }
   }
 
+  var validRect: CGRect {
+    var rect = documentVisibleRect
+    let offset = bounds.size.height * 2
+    rect.origin.y = max(self.contentOffset.y - (offset / 2), 0)
+    rect.size.height = bounds.size.height + offset
+    return rect
+  }
+
+  var discardableRect: CGRect {
+    var rect = documentVisibleRect
+    let offset = bounds.size.height * 2.5
+    rect.origin.y = max(self.contentOffset.y - (offset / 2), 0)
+    rect.size.height = bounds.size.height + offset
+    return rect
+  }
+
   @objc(scrollEnabled)
   public lazy var familyDocumentView = FamilyDocumentView()
   public var isScrollEnabled: Bool = true
@@ -71,6 +87,15 @@ public class FamilyScrollView: NSScrollView {
                           force: Bool,
                           completion: (() -> Void)?) {
     guard isPerformingBatchUpdates == false, !isDeallocating else { return }
+
+    defer {
+      // Clean up invalid views.
+      if !isScrolling {
+        for (offset, scrollView) in subviewsInLayoutOrder.enumerated() where scrollView.frame.size.height != 0 && !scrollView.frame.intersects(discardableRect) {
+          scrollView.frame.size.height = 0
+        }
+      }
+    }
 
     guard !layoutIsRunning || !force else {
       return
@@ -336,15 +361,6 @@ public class FamilyScrollView: NSScrollView {
       cache.state != .isRunning else { return }
 
     var scrollViewContentOffset = self.contentOffset
-    var validRect = documentVisibleRect
-    let validOffset = bounds.size.height * 2
-    validRect.origin.y = max(self.contentOffset.y - (validOffset / 2), 0)
-    validRect.size.height = bounds.size.height + validOffset
-
-    var discardableRect = documentVisibleRect
-    let discardOffset = bounds.size.height * 2.5
-    discardableRect.origin.y = max(self.contentOffset.y - (discardOffset / 2), 0)
-    discardableRect.size.height = bounds.size.height + discardOffset
 
     if cache.state == .empty {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
