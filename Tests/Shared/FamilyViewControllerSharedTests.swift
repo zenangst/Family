@@ -43,9 +43,8 @@ class FamilyViewControllerSharedTests: XCTestCase {
 
 
     #if os(macOS)
-    XCTAssertEqual(childViewController.view.frame, CGRect(origin: .init(x: 0, y: 0),
+    XCTAssertEqual(childViewController.view.frame, CGRect(origin: .init(x: 10, y: 10),
                                                           size: CGSize(width: 460, height: 500)))
-
     XCTAssertEqual(childViewController.view.enclosingScrollView?.contentInsets.top, padding.top)
     XCTAssertEqual(childViewController.view.enclosingScrollView?.contentInsets.left, padding.left)
     XCTAssertEqual(childViewController.view.enclosingScrollView?.contentInsets.right, padding.right)

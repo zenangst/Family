@@ -79,7 +79,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
 
   // MARK: - Public methods
 
-  public func body(withDuration duration: Double = 0.25,
+  public func body(withDuration duration: Double = 0.0,
                    _ closure: () -> Void) {
     performBatchUpdates(withDuration: duration, { _ in
       closure()
