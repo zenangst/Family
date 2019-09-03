@@ -79,22 +79,15 @@ class FamilyWrapperView: NSScrollView {
       !(event.phase == .ended || event.momentumPhase == .ended)
   }
 
-  override func viewWillMove(toWindow newWindow: NSWindow?) {
-    super.viewWillMove(toWindow: newWindow)
-
-    if newWindow == nil {
-      invalidateFamilyScrollView(needsDisplay: true)
-    }
-  }
-
   private func invalidateFamilyScrollView(needsDisplay: Bool) {
+    guard familyScrollView?.isPerformingBatchUpdates == false else { return }
     familyScrollView?.cache.invalidate()
     familyScrollView?.layoutViews(withDuration: nil,
                                   allowsImplicitAnimation: false,
                                   force: true,
                                   completion: nil)
     guard needsDisplay else { return }
-    familyScrollView?.needsDisplay = true
+    familyScrollView?.setNeedsDisplay(frame)
     familyScrollView?.layoutSubtreeIfNeeded()
   }
 
