@@ -88,6 +88,7 @@ class FamilyWrapperView: NSScrollView {
   }
 
   private func invalidateFamilyScrollView(needsDisplay: Bool) {
+    guard familyScrollView?.isPerformingBatchUpdates == false else { return }
     familyScrollView?.cache.invalidate()
     familyScrollView?.layoutViews(withDuration: nil,
                                   allowsImplicitAnimation: false,
