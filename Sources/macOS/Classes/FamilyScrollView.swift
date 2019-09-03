@@ -196,6 +196,7 @@ public class FamilyScrollView: NSScrollView {
     backgrounds[view] = backgroundView
     familyDocumentView.addSubview(backgroundView, positioned: .below, relativeTo: view)
     cache.invalidate()
+    guard !isPerformingBatchUpdates else { return }
     layoutViews(withDuration: nil, force: false, completion: nil)
   }
 
@@ -210,6 +211,7 @@ public class FamilyScrollView: NSScrollView {
     }
 
     cache.invalidate()
+    guard !isPerformingBatchUpdates else { return }
     layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
 
@@ -225,6 +227,7 @@ public class FamilyScrollView: NSScrollView {
   public func addPadding(_ insets: Insets, for view: View) {
     spaceManager.addPadding(insets, for: view)
     cache.invalidate()
+    guard !isPerformingBatchUpdates else { return }
     layoutViews(withDuration: nil, force: false, completion: nil)
   }
 
@@ -235,6 +238,7 @@ public class FamilyScrollView: NSScrollView {
   public func addMargins(_ insets: Insets, for view: View) {
     spaceManager.addMargins(insets, for: view)
     cache.invalidate()
+    guard !isPerformingBatchUpdates else { return }
     layoutViews(withDuration: nil, force: false, completion: nil)
   }
 
