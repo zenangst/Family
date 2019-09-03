@@ -191,6 +191,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     addSubview(backgroundView)
     sendSubviewToBack(backgroundView)
     cache.invalidate()
+    guard !isPerformingBatchUpdates else { return }
     layoutViews()
   }
 
@@ -247,6 +248,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
     spaceManager.removeView(subview)
     cache.invalidate()
+    guard !isPerformingBatchUpdates else { return }
     layoutIfNeeded()
   }
 
@@ -377,6 +379,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   public func addPadding(_ insets: Insets, for view: View) {
     spaceManager.addPadding(insets, for: view)
     cache.invalidate()
+    guard !isPerformingBatchUpdates else { return }
     layoutViews()
   }
 
@@ -387,6 +390,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   public func addMargins(_ insets: Insets, for view: View) {
     spaceManager.addMargins(insets, for: view)
     cache.invalidate()
+    guard !isPerformingBatchUpdates else { return }
     layoutViews()
   }
 
@@ -415,6 +419,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   public func layoutViews(withDuration duration: Double? = nil,
                           animation: CAAnimation? = nil,
                           completion: (() -> Void)? = nil) {
+    guard !isPerformingBatchUpdates else { return }
+
     defer {
       // Clean up invalid views.
       if !isScrolling {
@@ -423,8 +429,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
       }
     }
-
-    guard isPerformingBatchUpdates == false else { return }
 
     guard !isDeallocating else { return }
 
