@@ -1,7 +1,7 @@
 import UIKit
 
 public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestureRecognizerDelegate {
-  private var previousContentOffset: CGPoint = .zero
+  private var previousContentOffset: CGPoint = .init(x: -1, y: -1)
 
   /// The amount of insets that should be inserted inbetween views.
   public var margins: Insets {
