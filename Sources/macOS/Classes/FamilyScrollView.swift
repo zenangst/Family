@@ -286,7 +286,6 @@ public class FamilyScrollView: NSScrollView {
     isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
       !(event.phase == .ended || event.momentumPhase == .ended)
     isScrollingWithWheel = isScrolling
-
     layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
 
@@ -360,7 +359,8 @@ public class FamilyScrollView: NSScrollView {
     guard isPerformingBatchUpdates == false, !isDeallocating,
       cache.state != .isRunning else { return }
 
-    var scrollViewContentOffset = self.contentOffset
+    var parentContentOffset = CGPoint(x: round(self.contentOffset.x),
+                                      y: round(self.contentOffset.y))
 
     if cache.state == .empty {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
@@ -374,11 +374,11 @@ public class FamilyScrollView: NSScrollView {
         var frame = scrollView.frame
         var viewFrame = frame
 
-        yOffsetOfCurrentSubview += margins.top
+        yOffsetOfCurrentSubview += round(margins.top)
 
-        frame.origin.y = yOffsetOfCurrentSubview
+        frame.origin.y = round(yOffsetOfCurrentSubview)
         frame.origin.x = currentXOffset
-        frame.size.height = min(visibleRect.height, contentSize.height)
+        frame.size.height = round(min(visibleRect.height, contentSize.height))
         frame.size.width = round(self.frame.size.width) - margins.left - margins.right
 
         if !frame.intersects(documentVisibleRect) {
@@ -400,7 +400,7 @@ public class FamilyScrollView: NSScrollView {
         view.frame = viewFrame
         scrollView.frame = frame
 
-        let origin = CGPoint(x: frame.origin.x, y: yOffsetOfCurrentSubview)
+        let origin = CGPoint(x: frame.origin.x, y: round(yOffsetOfCurrentSubview))
         let entry = FamilyViewControllerAttributes(view: view, origin: origin,
                                                    contentSize: contentSize)
 
@@ -411,14 +411,14 @@ public class FamilyScrollView: NSScrollView {
         cache.add(entry: entry)
 
         if let backgroundView = backgrounds[view] {
-          let backgroundFrame = CGRect(origin: CGPoint(x: margins.left, y: yOffsetOfCurrentSubview),
+          let backgroundFrame = CGRect(origin: CGPoint(x: margins.left, y: round(yOffsetOfCurrentSubview)),
                                        size: CGSize(width: round(self.frame.size.width) - margins.left - margins.right,
                                                     height: contentSize.height + padding.top + padding.bottom))
           positionBackgroundView(backgroundFrame, backgroundView)
         }
 
         if contentSize.height > 0 {
-          yOffsetOfCurrentSubview += contentSize.height + margins.bottom + padding.top + padding.bottom
+          yOffsetOfCurrentSubview += round(contentSize.height + margins.bottom + padding.top + padding.bottom)
         }
 
         cache.state = .isRunning
@@ -451,15 +451,15 @@ public class FamilyScrollView: NSScrollView {
       var contentOffset = scrollView.contentOffset
 
       // Constrain the computed offset to be inside of document visible rect.
-      scrollViewContentOffset.y = min(documentVisibleRect.origin.y + contentInsets.top,
-                                      cache.contentSize.height - documentVisibleRect.size.height + contentInsets.top)
+      parentContentOffset.y = round(min(documentVisibleRect.origin.y + contentInsets.top,
+                                      cache.contentSize.height - documentVisibleRect.size.height + contentInsets.top))
 
-      if self.contentOffset.y < attributes.origin.y {
+      if parentContentOffset.y < attributes.origin.y {
         contentOffset.y = 0
-        frame.origin.y = abs(attributes.origin.y)
+        frame.origin.y = round(abs(attributes.origin.y))
       } else {
-        contentOffset.y = abs(scrollViewContentOffset.y - attributes.origin.y)
-        frame.origin.y = abs(scrollViewContentOffset.y)
+        contentOffset.y = round(abs(parentContentOffset.y - attributes.origin.y))
+        frame.origin.y = round(abs(parentContentOffset.y))
       }
 
       var newHeight: CGFloat = abs(fmin(documentVisibleRect.size.height, attributes.contentSize.height))
@@ -497,7 +497,8 @@ public class FamilyScrollView: NSScrollView {
         }
       }
 
-      frame.size.height = newHeight
+      frame.size.height = round(newHeight)
+
       if scrollView.frame != frame {
         scrollView.frame = frame
       }
