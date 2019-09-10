@@ -1,6 +1,8 @@
 import UIKit
 
 public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestureRecognizerDelegate {
+  private var previousContentOffset: CGPoint = .zero
+
   /// The amount of insets that should be inserted inbetween views.
   public var margins: Insets {
     get { return spaceManager.defaultMargins }
@@ -369,6 +371,9 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// directly, call `setNeedsLayout()` instead.
   open override func layoutSubviews() {
     super.layoutSubviews()
+    defer { previousContentOffset = contentOffset }
+    let shouldLayoutViews = subviewsInLayoutOrder.first(where: { $0.layer.animationKeys() != nil }) != nil
+    guard contentOffset != previousContentOffset || shouldLayoutViews else { return }
     layoutViews()
   }
 
