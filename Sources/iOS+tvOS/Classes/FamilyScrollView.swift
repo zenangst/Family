@@ -339,7 +339,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
       if strongSelf.scrollViewIsHorizontal(scrollView), abs(newValue.y) != 0 {
         scrollView.contentOffset.y = 0
-        strongSelf.runLayoutSubviewsAlgorithm()
+        strongSelf.layoutViews()
       }
     })
     observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
