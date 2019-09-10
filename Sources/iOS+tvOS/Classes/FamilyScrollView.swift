@@ -596,7 +596,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
           contentOffset.y = 0.0
           frame.origin.y = round(yOffsetOfCurrentSubview)
         } else {
-          contentOffset.y = parentContentOffset.y - yOffsetOfCurrentSubview
+          contentOffset.y = round(parentContentOffset.y - yOffsetOfCurrentSubview)
           frame.origin.y = parentContentOffset.y
         }
 
@@ -614,7 +614,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
         frame.size.width = self.frame.size.width - margins.left - margins.right
         frame.size.height = round(newHeight)
-        frame.origin.y = yOffsetOfCurrentSubview
+        frame.origin.y = round(yOffsetOfCurrentSubview)
 
         if !frame.intersects(documentVisibleRect) {
           frame.size.height = 0
@@ -624,16 +624,16 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
         cache.add(entry: FamilyViewControllerAttributes(view: view,
                                                         origin: CGPoint(x: frame.origin.x,
-                                                                        y: yOffsetOfCurrentSubview + padding.top),
+                                                                        y: round(yOffsetOfCurrentSubview + padding.top)),
                                                         contentSize: scrollView.contentSize))
 
         if let backgroundView = backgrounds[view] {
-          frame.origin.y = yOffsetOfCurrentSubview
+          frame.origin.y = round(yOffsetOfCurrentSubview)
           positionBackgroundView(scrollView, frame, margins, padding, backgroundView, view)
         }
 
         if scrollView.contentSize.height > 0 {
-          yOffsetOfCurrentSubview += scrollView.contentSize.height + margins.bottom + padding.top + padding.bottom
+          yOffsetOfCurrentSubview += round(scrollView.contentSize.height + margins.bottom + padding.top + padding.bottom)
         }
       }
 
