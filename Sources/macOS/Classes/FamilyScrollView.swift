@@ -87,7 +87,6 @@ public class FamilyScrollView: NSScrollView {
                           allowsImplicitAnimation: Bool = true,
                           force: Bool,
                           completion: (() -> Void)?) {
-
     guard isPerformingBatchUpdates == false, !isDeallocating else { return }
 
     let shouldLayoutViews = subviewsInLayoutOrder.first(where: { $0.layer?.animationKeys() != nil }) != nil
