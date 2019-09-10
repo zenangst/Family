@@ -1,6 +1,7 @@
 import Cocoa
 
 public class FamilyScrollView: NSScrollView {
+  private var previousContentOffset: CGPoint = .init(x: -1, y: -1)
   public override var isFlipped: Bool { return true }
 
   public var margins: Insets {
@@ -86,7 +87,14 @@ public class FamilyScrollView: NSScrollView {
                           allowsImplicitAnimation: Bool = true,
                           force: Bool,
                           completion: (() -> Void)?) {
+
     guard isPerformingBatchUpdates == false, !isDeallocating else { return }
+
+    let shouldLayoutViews = subviewsInLayoutOrder.first(where: { $0.layer?.animationKeys() != nil }) != nil
+    guard contentOffset != previousContentOffset || cache.state == .empty || shouldLayoutViews else {
+      return
+    }
+    defer { previousContentOffset = contentOffset }
 
     defer {
       // Clean up invalid views.
@@ -286,6 +294,7 @@ public class FamilyScrollView: NSScrollView {
     isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
       !(event.phase == .ended || event.momentumPhase == .ended)
     isScrollingWithWheel = isScrolling
+
     layoutViews(withDuration: 0.0, force: false, completion: nil)
   }
 
