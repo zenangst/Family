@@ -373,7 +373,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     super.layoutSubviews()
     defer { previousContentOffset = contentOffset }
     let shouldLayoutViews = subviewsInLayoutOrder.first(where: { $0.layer.animationKeys() != nil }) != nil
-    guard contentOffset != previousContentOffset || shouldLayoutViews else { return }
+    guard contentOffset != previousContentOffset || cache.state == .empty || shouldLayoutViews else { return }
     layoutViews()
   }
 
