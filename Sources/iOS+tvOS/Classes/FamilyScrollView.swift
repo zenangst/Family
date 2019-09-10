@@ -371,9 +371,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// directly, call `setNeedsLayout()` instead.
   open override func layoutSubviews() {
     super.layoutSubviews()
-    defer { previousContentOffset = contentOffset }
-    let shouldLayoutViews = subviewsInLayoutOrder.first(where: { $0.layer.animationKeys() != nil }) != nil
-    guard contentOffset != previousContentOffset || cache.state == .empty || shouldLayoutViews else { return }
     layoutViews()
   }
 
@@ -425,6 +422,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
                           animation: CAAnimation? = nil,
                           completion: (() -> Void)? = nil) {
     guard !isPerformingBatchUpdates else { return }
+
+    defer { previousContentOffset = contentOffset }
+    let shouldLayoutViews = subviewsInLayoutOrder.first(where: { $0.layer.animationKeys() != nil }) != nil
+    guard contentOffset != previousContentOffset || cache.state == .empty || shouldLayoutViews else { return }
 
     defer {
       // Clean up invalid views.
