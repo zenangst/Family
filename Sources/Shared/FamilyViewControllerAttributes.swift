@@ -14,7 +14,7 @@ public class FamilyViewControllerAttributes: NSObject {
     self.view = view
     self.origin = origin
     self.contentSize = contentSize
-    self.maxY = contentSize.height + origin.y
+    self.maxY = round(contentSize.height + origin.y)
     #if os(macOS)
     self.scrollView = view.enclosingScrollView!
     #else

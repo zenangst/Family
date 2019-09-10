@@ -568,6 +568,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   internal func runLayoutSubviewsAlgorithm() {
     guard cache.state != .isRunning else { return }
 
+    let parentContentOffset = CGPoint(x: round(self.contentOffset.x), y: round(self.contentOffset.y))
+
     if cache.state == .empty {
       cache.state = .isRunning
       var yOffsetOfCurrentSubview: CGFloat = 0.0
@@ -585,12 +587,12 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         var frame = scrollView.frame
         var contentOffset = scrollView.contentOffset
 
-        if self.contentOffset.y < yOffsetOfCurrentSubview {
+        if parentContentOffset.y < yOffsetOfCurrentSubview {
           contentOffset.y = 0.0
           frame.origin.y = round(yOffsetOfCurrentSubview)
         } else {
-          contentOffset.y = self.contentOffset.y - yOffsetOfCurrentSubview
-          frame.origin.y = round(self.contentOffset.y)
+          contentOffset.y = parentContentOffset.y - yOffsetOfCurrentSubview
+          frame.origin.y = parentContentOffset.y
         }
 
         let remainingBoundsHeight = fmax(bounds.maxY - yOffsetOfCurrentSubview, 0.0)
@@ -606,7 +608,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
 
         frame.size.width = self.frame.size.width - margins.left - margins.right
-        frame.size.height = newHeight
+        frame.size.height = round(newHeight)
         frame.origin.y = yOffsetOfCurrentSubview
 
         if !frame.intersects(documentVisibleRect) {
@@ -630,10 +632,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
       }
 
-      let computedHeight = yOffsetOfCurrentSubview
+      let computedHeight = round(yOffsetOfCurrentSubview)
       let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
       var height = fmax(computedHeight, minimumContentHeight)
-      cache.contentSize = CGSize(width: bounds.size.width, height: yOffsetOfCurrentSubview)
+      cache.contentSize = CGSize(width: bounds.size.width, height: computedHeight)
 
       if isChildViewController {
         height = computedHeight
@@ -641,7 +643,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
 
       cache.state = .isFinished
-      contentSize = CGSize(width: cache.contentSize.width, height: height)
+      contentSize = CGSize(width: cache.contentSize.width, height: round(height))
     }
 
     let validAttributes = getValidAttributes(in: discardableRect)
@@ -651,12 +653,12 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
 
-      if self.contentOffset.y < scrollView.frame.origin.y {
+      if parentContentOffset.y < scrollView.frame.origin.y {
         contentOffset.y = 0.0
         frame.origin.y = round(scrollView.frame.origin.y)
       } else {
-        contentOffset.y = self.contentOffset.y - scrollView.frame.origin.y
-        frame.origin.y = round(self.contentOffset.y)
+        contentOffset.y = round(parentContentOffset.y - scrollView.frame.origin.y)
+        frame.origin.y = parentContentOffset.y
       }
 
       var newHeight: CGFloat = fmin(documentView.frame.height, scrollView.contentSize.height)
@@ -670,12 +672,12 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         newHeight += padding.top + padding.bottom
       }
 
-      let shouldScroll = (round(self.contentOffset.y) >= round(frame.origin.y) &&
-        round(self.contentOffset.y) < round(attributes.maxY)) &&
+      let shouldScroll = (parentContentOffset.y >= round(frame.origin.y) &&
+        parentContentOffset.y < attributes.maxY) &&
         round(frame.height) > round(documentView.frame.height)
 
       if scrollView is FamilyWrapperView {
-        if scrollView.contentOffset.y != contentOffset.y && self.contentOffset.y < scrollView.frame.origin.y {
+        if scrollView.contentOffset.y != contentOffset.y && parentContentOffset.y < scrollView.frame.origin.y {
           scrollView.contentOffset.y = contentOffset.y
         } else {
           frame.origin.y = attributes.frame.origin.y
@@ -691,7 +693,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
       }
 
-      frame.size.height = newHeight
+      frame.size.height = round(newHeight)
 
       if scrollView.frame != frame {
         scrollView.frame = frame
