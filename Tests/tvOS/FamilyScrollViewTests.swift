@@ -98,7 +98,7 @@ class FamilyScrollViewTests: XCTestCase {
 
     // Check that layout algorithm takes spacing between views into account.
     scrollView.margins = .init(top: 0, left: 0, bottom: 10, right: 0)
-    scrollView.layoutSubviews()
+    scrollView.layoutViews()
 
     XCTAssertEqual(mockedScrollView1.frame, CGRect(origin: .zero, size: size))
     XCTAssertEqual(mockedScrollView2.frame, CGRect(origin: CGPoint(x: 0, y: 250 + scrollView.margins.bottom), size: size))
