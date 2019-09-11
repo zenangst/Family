@@ -701,6 +701,9 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
       } else if shouldScroll {
         scrollView.contentOffset.y = contentOffset.y
+        if self.contentOffset.y < frame.origin.y && frame.origin.y != attributes.frame.origin.y {
+          frame.origin.y = attributes.frame.origin.y
+        }
       } else {
         frame.origin.y = attributes.origin.y
         // Reset content offset to avoid setting offsets that
