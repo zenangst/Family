@@ -671,11 +671,11 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
 
-      if parentContentOffset.y < scrollView.frame.origin.y {
+      if parentContentOffset.y < attributes.frame.origin.y {
         contentOffset.y = 0.0
         frame.origin.y = round(scrollView.frame.origin.y)
       } else {
-        contentOffset.y = round(parentContentOffset.y - scrollView.frame.origin.y)
+        contentOffset.y = round(parentContentOffset.y - attributes.frame.origin.y)
         frame.origin.y = parentContentOffset.y
       }
 
