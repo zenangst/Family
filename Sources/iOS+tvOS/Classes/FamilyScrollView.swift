@@ -128,6 +128,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
+  public override var contentOffset: CGPoint {
+    willSet { previousContentOffset = contentOffset }
+  }
+
   deinit {
     subviewsInLayoutOrder.removeAll()
     observers.removeAll()
