@@ -690,9 +690,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         newHeight += padding.top + padding.bottom
       }
 
-      let shouldScroll = (parentContentOffset.y >= round(frame.origin.y) &&
-        parentContentOffset.y < attributes.maxY) &&
-        round(frame.height) > round(documentView.frame.height)
+      let shouldScroll = attributes.frame.intersects(documentVisibleRect) &&
+        round(attributes.contentSize.height) > round(documentView.frame.size.height)
 
       if scrollView is FamilyWrapperView {
         if scrollView.contentOffset.y != contentOffset.y && parentContentOffset.y < scrollView.frame.origin.y {
