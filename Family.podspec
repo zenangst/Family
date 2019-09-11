@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = "Family"
   s.summary          = "A child view controller framework that makes setting up your parent controllers as easy as pie."
-  s.version          = "0.20.7"
+  s.version          = "0.20.8"
   s.homepage         = "https://github.com/zenangst/Family"
   s.license          = 'MIT'
   s.author           = { "Christoffer Winterkvist" => "christoffer@winterkvist.com" }

@@ -128,6 +128,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
+  public override var contentOffset: CGPoint {
+    willSet { previousContentOffset = contentOffset }
+  }
+
   deinit {
     subviewsInLayoutOrder.removeAll()
     observers.removeAll()
@@ -423,9 +427,16 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
                           completion: (() -> Void)? = nil) {
     guard !isPerformingBatchUpdates else { return }
 
-    defer { previousContentOffset = contentOffset }
-    let shouldLayoutViews = subviewsInLayoutOrder.first(where: { $0.layer.animationKeys() != nil }) != nil
-    guard contentOffset != previousContentOffset || cache.state == .empty || shouldLayoutViews else { return }
+    #if os(tvOS)
+    let foundAnimations = subviewsInLayoutOrder.first(where: { $0.layer.animationKeys() != nil }) != nil
+    let shouldLayoutViews = contentOffset != previousContentOffset
+      || cache.state == .empty
+      || foundAnimations
+
+    guard shouldLayoutViews else {
+      return
+    }
+    #endif
 
     defer {
       // Clean up invalid views.
@@ -574,8 +585,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   internal func runLayoutSubviewsAlgorithm() {
     guard cache.state != .isRunning else { return }
 
-    let parentContentOffset = CGPoint(x: round(self.contentOffset.x),
-                                      y: round(self.contentOffset.y))
+    let parentContentOffset = CGPoint(x: self.contentOffset.x,
+                                      y: self.contentOffset.y)
 
     if cache.state == .empty {
       cache.state = .isRunning
@@ -660,11 +671,11 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
 
-      if parentContentOffset.y < scrollView.frame.origin.y {
+      if parentContentOffset.y < attributes.frame.origin.y {
         contentOffset.y = 0.0
         frame.origin.y = round(scrollView.frame.origin.y)
       } else {
-        contentOffset.y = round(parentContentOffset.y - scrollView.frame.origin.y)
+        contentOffset.y = round(parentContentOffset.y - attributes.frame.origin.y)
         frame.origin.y = parentContentOffset.y
       }
 
@@ -679,9 +690,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         newHeight += padding.top + padding.bottom
       }
 
-      let shouldScroll = (parentContentOffset.y >= round(frame.origin.y) &&
-        parentContentOffset.y < attributes.maxY) &&
-        round(frame.height) > round(documentView.frame.height)
+      let shouldScroll = attributes.frame.intersects(documentVisibleRect) &&
+        round(attributes.contentSize.height) > round(documentView.frame.size.height)
 
       if scrollView is FamilyWrapperView {
         if scrollView.contentOffset.y != contentOffset.y && parentContentOffset.y < scrollView.frame.origin.y {
@@ -691,6 +701,9 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
       } else if shouldScroll {
         scrollView.contentOffset.y = contentOffset.y
+        if self.contentOffset.y < frame.origin.y && frame.origin.y != attributes.frame.origin.y {
+          frame.origin.y = attributes.frame.origin.y
+        }
       } else {
         frame.origin.y = attributes.origin.y
         // Reset content offset to avoid setting offsets that
