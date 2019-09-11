@@ -585,8 +585,8 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   internal func runLayoutSubviewsAlgorithm() {
     guard cache.state != .isRunning else { return }
 
-    let parentContentOffset = CGPoint(x: round(self.contentOffset.x),
-                                      y: round(self.contentOffset.y))
+    let parentContentOffset = CGPoint(x: self.contentOffset.x,
+                                      y: self.contentOffset.y)
 
     if cache.state == .empty {
       cache.state = .isRunning
