@@ -427,9 +427,16 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
                           completion: (() -> Void)? = nil) {
     guard !isPerformingBatchUpdates else { return }
 
-    defer { previousContentOffset = contentOffset }
-    let shouldLayoutViews = subviewsInLayoutOrder.first(where: { $0.layer.animationKeys() != nil }) != nil
-    guard contentOffset != previousContentOffset || cache.state == .empty || shouldLayoutViews else { return }
+    #if os(tvOS)
+    let foundAnimations = subviewsInLayoutOrder.first(where: { $0.layer.animationKeys() != nil }) != nil
+    let shouldLayoutViews = contentOffset != previousContentOffset
+      || cache.state == .empty
+      || foundAnimations
+
+    guard shouldLayoutViews else {
+      return
+    }
+    #endif
 
     defer {
       // Clean up invalid views.
