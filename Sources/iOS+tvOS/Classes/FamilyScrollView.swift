@@ -667,7 +667,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         frame.origin.y = round(scrollView.frame.origin.y)
       } else {
         contentOffset.y = round(parentContentOffset.y - attributes.frame.origin.y)
-        frame.origin.y = parentContentOffset.y
+        frame.origin.y = round(parentContentOffset.y)
       }
 
       var newHeight: CGFloat = fmin(documentView.frame.height, scrollView.contentSize.height)
@@ -692,7 +692,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         }
       } else if shouldScroll {
         scrollView.contentOffset.y = contentOffset.y
-        if self.contentOffset.y < frame.origin.y && frame.origin.y != attributes.frame.origin.y {
+        if round(self.contentOffset.y) < frame.origin.y && frame.origin.y != attributes.frame.origin.y {
           frame.origin.y = attributes.frame.origin.y
         }
       } else {
