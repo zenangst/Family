@@ -438,15 +438,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
     #endif
 
-    defer {
-      // Clean up invalid views.
-      if !isScrolling {
-        for scrollView in subviewsInLayoutOrder where scrollView.frame.size.height != 0 && !scrollView.frame.intersects(discardableRect) {
-          scrollView.frame.size.height = 0
-        }
-      }
-    }
-
     guard !isDeallocating else { return }
 
     guard superview != nil else {
