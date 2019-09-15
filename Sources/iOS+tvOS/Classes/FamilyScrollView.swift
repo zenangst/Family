@@ -445,6 +445,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       return
     }
 
+    if !isScrolling {
+      purgeOffscreenViews(using: contentOffset)
+    }
+
     // Make sure that wrapper views have the correct width
     // on their wrapped views.
     if cache.state == .empty { adjustViewsWithPaddingAndMargins() }
@@ -485,7 +489,21 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
-  func adjustViewsWithPaddingAndMargins() {
+  private func purgeOffscreenViews(using contentOffset: CGPoint) {
+    var rect = documentVisibleRect
+    let offset = bounds.size.height * 2.5
+    rect.origin.y = max(contentOffset.y - (offset / 2), 0)
+    rect.size.height = bounds.size.height + offset
+    // Clean up invalid views.
+    let discardableScrollViews = subviewsInLayoutOrder.filter { $0.frame.size.height != 0 && !$0.frame.intersects(discardableRect) }
+
+    for (offset, scrollView) in discardableScrollViews.enumerated() {
+      Swift.print(scrollView)
+      scrollView.frame.size.height = 0
+    }
+  }
+
+  private func adjustViewsWithPaddingAndMargins() {
     for case let scrollView in subviewsInLayoutOrder {
       let wrapperView = scrollView as? FamilyWrapperView
       let padding = spaceManager.padding(for: wrapperView?.view ?? scrollView)
