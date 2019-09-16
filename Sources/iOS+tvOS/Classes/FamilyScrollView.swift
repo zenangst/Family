@@ -49,30 +49,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     return rect
   }
 
-  lazy var visibleRectLayer: UIView = {
-    let view = UIView()
-    view.isUserInteractionEnabled = false
-    view.layer.borderColor = UIColor.green.cgColor
-    view.layer.borderWidth = 2
-    return view
-  }()
-
-  lazy var validRectLayer: UIView = {
-    let view = UIView()
-    view.isUserInteractionEnabled = false
-    view.layer.borderColor = UIColor.yellow.cgColor
-    view.layer.borderWidth = 2
-    return view
-  }()
-
-  lazy var discardRectLayer: UIView = {
-    let view = UIView()
-    view.isUserInteractionEnabled = false
-    view.layer.borderColor = UIColor.red.cgColor
-    view.layer.borderWidth = 2
-    return view
-  }()
-
   /// The current viewport
   public var documentVisibleRect: CGRect {
     return CGRect(origin: contentOffset,
@@ -152,9 +128,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       contentInsetAdjustmentBehavior = .never
     }
     addSubview(documentView)
-    addSubview(discardRectLayer)
-    addSubview(validRectLayer)
-    addSubview(visibleRectLayer)
   }
 
   required public init?(coder aDecoder: NSCoder) {
@@ -495,10 +468,9 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     rect.origin.y = max(contentOffset.y - (offset / 2), 0)
     rect.size.height = bounds.size.height + offset
     // Clean up invalid views.
-    let discardableScrollViews = subviewsInLayoutOrder.filter { $0.frame.size.height != 0 && !$0.frame.intersects(discardableRect) }
-
-    for (offset, scrollView) in discardableScrollViews.enumerated() {
-      Swift.print(scrollView)
+    let discardableScrollViews = subviewsInLayoutOrder
+      .filter { $0.frame.size.height != 0 && !$0.frame.intersects(discardableRect) }
+    for scrollView in discardableScrollViews {
       scrollView.frame.size.height = 0
     }
   }
