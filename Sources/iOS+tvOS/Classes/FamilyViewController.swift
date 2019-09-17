@@ -311,7 +311,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       temporaryContainer[entry.value.view] = entry.key
     }
 
-    for view in scrollView.documentView.scrollViews {
+    for view in scrollView.scrollViews {
       let lookupView = (view as? FamilyWrapperView)?.view ?? view
       guard let controller = temporaryContainer[lookupView] else { continue }
       viewControllers.append(controller)
@@ -403,8 +403,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       .first(where: { $0.view == viewController.view && $0.view.frame.size.height != 0 }) else {
       return false
     }
-    var convertedFrame = scrollView.documentView.convert(attributes.scrollView.frame,
-                                                         to: scrollView.documentView)
+    var convertedFrame = scrollView.convert(attributes.scrollView.frame,
+                                            to: scrollView)
     convertedFrame.size.height = attributes.contentSize.height
     return documentVisibleRect.contains(convertedFrame)
   }
@@ -485,10 +485,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///           on if an index is provided.
   ///   - index: An optional index for where the view should appear.
   private func addOrInsertView(_ view: UIView, at index: Int? = nil) {
-    if let index = index, index < scrollView.documentView.subviews.count {
-      scrollView.documentView.insertSubview(view, at: index)
+    if let index = index, index < scrollView.subviews.count {
+      scrollView.insertSubview(view, at: index)
     } else {
-      scrollView.documentView.addSubview(view)
+      scrollView.addSubview(view)
     }
 
     if #available(iOS 11.0, *, tvOS 11.0, *) {

@@ -23,8 +23,8 @@ class FamilyScrollViewTests: XCTestCase {
     let mockedScrollView = UIScrollView(frame: CGRect(origin: .zero, size: size))
     mockedScrollView.contentSize = size
 
-    scrollView.documentView.addSubview(UIScrollView())
-    scrollView.documentView.addSubview(mockedScrollView)
+    scrollView.addSubview(UIScrollView())
+    scrollView.addSubview(mockedScrollView)
     scrollView.layoutViews()
 
     XCTAssertEqual(mockedScrollView.frame, CGRect(origin: .zero, size: size))
@@ -40,12 +40,12 @@ class FamilyScrollViewTests: XCTestCase {
     let verticalCollectionViewLayout = UICollectionViewFlowLayout()
     verticalCollectionViewLayout.scrollDirection = .vertical
     let verticalCollectionView = UICollectionView(frame: frame, collectionViewLayout: verticalCollectionViewLayout)
-    scrollView.documentView.addSubview(verticalCollectionView)
+    scrollView.addSubview(verticalCollectionView)
 
     let horizontalCollectionViewLayout = UICollectionViewFlowLayout()
     horizontalCollectionViewLayout.scrollDirection = .horizontal
     let horizontalCollectionView = UICollectionView(frame: frame, collectionViewLayout: horizontalCollectionViewLayout)
-    scrollView.documentView.addSubview(horizontalCollectionView)
+    scrollView.addSubview(horizontalCollectionView)
 
     XCTAssertFalse(verticalCollectionView.isScrollEnabled)
     XCTAssertTrue(horizontalCollectionView.isScrollEnabled)
@@ -57,10 +57,10 @@ class FamilyScrollViewTests: XCTestCase {
   func testTableViews() {
     let frame = CGRect(origin: .zero, size: CGSize(width: 500, height: 200))
     let tableView = UITableView(frame: frame)
-    scrollView.documentView.addSubview(tableView)
+    scrollView.addSubview(tableView)
 
     let anotherTableView = UITableView(frame: frame)
-    scrollView.documentView.addSubview(anotherTableView)
+    scrollView.addSubview(anotherTableView)
 
     XCTAssertFalse(tableView.isScrollEnabled)
     XCTAssertFalse(anotherTableView.isScrollEnabled)
@@ -85,7 +85,7 @@ class FamilyScrollViewTests: XCTestCase {
 
     [mockedScrollView1, mockedScrollView2, mockedScrollView3, mockedScrollView4].forEach {
       $0.contentSize = size
-      scrollView.documentView.addSubview($0)
+      scrollView.addSubview($0)
     }
 
     scrollView.layoutViews()

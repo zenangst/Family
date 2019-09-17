@@ -1,7 +1,11 @@
 import UIKit
 
-public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestureRecognizerDelegate {
+public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   private var previousContentOffset: CGPoint?
+
+  var scrollViews: [UIScrollView] {
+    return subviews.compactMap { $0 as? UIScrollView }
+  }
 
   /// The amount of insets that should be inserted inbetween views.
   public var margins: Insets {
@@ -92,10 +96,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
-  /// The content view is where all views get added when a view is used
-  /// in the `Family` framework.
-  public lazy var documentView: FamilyDocumentView = FamilyDocumentView()
-
   override public var frame: CGRect {
     willSet {
       if newValue.width != frame.width {
@@ -115,15 +115,11 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   /// - Parameter frame: The frame rectangle for the view, measured in points.
   public required override init(frame: CGRect) {
     super.init(frame: frame)
+    clipsToBounds = true
     autoresizesSubviews = false
-    documentView.backgroundColor = .clear
-    documentView.delegate = self
-    documentView.familyScrollView = self
-    documentView.autoresizingMask = self.autoresizingMask
     if #available(iOS 11.0, tvOS 11.0, *) {
       contentInsetAdjustmentBehavior = .never
     }
-    addSubview(documentView)
   }
 
   required public init?(coder aDecoder: NSCoder) {
@@ -153,9 +149,59 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
   }
 
-  func familyDocumentView(_ view: FamilyDocumentView,
-                          didAddScrollView scrollView: UIScrollView) {
+  /// Adds a view to the end of the receiver’s list of subviews.
+  /// If view do not inherit from `UIScrollView`, the view will be
+  /// wrapped in a `FamilyWrapperView` that works as a scroll view
+  /// for the view.
+  ///
+  /// - Parameter view: The view to be added.
+  ///                   After being added, this view appears on top of any other subviews.
+  open override func addSubview(_ view: UIView) {
+    if backgrounds.values.contains(view) {
+      super.addSubview(view)
+      return
+    }
+    let subview = wrapViewIfNeeded(view)
+    super.addSubview(subview)
+    guard let scrollView = subview as? UIScrollView else { return }
     didAddScrollViewToContainer(scrollView)
+    purgeViews()
+  }
+
+  public override func insertSubview(_ view: UIView, at index: Int) {
+    if backgrounds.values.contains(view) {
+      super.addSubview(view)
+      return
+    }
+    let subview = wrapViewIfNeeded(view)
+    super.insertSubview(subview, at: index)
+    guard let scrollView = subview as? UIScrollView else { return }
+    didAddScrollViewToContainer(scrollView)
+    purgeViews()
+  }
+
+  private func wrapViewIfNeeded(_ view: UIView) -> UIView {
+    let subview: UIView
+
+    switch view {
+    case let scrollView as UIScrollView:
+      subview = scrollView
+    default:
+      let wrapper = FamilyWrapperView(frame: view.frame,
+                                      view: view)
+      wrapper.familyScrollView = self
+      subview = wrapper
+    }
+
+    return subview
+  }
+
+  private func purgeViews() {
+    for case let wrapperView as FamilyWrapperView in subviews {
+      if wrapperView.view.superview != wrapperView {
+        wrapperView.removeFromSuperview()
+      }
+    }
   }
 
   func addBackground(_ backgroundView: UIView, to view: UIView) {
@@ -179,14 +225,14 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   func didAddScrollViewToContainer(_ scrollView: UIScrollView) {
     scrollView.autoresizingMask = [.flexibleWidth]
 
-    guard documentView.subviews.firstIndex(of: scrollView) != nil else {
+    guard subviews.firstIndex(of: scrollView) != nil else {
       return
     }
 
     observeView(view: scrollView)
 
     subviewsInLayoutOrder.removeAll()
-    for scrollView in documentView.scrollViews {
+    for scrollView in scrollViews {
       subviewsInLayoutOrder.append(scrollView)
       configureScrollView(scrollView)
     }
@@ -210,7 +256,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
     }
 
-    for scrollView in documentView.scrollViews {
+    for scrollView in scrollViews {
       configureScrollView(scrollView)
     }
 
@@ -265,7 +311,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   ///
   /// - Parameter view: The view that should be observered.
   private func observeView(view: UIScrollView) {
-    guard view.superview == documentView else { return }
+    guard view.superview == self else { return }
 
     for observer in observers.filter({ $0.view === view }) {
       if let index = observers.firstIndex(where: { $0 == observer }) {
@@ -380,7 +426,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
   /// Remove wrapper views that don't own their underlaying views.
   func purgeWrapperViews() {
-    for case let wrapperView as FamilyWrapperView in documentView.subviews {
+    for case let wrapperView as FamilyWrapperView in subviews {
       if wrapperView != wrapperView.view.superview {
         wrapperView.removeFromSuperview()
       }
@@ -426,11 +472,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     // Make sure that wrapper views have the correct width
     // on their wrapped views.
     if cache.state == .empty { adjustViewsWithPaddingAndMargins() }
-
-    if documentView.frame != bounds {
-      documentView.frame = bounds
-      documentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
-    }
 
     let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState, .preferredFramesPerSecond60]
     let animations = { self.runLayoutSubviewsAlgorithm() }
@@ -603,10 +644,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         var newHeight: CGFloat = ceil(fmin(remainingBoundsHeight, remainingContentHeight))
 
         if scrollView is FamilyWrapperView {
-          newHeight = fmin(documentView.frame.height, scrollView.contentSize.height)
+          newHeight = fmin(self.frame.height, scrollView.contentSize.height)
           frame.origin.x = margins.left
         } else {
-          newHeight = fmin(documentView.frame.height, newHeight)
+          newHeight = fmin(self.frame.height, newHeight)
           frame.origin.x = padding.left
         }
 
@@ -664,7 +705,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         frame.origin.y = round(parentContentOffset.y)
       }
 
-      var newHeight: CGFloat = fmin(documentView.frame.height, scrollView.contentSize.height)
+      var newHeight: CGFloat = fmin(self.frame.height, scrollView.contentSize.height)
 
       if !attributes.frame.intersects(validRect) {
         newHeight = 0
@@ -676,7 +717,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       }
 
       let shouldScroll = attributes.frame.intersects(documentVisibleRect) &&
-        round(attributes.contentSize.height) > round(documentView.frame.size.height)
+        round(attributes.contentSize.height) > round(self.frame.size.height)
 
       if scrollView is FamilyWrapperView {
         if scrollView.contentOffset.y != contentOffset.y && parentContentOffset.y < scrollView.frame.origin.y {

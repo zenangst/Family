@@ -4,7 +4,7 @@ import UIKit
 /// from `UIScrollView`. This is done to ensure that the user gets a fluid and
 /// smooth scrolling experience when scrolling in a `FamilyScrollView`.
 class FamilyWrapperView: UIScrollView {
-  weak var parentDocumentView: FamilyDocumentView?
+  weak var familyScrollView: FamilyScrollView?
   /// The wrapped view
   var view: UIView
   /// Observers the frame of the wrapped view.
@@ -55,8 +55,8 @@ class FamilyWrapperView: UIScrollView {
     hiddenObserver = view.observe(\.isHidden, options: [.initial, .new, .old]) { [weak self] (_, value) in
       if value.newValue != value.oldValue, let newValue = value.newValue {
         self?.isHidden = newValue
-        self?.parentDocumentView?.familyScrollView?.setNeedsLayout()
-        self?.parentDocumentView?.familyScrollView?.layoutIfNeeded()
+        self?.familyScrollView?.setNeedsLayout()
+        self?.familyScrollView?.layoutIfNeeded()
       }
     }
   }

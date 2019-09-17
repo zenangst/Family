@@ -51,11 +51,11 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(secondViewController.parent, familyViewController)
     XCTAssertEqual(thirdViewController.parent, familyViewController)
 
-    var wrapperView = (familyViewController.scrollView.documentView.subviews[0] as? FamilyWrapperView)
+    var wrapperView = (familyViewController.scrollView.subviews[0] as? FamilyWrapperView)
     XCTAssertEqual(wrapperView, firstViewController.view.superview)
-    wrapperView = (familyViewController.scrollView.documentView.subviews[1] as? FamilyWrapperView)
+    wrapperView = (familyViewController.scrollView.subviews[1] as? FamilyWrapperView)
     XCTAssertEqual(wrapperView, secondViewController.view.superview)
-    wrapperView = (familyViewController.scrollView.documentView.subviews[2] as? FamilyWrapperView)
+    wrapperView = (familyViewController.scrollView.subviews[2] as? FamilyWrapperView)
     XCTAssertEqual(wrapperView, thirdViewController.view.superview)
 
     XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1500)
@@ -77,8 +77,8 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(mockedViewController1.parent, familyViewController)
     XCTAssertEqual(mockedViewController2.parent, familyViewController)
     XCTAssertEqual(familyViewController.children.count, 2)
-    XCTAssertEqual(familyViewController.scrollView.documentView, mockedViewController1.scrollView.superview)
-    XCTAssertEqual(familyViewController.scrollView.documentView, mockedViewController2.scrollView.superview)
+    XCTAssertEqual(familyViewController.scrollView, mockedViewController1.scrollView.superview)
+    XCTAssertEqual(familyViewController.scrollView, mockedViewController2.scrollView.superview)
 
     XCTAssertEqual(familyViewController.registry.count, 2)
     mockedViewController1.removeFromParent()
