@@ -312,7 +312,9 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     observers.append(Observer(view: view, keyValueObservation: hiddenObserver))
 
     let contentOffsetObserver = view.observe(\.contentOffset, options: [.new], changeHandler: { [weak self] (scrollView, value) in
-      guard let strongSelf = self, let newValue = value.newValue else {
+      guard let strongSelf = self,
+        let newValue = value.newValue,
+        let oldValue = value.oldValue else {
         return
       }
 
