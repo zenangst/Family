@@ -373,7 +373,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
-    scrollView.cache.invalidate()
     scrollView.layoutViews(withDuration: duration, animation: animation) {
       completion?(self)
     }

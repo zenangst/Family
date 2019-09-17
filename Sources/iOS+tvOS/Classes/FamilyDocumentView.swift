@@ -21,6 +21,7 @@ public class FamilyDocumentView: UIView {
   public override init(frame: CGRect) {
     super.init(frame: frame)
     autoresizesSubviews = false
+    clipsToBounds = true
   }
   
   required init?(coder aDecoder: NSCoder) {
