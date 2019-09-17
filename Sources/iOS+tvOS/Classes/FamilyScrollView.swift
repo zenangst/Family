@@ -354,6 +354,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   }
 
   public func addPadding(_ insets: Insets, for view: View) {
+    guard insets != spaceManager.padding(for: view) else { return }
     spaceManager.addPadding(insets, for: view)
     invalidateLayout()
     guard !isPerformingBatchUpdates else { return }
@@ -365,6 +366,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   }
 
   public func addMargins(_ insets: Insets, for view: View) {
+    guard insets != spaceManager.margins(for: view) else { return }
     spaceManager.addMargins(insets, for: view)
     invalidateLayout()
     guard !isPerformingBatchUpdates else { return }
