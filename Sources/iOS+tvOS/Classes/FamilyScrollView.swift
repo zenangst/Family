@@ -164,7 +164,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       return
     }
 
-    if view.description.contains("_UIFocusFastScrollingIndexBarView") {
+    if view.description.contains("<_UI") {
       isFastScrolling = true
       super.addSubview(view)
       return
@@ -255,7 +255,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   ///
   /// - Parameter subview: The subview that got removed from the view heirarcy.
   open override func willRemoveSubview(_ subview: UIView) {
-    if subview.description.contains("_UIFocusFastScrollingIndexBarView") {
+    if subview.description.contains("<_UI") {
       isFastScrolling = false
       return
     }
