@@ -310,7 +310,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     let contentOffsetObserver = view.observe(\.contentOffset, options: [.new], changeHandler: { [weak self] (scrollView, value) in
       guard let strongSelf = self,
         let newValue = value.newValue,
-        let oldValue = value.oldValue else {
+        value.oldValue != nil else {
         return
       }
 
@@ -411,11 +411,13 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
 
     // Skip extra rendering pass.
+    #if os(tvOS)
     if let previousContentOffset = previousContentOffset, duration == nil {
       if previousContentOffset == contentOffset {
         return
       }
     }
+    #endif
 
     if !isScrolling {
       purgeOffscreenViews(using: contentOffset)
