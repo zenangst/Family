@@ -7,6 +7,8 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     return subviews.compactMap { $0 as? UIScrollView }
   }
 
+  var isFastScrolling: Bool = false
+
   /// The amount of insets that should be inserted inbetween views.
   public var margins: Insets {
     get { return spaceManager.defaultMargins }
@@ -161,6 +163,13 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       super.addSubview(view)
       return
     }
+
+    if view.description.contains("_UIFocusFastScrollingIndexBarView") {
+      isFastScrolling = true
+      super.addSubview(view)
+      return
+    }
+
     let subview = wrapViewIfNeeded(view)
     super.addSubview(subview)
     guard let scrollView = subview as? UIScrollView else { return }
@@ -246,6 +255,11 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   ///
   /// - Parameter subview: The subview that got removed from the view heirarcy.
   open override func willRemoveSubview(_ subview: UIView) {
+    if subview.description.contains("_UIFocusFastScrollingIndexBarView") {
+      isFastScrolling = false
+      return
+    }
+
     if let index = subviewsInLayoutOrder.firstIndex(where: { $0 == subview }) {
       subviewsInLayoutOrder.remove(at: index)
     }
@@ -659,12 +673,17 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
           frame.size.height = 0
         }
 
-        scrollView.frame = frame
+        if let attributes = FamilyViewControllerAttributes(view: view,
+                                                           origin: CGPoint(x: frame.origin.x,
+                                                                           y: round(yOffsetOfCurrentSubview + padding.top)),
+                                                           contentSize: scrollView.contentSize) {
+          cache.add(entry: attributes)
+        } else {
+          yOffsetOfCurrentSubview -= margins.top
+          continue
+        }
 
-        cache.add(entry: FamilyViewControllerAttributes(view: view,
-                                                        origin: CGPoint(x: frame.origin.x,
-                                                                        y: round(yOffsetOfCurrentSubview + padding.top)),
-                                                        contentSize: scrollView.contentSize))
+        scrollView.frame = frame
 
         if let backgroundView = backgrounds[view] {
           frame.origin.y = round(yOffsetOfCurrentSubview)
