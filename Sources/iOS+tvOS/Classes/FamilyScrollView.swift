@@ -411,11 +411,13 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
 
     // Skip extra rendering pass.
+    #if os(tvOS)
     if let previousContentOffset = previousContentOffset, duration == nil {
       if previousContentOffset == contentOffset {
         return
       }
     }
+    #endif
 
     if !isScrolling {
       purgeOffscreenViews(using: contentOffset)
