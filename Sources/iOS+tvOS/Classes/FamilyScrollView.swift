@@ -8,7 +8,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     get { return spaceManager.defaultMargins }
     set {
       spaceManager.defaultMargins = newValue
-      cache.invalidate()
+      invalidateLayout()
     }
   }
 
@@ -16,7 +16,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     get { return spaceManager.defaultPadding }
     set {
       spaceManager.defaultPadding = newValue
-      cache.invalidate()
+      invalidateLayout()
     }
   }
 
@@ -25,7 +25,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   public override var bounds: CGRect {
     willSet {
       if newValue.width != bounds.width {
-        cache.invalidate()
+        invalidateLayout()
       }
     }
   }
@@ -99,7 +99,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   override public var frame: CGRect {
     willSet {
       if newValue.width != frame.width {
-        cache.invalidate()
+        invalidateLayout()
       }
     }
   }
@@ -169,7 +169,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     backgrounds[view] = backgroundView
     addSubview(backgroundView)
     sendSubviewToBack(backgroundView)
-    cache.invalidate()
+    invalidateLayout()
     guard !isPerformingBatchUpdates else { return }
     layoutViews()
   }
@@ -195,7 +195,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       configureScrollView(scrollView)
     }
 
-    cache.invalidate()
+    invalidateLayout()
     setNeedsLayout()
     layoutIfNeeded()
   }
@@ -226,7 +226,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
     }
 
     spaceManager.removeView(subview)
-    cache.invalidate()
+    invalidateLayout()
     guard !isPerformingBatchUpdates else { return }
     layoutIfNeeded()
   }
@@ -286,7 +286,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
       if self?.compare(newValue, to: oldValue) == false {
         let contentOffset = strongSelf.contentOffset
-        strongSelf.cache.invalidate()
+        strongSelf.invalidateLayout()
         let targetView = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         let animation = targetView.layer.allAnimationsWithKeys.first
         strongSelf.layoutViews(animation: animation)
@@ -305,7 +305,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       if newValue != oldValue {
         let targetView = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         let animation = targetView.layer.allAnimationsWithKeys.first
-        self?.cache.invalidate()
+        self?.invalidateLayout()
         self?.layoutViews(animation: animation)
       }
     })
@@ -359,7 +359,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
   public func addPadding(_ insets: Insets, for view: View) {
     spaceManager.addPadding(insets, for: view)
-    cache.invalidate()
+    invalidateLayout()
     guard !isPerformingBatchUpdates else { return }
     layoutViews()
   }
@@ -370,9 +370,14 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
   public func addMargins(_ insets: Insets, for view: View) {
     spaceManager.addMargins(insets, for: view)
-    cache.invalidate()
+    invalidateLayout()
     guard !isPerformingBatchUpdates else { return }
     layoutViews()
+  }
+
+  func invalidateLayout() {
+    cache.invalidate()
+    self.previousContentOffset = nil
   }
 
   /// Remove wrapper views that don't own their underlaying views.
@@ -555,7 +560,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
   }
 
   @objc func injected() {
-    cache.invalidate()
+    invalidateLayout()
     layoutViews()
   }
 
