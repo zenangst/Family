@@ -164,6 +164,16 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       return
     }
 
+    // Scroll indicator on < iOS 12
+    // This should be done in a better way.
+    if #available(iOS 13, *) {} else {
+      if view is UIImageView, view.frame.size == .init(width: 2.5, height: 2.5) {
+        super.addSubview(view)
+        return
+      }
+    }
+
+    // Scroll indicator on tvOS
     if view.description.contains("<_UI") {
       isFastScrolling = true
       super.addSubview(view)
