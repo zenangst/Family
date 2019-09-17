@@ -406,17 +406,22 @@ public class FamilyScrollView: NSScrollView {
         viewFrame.size.height = contentSize.height
 
         view.frame = viewFrame
-        scrollView.frame = frame
+
 
         let origin = CGPoint(x: frame.origin.x, y: round(yOffsetOfCurrentSubview))
-        let entry = FamilyViewControllerAttributes(view: view, origin: origin,
-                                                   contentSize: contentSize)
+        if let entry = FamilyViewControllerAttributes(view: view, origin: origin,
+                                                      contentSize: contentSize) {
+          cache.add(entry: entry)
+        } else {
+          yOffsetOfCurrentSubview -= round(margins.top)
+          continue
+        }
+
+        scrollView.frame = frame
 
         if scrollView.frame != frame {
           scrollView.frame = frame
         }
-
-        cache.add(entry: entry)
 
         if let backgroundView = backgrounds[view] {
           let backgroundFrame = CGRect(origin: CGPoint(x: margins.left, y: round(yOffsetOfCurrentSubview)),

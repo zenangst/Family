@@ -10,7 +10,7 @@ public class FamilyViewControllerAttributes: NSObject {
   }
   public let scrollView: ScrollView
 
-  init(view: View, origin: CGPoint, contentSize: CGSize) {
+  init?(view: View, origin: CGPoint, contentSize: CGSize) {
     self.view = view
     self.origin = origin
     self.contentSize = contentSize
@@ -18,7 +18,11 @@ public class FamilyViewControllerAttributes: NSObject {
     #if os(macOS)
     self.scrollView = view.enclosingScrollView!
     #else
-    self.scrollView = (view as? ScrollView) ?? view.superview as! ScrollView
+    if let scrollView = view.superview as? ScrollView {
+      self.scrollView = (view as? ScrollView) ?? scrollView
+    } else {
+      return nil
+    }
     #endif
 
   }
