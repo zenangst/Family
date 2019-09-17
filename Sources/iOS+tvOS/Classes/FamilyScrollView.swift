@@ -433,7 +433,7 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
       documentView.bounds = CGRect(origin: contentOffset, size: bounds.size)
     }
 
-    let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState]
+    let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState, .preferredFramesPerSecond60]
     let animations = { self.runLayoutSubviewsAlgorithm() }
     let animationCompletion: (Bool) -> Void = { _ in completion?() }
 
