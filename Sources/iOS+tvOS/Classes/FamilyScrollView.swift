@@ -726,15 +726,16 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
 
+      var newHeight: CGFloat = fmin(self.frame.height, scrollView.contentSize.height)
+
       if parentContentOffset.y < attributes.frame.origin.y {
         contentOffset.y = 0.0
         frame.origin.y = round(scrollView.frame.origin.y)
       } else {
-        contentOffset.y = round(parentContentOffset.y - attributes.frame.origin.y)
-        frame.origin.y = round(parentContentOffset.y)
+        contentOffset.y = min(round(parentContentOffset.y - attributes.frame.origin.y),
+                              attributes.contentSize.height - frame.size.height)
+        frame.origin.y = min(round(parentContentOffset.y), attributes.maxY - newHeight)
       }
-
-      var newHeight: CGFloat = fmin(self.frame.height, scrollView.contentSize.height)
 
       if !attributes.frame.intersects(validRect) {
         newHeight = 0
