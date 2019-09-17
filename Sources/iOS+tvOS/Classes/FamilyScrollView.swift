@@ -1,7 +1,7 @@
 import UIKit
 
 public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestureRecognizerDelegate {
-  private var previousContentOffset: CGPoint = .init(x: -1, y: -1)
+  private var previousContentOffset: CGPoint?
 
   /// The amount of insets that should be inserted inbetween views.
   public var margins: Insets {
@@ -102,10 +102,6 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
         invalidateLayout()
       }
     }
-  }
-
-  public override var contentOffset: CGPoint {
-    willSet { previousContentOffset = contentOffset }
   }
 
   deinit {
@@ -406,23 +402,17 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
                           animation: CAAnimation? = nil,
                           completion: (() -> Void)? = nil) {
     guard !isPerformingBatchUpdates else { return }
-
-    #if os(tvOS)
-    let foundAnimations = subviewsInLayoutOrder.first(where: { $0.layer.animationKeys() != nil }) != nil
-    let shouldLayoutViews = contentOffset != previousContentOffset
-      || cache.state == .empty
-      || foundAnimations
-
-    guard shouldLayoutViews else {
-      return
-    }
-    #endif
-
     guard !isDeallocating else { return }
-
     guard superview != nil else {
       completion?()
       return
+    }
+
+    // Skip extra rendering pass.
+    if let previousContentOffset = previousContentOffset, duration == nil {
+      if previousContentOffset == contentOffset {
+        return
+      }
     }
 
     if !isScrolling {
@@ -440,7 +430,10 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
 
     let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState, .preferredFramesPerSecond60]
     let animations = { self.runLayoutSubviewsAlgorithm() }
-    let animationCompletion: (Bool) -> Void = { _ in completion?() }
+    let animationCompletion: (Bool) -> Void = { _ in
+      completion?()
+      self.previousContentOffset = nil
+    }
 
     if #available(iOS 9.0, *) {
       if let animation = animation {
@@ -451,21 +444,21 @@ public class FamilyScrollView: UIScrollView, FamilyDocumentViewDelegate, UIGestu
                          initialSpringVelocity: springAnimation.initialVelocity,
                          options: options, animations: animations, completion: animationCompletion)
         default:
-          UIView.animate(withDuration: animation.duration, delay: 0.0, options: options, animations: {
-            self.runLayoutSubviewsAlgorithm()
-          }, completion: animationCompletion)
+          UIView.animate(withDuration: animation.duration, delay: 0.0, options: options, animations: runLayoutSubviewsAlgorithm, completion: animationCompletion)
         }
         return
       }
     }
 
     if let duration = duration, duration > 0.0 {
-      UIView.animate(withDuration: duration, delay: 0.0, options: options, animations: {
-        self.runLayoutSubviewsAlgorithm()
-      }, completion: animationCompletion)
+      self.previousContentOffset = self.contentOffset
+      UIView.animate(withDuration: duration, delay: 0.0,
+                     options: options,
+                     animations: runLayoutSubviewsAlgorithm,
+                     completion: animationCompletion)
     } else {
       runLayoutSubviewsAlgorithm()
-      completion?()
+      self.previousContentOffset = self.contentOffset
     }
   }
 
