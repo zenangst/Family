@@ -7,7 +7,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     return subviews.compactMap { $0 as? UIScrollView }
   }
 
-  var isFastScrolling: Bool = false
+  public var isFastScrolling: Bool = false
 
   /// The amount of insets that should be inserted inbetween views.
   public var margins: Insets {
