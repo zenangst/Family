@@ -174,7 +174,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     }
 
     // Scroll indicator on tvOS
-    if view.description.contains("<_UI") {
+    if view.isSystemView {
       isFastScrolling = true
       super.addSubview(view)
       return
@@ -265,7 +265,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   ///
   /// - Parameter subview: The subview that got removed from the view heirarcy.
   open override func willRemoveSubview(_ subview: UIView) {
-    if subview.description.contains("<_UI") {
+    if subview.isSystemView {
       isFastScrolling = false
       return
     }
@@ -776,4 +776,8 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       }
     }
   }
+}
+
+private extension UIView {
+  var isSystemView: Bool { return description.starts(with: "<_UI") }
 }
