@@ -39,7 +39,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     if let eventHandlerKeyDown = eventHandlerKeyDown { NSEvent.removeMonitor(eventHandlerKeyDown) }
   }
 
-  // MARK: - View lifecycle
+  // MARK: - View life cycle
 
   open override func loadView() {
     let view = baseView
@@ -176,6 +176,8 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
       view.addSubview(childController.view)
       childController.view.frame.size = .zero
       subview = handler(childController)
+    } else if let scrollView = childController.view as? ScrollView {
+      subview = scrollView.documentView ?? scrollView
     } else {
       subview = childController.view
     }
