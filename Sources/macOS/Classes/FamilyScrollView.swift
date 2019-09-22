@@ -378,14 +378,13 @@ public class FamilyScrollView: NSScrollView {
         let padding = spaceManager.padding(for: view)
         let margins = spaceManager.margins(for: view)
         let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
-        let currentXOffset = scrollView.isHorizontal ? scrollView.contentOffset.x : margins.left
         var frame = scrollView.frame
         var viewFrame = frame
 
         yOffsetOfCurrentSubview += round(margins.top)
 
         frame.origin.y = round(yOffsetOfCurrentSubview)
-        frame.origin.x = currentXOffset
+        frame.origin.x = margins.left
         frame.size.height = round(min(visibleRect.height, contentSize.height))
         frame.size.width = round(self.frame.size.width) - margins.left - margins.right
 
@@ -393,12 +392,13 @@ public class FamilyScrollView: NSScrollView {
           frame.size.height = 0
         }
 
+        scrollView.automaticallyAdjustsContentInsets = false
+        scrollView.contentInsets = padding
+
         if view is NSCollectionView {
           viewFrame.origin.x = padding.left
           viewFrame.origin.y = padding.top
         } else {
-          scrollView.automaticallyAdjustsContentInsets = false
-          scrollView.contentInsets = padding
           frame.size.height += padding.top + padding.bottom
         }
 
@@ -435,7 +435,6 @@ public class FamilyScrollView: NSScrollView {
         }
 
         cache.state = .isRunning
-
         let previousContentOffset = self.contentOffset
         self.contentOffset = previousContentOffset
       }
@@ -505,7 +504,9 @@ public class FamilyScrollView: NSScrollView {
         }
         // Reset content offset to avoid setting offsets that
         // look like `clipsToBounds` bugs.
-        if self.contentOffset.y < attributes.maxY && scrollView.contentOffset.y != 0 {
+        if self.contentOffset.y < attributes.maxY &&
+          scrollView.contentOffset.y != 0 &&
+          !scrollView.isHorizontal {
           scrollView.contentOffset = CGPoint(x: currentXOffset, y: 0)
         }
       }
