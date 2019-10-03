@@ -1,8 +1,6 @@
 import UIKit
 
 public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
-  private var previousContentOffset: CGPoint?
-
   var scrollViews: [UIScrollView] {
     return subviews.compactMap { $0 as? UIScrollView }
   }
@@ -445,7 +443,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
   func invalidateLayout() {
     cache.invalidate()
-    self.previousContentOffset = nil
   }
 
   /// Remove wrapper views that don't own their underlaying views.
@@ -480,15 +477,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       return
     }
 
-    // Skip extra rendering pass.
-    #if os(tvOS)
-    if let previousContentOffset = previousContentOffset, duration == nil {
-      if previousContentOffset == contentOffset {
-        return
-      }
-    }
-    #endif
-
     if !isScrolling {
       purgeOffscreenViews(using: contentOffset)
     }
@@ -501,7 +489,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     let animations = { self.runLayoutSubviewsAlgorithm() }
     let animationCompletion: (Bool) -> Void = { _ in
       completion?()
-      self.previousContentOffset = nil
     }
 
     if #available(iOS 9.0, *) {
@@ -520,14 +507,12 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     }
 
     if let duration = duration, duration > 0.0 {
-      self.previousContentOffset = self.contentOffset
       UIView.animate(withDuration: duration, delay: 0.0,
                      options: options,
                      animations: runLayoutSubviewsAlgorithm,
                      completion: animationCompletion)
     } else {
       runLayoutSubviewsAlgorithm()
-      self.previousContentOffset = self.contentOffset
     }
   }
 
