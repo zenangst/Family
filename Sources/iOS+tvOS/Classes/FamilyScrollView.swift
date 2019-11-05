@@ -513,6 +513,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
                      completion: animationCompletion)
     } else {
       runLayoutSubviewsAlgorithm()
+      completion?()
     }
   }
 
