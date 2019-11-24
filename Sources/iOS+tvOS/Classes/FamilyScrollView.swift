@@ -765,5 +765,19 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 }
 
 private extension UIView {
-  var isSystemView: Bool { return description.starts(with: "<_UI") }
+  var isSystemView: Bool {
+    let systemViewIdentifiers = [
+      "<_UI",
+      "<UISelectionGrabberDot"
+    ]
+    var result: Bool = false
+    for identifier in systemViewIdentifiers {
+      if description.starts(with: identifier) {
+        result = true
+        break
+      }
+    }
+
+    return result
+  }
 }
