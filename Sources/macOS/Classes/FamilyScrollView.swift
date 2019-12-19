@@ -1,6 +1,11 @@
 import Cocoa
 
+public protocol FamilyScrollViewDelegate: class {
+  func familyScrollView(_ scrollView: FamilyScrollView, didScrollToPoint point: CGPoint, isScrolling: Bool)
+}
+
 public class FamilyScrollView: NSScrollView {
+  public weak var delegate: FamilyScrollViewDelegate?
   private var previousContentOffset: CGPoint = .init(x: -1, y: -1)
   public override var isFlipped: Bool { return true }
 
@@ -46,7 +51,11 @@ public class FamilyScrollView: NSScrollView {
   internal var isChildViewController: Bool = false
   internal var layoutIsRunning: Bool = false
   internal var isScrollingWithWheel: Bool = false
-  internal var isScrolling: Bool = false
+  internal var isScrolling: Bool = false {
+    willSet {
+      delegate?.familyScrollView(self, didScrollToPoint: contentOffset, isScrolling: newValue)
+    }
+  }
   internal var isScrollingByProxy: Bool = false
   internal var isPerformingBatchUpdates: Bool = false
   private var subviewsInLayoutOrder = [NSScrollView]()
