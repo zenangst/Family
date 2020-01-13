@@ -256,6 +256,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
     invalidateLayout()
     setNeedsLayout()
+    guard !isPerformingBatchUpdates else { return }
     layoutIfNeeded()
   }
 

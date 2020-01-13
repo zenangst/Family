@@ -376,7 +376,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     scrollView.layoutViews(withDuration: duration, animation: animation) {
       completion?(self)
     }
-
+    scrollView.layoutIfNeeded()
     return self
   }
 
