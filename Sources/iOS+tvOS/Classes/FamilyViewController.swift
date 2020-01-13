@@ -370,13 +370,15 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
                                 animation: CAAnimation? = nil,
                                 _ handler: (FamilyViewController) -> Void,
                                 completion: ((FamilyViewController) -> Void)? = nil) -> Self {
+    scrollView.disableContentSizeObservers = true
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
+    scrollView.layoutIfNeeded()
     scrollView.layoutViews(withDuration: duration, animation: animation) {
       completion?(self)
+      self.scrollView.disableContentSizeObservers = false
     }
-    scrollView.layoutIfNeeded()
     return self
   }
 
