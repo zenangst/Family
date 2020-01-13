@@ -157,6 +157,11 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// - Parameter view: The view to be added.
   ///                   After being added, this view appears on top of any other subviews.
   open override func addSubview(_ view: UIView) {
+    defer {
+      invalidateLayout()
+      if !isPerformingBatchUpdates && !isDeallocating { layoutIfNeeded() }
+    }
+
     if backgrounds.values.contains(view) {
       super.addSubview(view)
       return
@@ -186,6 +191,11 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   }
 
   public override func insertSubview(_ view: UIView, at index: Int) {
+    defer {
+      invalidateLayout()
+      if !isPerformingBatchUpdates && !isDeallocating { layoutIfNeeded() }
+    }
+
     if backgrounds.values.contains(view) {
       super.addSubview(view)
       return
@@ -229,8 +239,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     addSubview(backgroundView)
     sendSubviewToBack(backgroundView)
     invalidateLayout()
-    guard !isPerformingBatchUpdates else { return }
-    layoutViews()
   }
 
   /// This configures observers and configures the scroll views
@@ -253,11 +261,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       subviewsInLayoutOrder.append(scrollView)
       configureScrollView(scrollView)
     }
-
-    invalidateLayout()
-    setNeedsLayout()
-    guard !isPerformingBatchUpdates else { return }
-    layoutIfNeeded()
   }
 
   /// Removes the observer for any view that gets removed from the view heirarcy.
@@ -292,8 +295,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
     spaceManager.removeView(subview)
     invalidateLayout()
-    guard !isPerformingBatchUpdates else { return }
-    layoutIfNeeded()
   }
 
   /// Configures all scroll view in view heirarcy if they are allowed to scroll or not.
@@ -444,6 +445,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
   func invalidateLayout() {
     cache.invalidate()
+    setNeedsLayout()
   }
 
   /// Remove wrapper views that don't own their underlaying views.
