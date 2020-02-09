@@ -299,8 +299,19 @@ public class FamilyScrollView: NSScrollView {
     }
     super.scrollWheel(with: event)
 
-    isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
-      !(event.phase == .ended || event.momentumPhase == .ended)
+    switch event.phase {
+    case .changed, .began:
+      isScrolling = true
+    default:
+
+      switch event.momentumPhase {
+      case .changed:
+        isScrolling = !(event.deltaY == 0)
+      default:
+        isScrolling = false
+      }
+    }
+
     isScrollingWithWheel = isScrolling
 
     layoutViews(withDuration: 0.0, force: false, completion: nil)
