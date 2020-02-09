@@ -384,11 +384,17 @@ public class FamilyScrollView: NSScrollView {
   }
 
   private func runLayoutSubviewsAlgorithm() {
-    guard isPerformingBatchUpdates == false, !isDeallocating,
-      cache.state != .isRunning else { return }
+    guard isPerformingBatchUpdates == false,
+      !isDeallocating,
+      cache.state != .isRunning,
+      visibleRect.size != .zero
+    else { return }
+
+    let y = round(min(documentVisibleRect.origin.y + contentInsets.top,
+    cache.contentSize.height - documentVisibleRect.size.height + contentInsets.top))
 
     var parentContentOffset = CGPoint(x: round(self.contentOffset.x),
-                                      y: round(self.contentOffset.y))
+                                      y: y)
 
     if cache.state == .empty {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
@@ -397,7 +403,7 @@ public class FamilyScrollView: NSScrollView {
         let contentSize: CGSize = contentSizeForView(view)
         let padding = spaceManager.padding(for: view)
         let margins = spaceManager.margins(for: view)
-        let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
+        let constrainedWidth = max(round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right, 0)
         var frame = scrollView.frame
         var viewFrame = frame
 
@@ -405,7 +411,7 @@ public class FamilyScrollView: NSScrollView {
 
         frame.origin.y = round(yOffsetOfCurrentSubview)
         frame.origin.x = margins.left
-        frame.size.height = round(min(visibleRect.height, contentSize.height))
+        frame.size.height = abs(fmin(documentVisibleRect.size.height + contentOffset.y, contentSize.height))
         frame.size.width = round(self.frame.size.width) - margins.left - margins.right
 
         if !frame.intersects(documentVisibleRect) {
@@ -422,11 +428,10 @@ public class FamilyScrollView: NSScrollView {
           frame.size.height += padding.top + padding.bottom
         }
 
-        viewFrame.size.width = scrollView.isHorizontal ? contentSize.width : constrainedWidth
+        viewFrame.size.width = max(scrollView.isHorizontal ? contentSize.width : constrainedWidth, 0)
         viewFrame.size.height = contentSize.height
 
         view.frame = viewFrame
-
 
         let origin = CGPoint(x: frame.origin.x, y: round(yOffsetOfCurrentSubview))
         if let entry = FamilyViewControllerAttributes(view: view, origin: origin,
@@ -438,7 +443,6 @@ public class FamilyScrollView: NSScrollView {
         }
 
         scrollView.frame = frame
-
         if scrollView.frame != frame {
           scrollView.frame = frame
         }
@@ -471,6 +475,7 @@ public class FamilyScrollView: NSScrollView {
 
       documentView?.frame.size = CGSize(width: cache.contentSize.width, height: height)
       cache.state = .isFinished
+      return
     }
 
     let validAttributes = getValidAttributes(in: discardableRect)
