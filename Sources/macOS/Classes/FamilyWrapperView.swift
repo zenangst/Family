@@ -86,9 +86,9 @@ class FamilyWrapperView: NSScrollView {
     if familyScrollView.cache.state != .isRunning {
       familyScrollView.cache.invalidate()
       familyScrollView.layoutViews(withDuration: nil,
-                                    allowsImplicitAnimation: false,
-                                    force: true,
-                                    completion: nil)
+                                   allowsImplicitAnimation: false,
+                                   force: true,
+                                   completion: nil)
       guard needsDisplay else { return }
       familyScrollView.setNeedsDisplay(frame)
       familyScrollView.layoutSubtreeIfNeeded()

@@ -426,6 +426,8 @@ public class FamilyScrollView: NSScrollView {
           viewFrame.origin.y = padding.top
         } else {
           frame.size.height += padding.top + padding.bottom
+          viewFrame.origin.x = padding.left
+          viewFrame.origin.y = padding.top
         }
 
         viewFrame.size.width = max(scrollView.isHorizontal ? contentSize.width : constrainedWidth, 0)

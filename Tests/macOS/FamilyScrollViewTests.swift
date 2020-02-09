@@ -1,6 +1,12 @@
 import XCTest
 @testable import Family
 
+class MockedViewController: NSViewController {
+  override func loadView() {
+    view = NSView()
+  }
+}
+
 class FamilyScrollViewTests: XCTestCase {
   class CollectionViewFlowLayoutMock: NSCollectionViewFlowLayout {
     var contentSize: CGSize = CGSize(width: 100, height: 100)
@@ -8,26 +14,20 @@ class FamilyScrollViewTests: XCTestCase {
   }
 
   static let mockFrame = CGRect(origin: .zero, size: CGSize(width: 500, height: 1000))
-  let superview = NSView(frame: FamilyScrollViewTests.mockFrame)
+  var window: NSWindow!
   var scrollView: FamilyScrollView!
 
   override func setUp() {
     super.setUp()
+    let contentViewController = MockedViewController()
+    contentViewController.view.frame = FamilyScrollViewTests.mockFrame
+    window = NSWindow(contentViewController: contentViewController)
     scrollView = FamilyScrollView()
-  }
-
-  override func tearDown() {
-    super.tearDown()
-    superview.subviews.forEach { $0.removeFromSuperview() }
+    contentViewController.view.addSubview(scrollView)
+    window.makeKeyAndOrderFront(nil)
   }
 
   func testLayoutAlgorithm() {
-    superview.addSubview(scrollView)
-
-    XCTAssertEqual(scrollView.contentSize, superview.bounds.size)
-    // Should set the same height as the super view.
-    XCTAssertEqual(superview.bounds, scrollView.frame)
-
     let size = CGSize(width: 500, height: 250)
     let mockedScrollView1 = NSScrollView(frame: CGRect(origin: .zero, size: size))
     let mockedScrollView2 = NSScrollView(frame: CGRect(origin: .zero, size: size))

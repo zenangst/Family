@@ -18,8 +18,9 @@ class FamilyViewControllerSharedTests: XCTestCase {
     container.view.frame.size = CGSize(width: 500, height: 1000)
     container.scrollView.frame.size = CGSize(width: 500, height: 1000)
     #if os(macOS)
-    container.loadView()
-    container.scrollView.layoutViews(withDuration: nil, force: false, completion: nil)
+    let window = NSWindow(contentViewController: container)
+    container.scrollView.layoutViews(withDuration: nil, force: true, completion: nil)
+    window.makeKeyAndOrderFront(nil)
     #else
     container.loadViewIfNeeded()
     container.scrollView.layoutViews()
