@@ -213,7 +213,7 @@ public class FamilyScrollView: NSScrollView {
   private func processNewWindowSize() {
     guard window != nil else { return }
     cache.invalidate()
-    layoutViews(withDuration: nil, force: false, completion: nil)
+    layoutViews(withDuration: nil, force: true, completion: nil)
   }
 
   @objc open func windowDidResize(_ notification: Notification) {
