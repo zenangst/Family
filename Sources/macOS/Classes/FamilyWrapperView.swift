@@ -80,15 +80,19 @@ class FamilyWrapperView: NSScrollView {
   }
 
   private func invalidateFamilyScrollView(needsDisplay: Bool) {
-    guard familyScrollView?.isPerformingBatchUpdates == false else { return }
-    familyScrollView?.cache.invalidate()
-    familyScrollView?.layoutViews(withDuration: nil,
-                                  allowsImplicitAnimation: false,
-                                  force: true,
-                                  completion: nil)
-    guard needsDisplay else { return }
-    familyScrollView?.setNeedsDisplay(frame)
-    familyScrollView?.layoutSubtreeIfNeeded()
+    guard let familyScrollView = familyScrollView else { return }
+    guard familyScrollView.isPerformingBatchUpdates == false else { return }
+
+    if familyScrollView.cache.state != .isRunning {
+      familyScrollView.cache.invalidate()
+      familyScrollView.layoutViews(withDuration: nil,
+                                   allowsImplicitAnimation: false,
+                                   force: true,
+                                   completion: nil)
+      guard needsDisplay else { return }
+      familyScrollView.setNeedsDisplay(frame)
+      familyScrollView.layoutSubtreeIfNeeded()
+    }
   }
 
   private func setWrapperFrameSize(_ rect: CGRect) {

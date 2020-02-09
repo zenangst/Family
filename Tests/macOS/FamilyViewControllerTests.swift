@@ -1,15 +1,8 @@
 import XCTest
 @testable import Family
 
-private extension NSViewController {
-  func prepareViewController() {
-    let _ = view
-    viewWillAppear()
-    viewDidAppear()
-  }
-}
-
 class FamilyViewControllerTests: XCTestCase {
+  var window: NSWindow!
   var familyViewController: FamilyViewController!
 
   class MockScrollViewController: MockViewController {
@@ -31,12 +24,15 @@ class FamilyViewControllerTests: XCTestCase {
   override func setUp() {
     super.setUp()
     familyViewController = FamilyViewController()
-    familyViewController.prepareViewController()
+    familyViewController.view.frame.size = CGSize(width: 375, height: 667)
+    window = NSWindow(contentViewController: familyViewController)
+    window.makeKeyAndOrderFront(nil)
     NSAnimationContext.current.duration = 0.0
   }
 
   func testAddingChildViewController() {
     let viewController = MockViewController()
+    viewController.view.frame.size.height = 667
     familyViewController.addChild(viewController)
     XCTAssertEqual(viewController.parent, familyViewController)
     XCTAssertEqual(viewController.view.frame, familyViewController.view.frame)
@@ -122,7 +118,9 @@ class FamilyViewControllerTests: XCTestCase {
   func testViewControllerIsVisibleMethods() {
     let familyViewController = FamilyViewController()
     familyViewController.view.frame.size = CGSize(width: 375, height: 667)
-    familyViewController.prepareViewController()
+
+    let window = NSWindow(contentViewController: familyViewController)
+    window.makeKeyAndOrderFront(nil)
 
     let controller1 = MockViewController()
     let controller2 = MockViewController()
@@ -181,7 +179,8 @@ class FamilyViewControllerTests: XCTestCase {
   func testAttributesForViewController() {
     let familyViewController = FamilyViewController()
     familyViewController.view.frame.size = CGSize(width: 375, height: 667)
-    familyViewController.prepareViewController()
+    let window = NSWindow(contentViewController: familyViewController)
+    window.makeKeyAndOrderFront(nil)
 
     let controller1 = MockViewController()
     controller1.view.frame.size = CGSize(width: 375, height: 667)
@@ -199,7 +198,6 @@ class FamilyViewControllerTests: XCTestCase {
   func testBatchUpdates() {
     let familyViewController = FamilyViewController()
     familyViewController.view.frame.size = CGSize(width: 375, height: 667)
-    familyViewController.prepareViewController()
 
     let controller1 = MockViewController()
     controller1.title = "Controller 1"
@@ -226,7 +224,6 @@ class FamilyViewControllerTests: XCTestCase {
     let window = NSWindow(contentViewController: familyViewController)
     window.setFrame(NSRect.init(origin: .zero, size: CGSize(width: 375, height: 667)), display: false)
     familyViewController.view.frame.size = CGSize(width: 375, height: 667)
-    familyViewController.prepareViewController()
 
     let controller1 = MockViewController()
     controller1.title = "Controller 1"

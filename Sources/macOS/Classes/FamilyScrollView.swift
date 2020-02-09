@@ -96,7 +96,7 @@ public class FamilyScrollView: NSScrollView {
                           allowsImplicitAnimation: Bool = true,
                           force: Bool,
                           completion: (() -> Void)?) {
-    guard isPerformingBatchUpdates == false, !isDeallocating else { return }
+    guard isPerformingBatchUpdates == false, !isDeallocating, window != nil else { return }
 
     let shouldLayoutViews = subviewsInLayoutOrder.first(where: { $0.layer?.animationKeys() != nil }) != nil
     guard contentOffset != previousContentOffset || cache.state == .empty || shouldLayoutViews else {
@@ -185,12 +185,10 @@ public class FamilyScrollView: NSScrollView {
     }
   }
 
-  func scrollTo(_ point: CGPoint, in view: NSView) {
-    let shouldScrollByProxy = isScrollingByProxy &&
-      !isScrolling && !layoutIsRunning &&
-      view.window?.isVisible == true
-    defer { isScrollingByProxy = false }
-    guard shouldScrollByProxy, let entry = cache.entry(for: view) else {
+  func scrollTo(_ point: CGPoint, in view: NSView, completion: @escaping () -> Void) {
+    guard view.window?.isVisible == true else { return }
+
+    guard isScrollingByProxy, !isScrolling, let entry = cache.entry(for: view) else {
       return
     }
     var newOffset = CGPoint(x: self.contentOffset.x,
@@ -206,6 +204,8 @@ public class FamilyScrollView: NSScrollView {
     contentView.scroll(newOffset)
     // This is invoked to avoid animation stutter.
     contentView.scroll(to: newOffset)
+
+    layoutViews(withDuration: nil, force: true, completion: completion)
   }
 
   // MARK: - Window resizing
@@ -213,7 +213,7 @@ public class FamilyScrollView: NSScrollView {
   private func processNewWindowSize() {
     guard window != nil else { return }
     cache.invalidate()
-    layoutViews(withDuration: nil, force: false, completion: nil)
+    layoutViews(withDuration: nil, force: true, completion: nil)
   }
 
   @objc open func windowDidResize(_ notification: Notification) {
@@ -299,8 +299,18 @@ public class FamilyScrollView: NSScrollView {
     }
     super.scrollWheel(with: event)
 
-    isScrolling = !(event.deltaX == 0 && event.deltaY == 0) ||
-      !(event.phase == .ended || event.momentumPhase == .ended)
+    switch event.phase {
+    case .changed, .began:
+      isScrolling = true
+    default:
+      switch event.momentumPhase {
+      case .changed:
+        isScrolling = !(event.deltaY == 0)
+      default:
+        isScrolling = false
+      }
+    }
+
     isScrollingWithWheel = isScrolling
 
     layoutViews(withDuration: 0.0, force: false, completion: nil)
@@ -309,6 +319,7 @@ public class FamilyScrollView: NSScrollView {
   func wrapperViewDidChangeFrame(_ view: NSView, from fromValue: CGRect, to toValue: CGRect) {
     guard window != nil else { return }
     guard round(fromValue.height) != round(toValue.height) else { return }
+    guard cache.state != .isRunning else { return }
     cache.invalidate()
     layoutViews(withDuration: nil,
                 allowsImplicitAnimation: false,
@@ -373,11 +384,17 @@ public class FamilyScrollView: NSScrollView {
   }
 
   private func runLayoutSubviewsAlgorithm() {
-    guard isPerformingBatchUpdates == false, !isDeallocating,
-      cache.state != .isRunning else { return }
+    guard isPerformingBatchUpdates == false,
+      !isDeallocating,
+      cache.state != .isRunning,
+      visibleRect.size != .zero
+    else { return }
+
+    let y = round(min(documentVisibleRect.origin.y + contentInsets.top,
+    cache.contentSize.height - documentVisibleRect.size.height + contentInsets.top))
 
     var parentContentOffset = CGPoint(x: round(self.contentOffset.x),
-                                      y: round(self.contentOffset.y))
+                                      y: y)
 
     if cache.state == .empty {
       var yOffsetOfCurrentSubview: CGFloat = 0.0
@@ -386,7 +403,7 @@ public class FamilyScrollView: NSScrollView {
         let contentSize: CGSize = contentSizeForView(view)
         let padding = spaceManager.padding(for: view)
         let margins = spaceManager.margins(for: view)
-        let constrainedWidth = round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right
+        let constrainedWidth = max(round(self.frame.size.width) - margins.left - margins.right - padding.left - padding.right, 0)
         var frame = scrollView.frame
         var viewFrame = frame
 
@@ -394,7 +411,7 @@ public class FamilyScrollView: NSScrollView {
 
         frame.origin.y = round(yOffsetOfCurrentSubview)
         frame.origin.x = margins.left
-        frame.size.height = round(min(visibleRect.height, contentSize.height))
+        frame.size.height = abs(fmin(documentVisibleRect.size.height + contentOffset.y, contentSize.height))
         frame.size.width = round(self.frame.size.width) - margins.left - margins.right
 
         if !frame.intersects(documentVisibleRect) {
@@ -409,13 +426,14 @@ public class FamilyScrollView: NSScrollView {
           viewFrame.origin.y = padding.top
         } else {
           frame.size.height += padding.top + padding.bottom
+          viewFrame.origin.x = padding.left
+          viewFrame.origin.y = padding.top
         }
 
-        viewFrame.size.width = scrollView.isHorizontal ? contentSize.width : constrainedWidth
+        viewFrame.size.width = max(scrollView.isHorizontal ? contentSize.width : constrainedWidth, 0)
         viewFrame.size.height = contentSize.height
 
         view.frame = viewFrame
-
 
         let origin = CGPoint(x: frame.origin.x, y: round(yOffsetOfCurrentSubview))
         if let entry = FamilyViewControllerAttributes(view: view, origin: origin,
@@ -427,7 +445,6 @@ public class FamilyScrollView: NSScrollView {
         }
 
         scrollView.frame = frame
-
         if scrollView.frame != frame {
           scrollView.frame = frame
         }
@@ -460,6 +477,7 @@ public class FamilyScrollView: NSScrollView {
 
       documentView?.frame.size = CGSize(width: cache.contentSize.width, height: height)
       cache.state = .isFinished
+      return
     }
 
     let validAttributes = getValidAttributes(in: discardableRect)

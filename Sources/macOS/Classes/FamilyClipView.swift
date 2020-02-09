@@ -7,9 +7,10 @@ class FamilyClipView: NSClipView {
 
   override func scroll(to newOrigin: NSPoint) {
     super.scroll(to: newOrigin)
-    guard let familyScrollView = scrollView, newOrigin.y != contentInsets.top else { return }
-    familyScrollView.isScrollingByProxy = true
-    familyScrollView.scrollTo(newOrigin, in: documentView!)
+    guard let familyScrollView = scrollView else { return }
+    familyScrollView.scrollTo(newOrigin, in: documentView!) {
+      familyScrollView.isScrollingByProxy = false
+    }
   }
 }
 
