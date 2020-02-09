@@ -303,7 +303,6 @@ public class FamilyScrollView: NSScrollView {
     case .changed, .began:
       isScrolling = true
     default:
-
       switch event.momentumPhase {
       case .changed:
         isScrolling = !(event.deltaY == 0)
@@ -320,6 +319,7 @@ public class FamilyScrollView: NSScrollView {
   func wrapperViewDidChangeFrame(_ view: NSView, from fromValue: CGRect, to toValue: CGRect) {
     guard window != nil else { return }
     guard round(fromValue.height) != round(toValue.height) else { return }
+    guard cache.state != .isRunning else { return }
     cache.invalidate()
     layoutViews(withDuration: nil,
                 allowsImplicitAnimation: false,
