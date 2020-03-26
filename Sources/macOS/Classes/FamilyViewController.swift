@@ -18,6 +18,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
   private(set) public var registry = [ViewController: View]()
   var observer: NSKeyValueObservation?
   var eventHandlerKeyDown: Any?
+  var eventHandlerKeyUp: Any?
 
   public convenience init(isChildViewController: Bool) {
     self.init(nibName: nil, bundle: nil)
@@ -37,6 +38,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     children.forEach { $0.removeFromParent() }
     purgeRemovedViews()
     if let eventHandlerKeyDown = eventHandlerKeyDown { NSEvent.removeMonitor(eventHandlerKeyDown) }
+    if let eventHandlerKeyUp = eventHandlerKeyUp { NSEvent.removeMonitor(eventHandlerKeyUp) }
   }
 
   // MARK: - View life cycle
@@ -64,6 +66,11 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
     eventHandlerKeyDown = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event -> NSEvent? in
       self?.scrollView.isScrollingByProxy = true
+      return event
+    }
+
+    eventHandlerKeyUp = NSEvent.addLocalMonitorForEvents(matching: .keyUp) { [weak self] event -> NSEvent? in
+      self?.scrollView.isScrollingByProxy = false
       return event
     }
   }
