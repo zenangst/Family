@@ -480,11 +480,11 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   ///                       out from animating if the view is scroll by the user.
   public func layoutViews(withDuration duration: Double? = nil,
                           animation: CAAnimation? = nil,
-                          completion: (() -> Void)? = nil) {
-    guard !isPerformingBatchUpdates else { return }
-    guard !isDeallocating else { return }
-    guard superview != nil else {
-      completion?()
+                          completion: ((Bool) -> Void)? = nil) {
+    guard !isDeallocating,
+      !isPerformingBatchUpdates,
+      superview != nil else {
+      completion?(false)
       return
     }
 
@@ -499,7 +499,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     let options: UIView.AnimationOptions = [.allowUserInteraction, .beginFromCurrentState, .preferredFramesPerSecond60]
     let animations = { self.runLayoutSubviewsAlgorithm() }
     let animationCompletion: (Bool) -> Void = { _ in
-      completion?()
+      completion?(true)
     }
 
     if #available(iOS 9.0, *) {
@@ -524,7 +524,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
                      completion: animationCompletion)
     } else {
       runLayoutSubviewsAlgorithm()
-      completion?()
+      completion?(true)
     }
   }
 

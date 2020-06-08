@@ -369,14 +369,13 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   open func performBatchUpdates(withDuration duration: Double = 0.25,
                                 animation: CAAnimation? = nil,
                                 _ handler: (FamilyViewController) -> Void,
-                                completion: ((FamilyViewController) -> Void)? = nil) -> Self {
+                                completion: ((FamilyViewController, Bool) -> Void)? = nil) -> Self {
     scrollView.disableContentSizeObservers = true
     scrollView.isPerformingBatchUpdates = true
     handler(self)
     scrollView.isPerformingBatchUpdates = false
-    scrollView.layoutIfNeeded()
-    scrollView.layoutViews(withDuration: duration, animation: animation) {
-      completion?(self)
+    scrollView.layoutViews(withDuration: duration, animation: animation) { completed in
+      completion?(self, completed)
       self.scrollView.disableContentSizeObservers = false
     }
     return self
