@@ -2,7 +2,7 @@ import UIKit
 
 public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   var scrollViews: [UIScrollView] {
-    return subviews.compactMap { $0 as? UIScrollView }
+    return subviews.compactMap({ $0 as? UIScrollView }).reversed()
   }
 
   public var isFastScrolling: Bool = false
@@ -185,7 +185,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     }
 
     let subview = wrapViewIfNeeded(view)
-    super.addSubview(subview)
+    super.insertSubview(subview, at: 0)
     guard let scrollView = subview as? UIScrollView else { return }
     didAddScrollViewToContainer(scrollView)
     purgeViews()
@@ -690,7 +690,9 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
           continue
         }
 
-        scrollView.frame = frame
+        if scrollView.frame != frame {
+          scrollView.frame = frame
+        }
 
         if let backgroundView = backgrounds[view] {
           frame.origin.y = round(yOffsetOfCurrentSubview)
@@ -713,7 +715,10 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       }
 
       cache.state = .isFinished
-      contentSize = CGSize(width: cache.contentSize.width, height: round(height))
+      let newContentSize = CGSize(width: cache.contentSize.width, height: round(height))
+      if newContentSize != contentSize {
+        contentSize = newContentSize
+      }
     }
 
     let validAttributes = getValidAttributes(in: discardableRect)
@@ -753,7 +758,10 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
           frame.origin.y = attributes.frame.origin.y
         }
       } else if shouldScroll {
-        scrollView.contentOffset.y = contentOffset.y
+        if scrollView.contentOffset.y != contentOffset.y {
+          scrollView.contentOffset.y = contentOffset.y
+        }
+
         if round(self.contentOffset.y) < frame.origin.y && frame.origin.y != attributes.frame.origin.y {
           frame.origin.y = attributes.frame.origin.y
         }
