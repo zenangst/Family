@@ -311,7 +311,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       temporaryContainer[entry.value.view] = entry.key
     }
 
-    for view in scrollView.scrollViews {
+    for view in scrollView.subviewsInLayoutOrder {
       let lookupView = (view as? FamilyWrapperView)?.view ?? view
       guard let controller = temporaryContainer[lookupView] else { continue }
       viewControllers.append(controller)
