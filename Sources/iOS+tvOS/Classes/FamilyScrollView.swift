@@ -1,10 +1,6 @@
 import UIKit
 
 public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
-  var scrollViews: [UIScrollView] {
-    return subviews.compactMap({ $0 as? UIScrollView }).reversed()
-  }
-
   public var isFastScrolling: Bool = false
 
   /// The amount of insets that should be inserted inbetween views.
@@ -185,10 +181,16 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     }
 
     let subview = wrapViewIfNeeded(view)
-    super.insertSubview(subview, at: 0)
     guard let scrollView = subview as? UIScrollView else { return }
+
+    if let previousIndex = subviewsInLayoutOrder.index(of: scrollView) {
+      subviewsInLayoutOrder.remove(at: previousIndex)
+    }
+
+    subviewsInLayoutOrder.append(scrollView)
     didAddScrollViewToContainer(scrollView)
     purgeViews()
+    addSubviewsInLayoutOrder()
   }
 
   public override func insertSubview(_ view: UIView, at index: Int) {
@@ -202,10 +204,16 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       return
     }
     let subview = wrapViewIfNeeded(view)
-    super.insertSubview(subview, at: index)
     guard let scrollView = subview as? UIScrollView else { return }
+
+    if let previousIndex = subviewsInLayoutOrder.index(of: scrollView) {
+      subviewsInLayoutOrder.remove(at: previousIndex)
+    }
+
+    subviewsInLayoutOrder.insert(scrollView, at: index)
     didAddScrollViewToContainer(scrollView)
     purgeViews()
+    addSubviewsInLayoutOrder()
   }
 
   private func wrapViewIfNeeded(_ view: UIView) -> UIView {
@@ -222,6 +230,12 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     }
 
     return subview
+  }
+
+  private func addSubviewsInLayoutOrder() {
+    for (index, view) in subviewsInLayoutOrder.reversed().enumerated() {
+      super.insertSubview(view, at: index)
+    }
   }
 
   private func purgeViews() {
@@ -251,17 +265,12 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   func didAddScrollViewToContainer(_ scrollView: UIScrollView) {
     scrollView.autoresizingMask = [.flexibleWidth]
 
-    guard subviews.firstIndex(of: scrollView) != nil else {
+    guard subviewsInLayoutOrder.firstIndex(of: scrollView) != nil else {
       return
     }
 
     observeView(view: scrollView)
-
-    subviewsInLayoutOrder.removeAll()
-    for scrollView in scrollViews {
-      subviewsInLayoutOrder.append(scrollView)
-      configureScrollView(scrollView)
-    }
+    configureScrollView(scrollView)
   }
 
   /// Removes the observer for any view that gets removed from the view heirarcy.
@@ -283,7 +292,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       }
     }
 
-    for scrollView in scrollViews {
+    for scrollView in subviewsInLayoutOrder {
       configureScrollView(scrollView)
     }
 
@@ -336,8 +345,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   ///
   /// - Parameter view: The view that should be observered.
   private func observeView(view: UIScrollView) {
-    guard view.superview == self else { return }
-
     for observer in observers.filter({ $0.view === view }) {
       if let index = observers.firstIndex(where: { $0 == observer }) {
         observers.remove(at: index)

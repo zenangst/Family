@@ -51,11 +51,11 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(secondViewController.parent, familyViewController)
     XCTAssertEqual(thirdViewController.parent, familyViewController)
 
-    var wrapperView = (familyViewController.scrollView.subviews[0] as? FamilyWrapperView)
+    var wrapperView = (familyViewController.scrollView.subviews[2] as? FamilyWrapperView)
     XCTAssertEqual(wrapperView, firstViewController.view.superview)
     wrapperView = (familyViewController.scrollView.subviews[1] as? FamilyWrapperView)
     XCTAssertEqual(wrapperView, secondViewController.view.superview)
-    wrapperView = (familyViewController.scrollView.subviews[2] as? FamilyWrapperView)
+    wrapperView = (familyViewController.scrollView.subviews[0] as? FamilyWrapperView)
     XCTAssertEqual(wrapperView, thirdViewController.view.superview)
 
     XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1500)
