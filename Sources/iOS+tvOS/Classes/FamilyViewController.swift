@@ -375,7 +375,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     scrollView.isPerformingBatchUpdates = false
     scrollView.layoutViews(withDuration: duration, animation: animation) { completed in
       completion?(self, completed)
-      
     }
     return self
   }
