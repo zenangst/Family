@@ -20,7 +20,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     }
   }
 
-  internal var disableContentSizeObservers: Bool = false
   internal var backgrounds = [UIView: UIView]()
 
   public override var bounds: CGRect {
@@ -338,6 +337,31 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     return ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
   }
 
+  func adjustContentSize(for view: UIView, scrollView: UIScrollView, withAnimation animation: CAAnimation?) {
+    guard let entry = cache.entry(for: view) else { return }
+    let padding = self.padding(for: view)
+    let margins = self.margins(for: view)
+    entry.contentSize = scrollView.contentSize
+    entry.origin.y = entry.origin.y + padding.top
+    entry.maxY = round(entry.contentSize.height + entry.origin.y) + margins.bottom + padding.top + padding.bottom
+    var next = entry.nextAttributes
+    var height: CGFloat = contentSize.height
+
+    while next != nil {
+      if let previous = next?.previousAttributes {
+        next?.updateWithAbsolute(previous.maxY)
+      }
+
+      height = max(next?.maxY ?? 0, contentSize.height)
+      next = next?.nextAttributes
+    }
+
+    if contentSize.height != height {
+      contentSize.height = height
+    }
+    layoutViews()
+  }
+
   /// Sets up observers for the view that gets added into the view heirarcy.
   /// It checks for content size, content offset and bounds changes on the view.
   /// If any of the observered values change, then layout algorithm is invoked
@@ -361,13 +385,10 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
       if self?.compare(newValue, to: oldValue) == false {
         let contentOffset = strongSelf.contentOffset
-        strongSelf.invalidateLayout()
         let targetView = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         let animation = targetView.layer.allAnimationsWithKeys.first
 
-        if !strongSelf.disableContentSizeObservers {
-          strongSelf.layoutViews(animation: animation)
-        }
+        strongSelf.adjustContentSize(for: targetView, scrollView: scrollView, withAnimation: animation)
 
         if !strongSelf.isScrolling {
           strongSelf.setContentOffset(contentOffset, animated: false)
@@ -442,9 +463,11 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   public func addPadding(_ insets: Insets, for view: View) {
     guard insets != spaceManager.padding(for: view) else { return }
     spaceManager.addPadding(insets, for: view)
-    invalidateLayout()
-    guard !isPerformingBatchUpdates else { return }
-    layoutViews()
+    if let entry = cache.entry(for: view) {
+      adjustContentSize(for: view, scrollView: entry.scrollView, withAnimation: nil)
+    } else {
+      invalidateLayout()
+    }
   }
 
   public func margins(for view: View) -> Insets {
@@ -454,9 +477,11 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   public func addMargins(_ insets: Insets, for view: View) {
     guard insets != spaceManager.margins(for: view) else { return }
     spaceManager.addMargins(insets, for: view)
-    invalidateLayout()
-    guard !isPerformingBatchUpdates else { return }
-    layoutViews()
+    if let entry = cache.entry(for: view) {
+      adjustContentSize(for: view, scrollView: entry.scrollView, withAnimation: nil)
+    } else {
+      invalidateLayout()
+    }
   }
 
   func invalidateLayout() {
@@ -490,7 +515,8 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
                           completion: ((Bool) -> Void)? = nil) {
     guard !isDeallocating,
       !isPerformingBatchUpdates,
-      superview != nil else {
+      superview != nil,
+      !subviewsInLayoutOrder.isEmpty else {
       completion?(false)
       return
     }
