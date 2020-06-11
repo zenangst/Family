@@ -13,8 +13,9 @@ class FamilyCache: NSObject {
 
   func add(entry: FamilyViewControllerAttributes) {
     storage[entry.view] = entry
+    entry.previousAttributes = collection.last
     collection.append(entry)
-    collection.sort(by: { $0.frame.maxY < $1.frame.maxY })
+    entry.previousAttributes?.nextAttributes = entry
   }
 
   func entry(for view: View) -> FamilyViewControllerAttributes? {
