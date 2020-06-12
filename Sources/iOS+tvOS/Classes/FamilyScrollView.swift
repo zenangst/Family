@@ -352,7 +352,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       if let previous = next?.previousAttributes, let next = next {
         let margins = self.margins(for: previous.view)
         let padding = self.margins(for: next.view)
-        let newDelta = previous.maxY + padding.top
+        let newDelta = previous.maxY + margins.top
         next.updateWithAbsolute(newDelta)
         bottomMargins = margins.bottom
         bottomPadding = padding.bottom
