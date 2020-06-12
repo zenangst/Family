@@ -341,23 +341,27 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     guard let entry = cache.entry(for: view) else { return }
     let padding = self.padding(for: view)
     let margins = self.margins(for: view)
+
     entry.contentSize = scrollView.contentSize
-    entry.origin.y = entry.origin.y + padding.top
+    entry.origin.y = entry.origin.y + margins.top
     entry.maxY = round(entry.contentSize.height + entry.origin.y) + margins.bottom + padding.top + padding.bottom
     var next = entry.nextAttributes
-    var height: CGFloat = contentSize.height
 
     while next != nil {
       if let previous = next?.previousAttributes {
-        next?.updateWithAbsolute(previous.maxY)
+        let margins = self.margins(for: previous.view)
+        let newDelta = previous.maxY + margins.top
+        next?.updateWithAbsolute(newDelta)
       }
-
-      height = max(next?.maxY ?? 0, contentSize.height)
       next = next?.nextAttributes
     }
 
-    if contentSize.height != height {
-      contentSize.height = height
+    var computedContentSize: CGFloat = 0
+    for entry in cache.collection {
+      computedContentSize += round(entry.contentSize.height)
+    }
+    if contentSize.height != computedContentSize {
+      contentSize.height = max(computedContentSize, contentSize.height)
     }
     layoutViews()
   }
