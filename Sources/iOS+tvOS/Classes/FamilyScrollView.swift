@@ -339,7 +339,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
   func adjustContentSize(for view: UIView, scrollView: UIScrollView, withAnimation animation: CAAnimation?) {
     guard let entry = cache.entry(for: view) else { return }
-    let padding = self.padding(for: view)
     let margins = self.margins(for: view)
 
     entry.contentSize = scrollView.contentSize
@@ -367,7 +366,11 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     }
 
     if contentSize.height != computedContentSize {
-      contentSize.height = max(computedContentSize, minimumContentHeight)
+      var newValue = max(computedContentSize, minimumContentHeight)
+      if newValue > 0 {
+        newValue += contentInset.top + contentInset.bottom
+      }
+      contentSize.height = newValue
     }
 
     layoutViews()
