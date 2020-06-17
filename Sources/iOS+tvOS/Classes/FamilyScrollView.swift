@@ -22,6 +22,14 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
   internal var backgrounds = [UIView: UIView]()
 
+  public override var contentOffset: CGPoint {
+    didSet {
+      if isFastScrolling {
+        layoutViews()
+      }
+    }
+  }
+
   public override var bounds: CGRect {
     willSet {
       if newValue.width != bounds.width {
@@ -402,12 +410,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
         let targetView = (scrollView as? FamilyWrapperView)?.view ?? scrollView
         let animation = targetView.layer.allAnimationsWithKeys.first
 
-        if strongSelf.isFastScrolling {
-          strongSelf.invalidateLayout()
-          strongSelf.layoutViews()
-        } else {
-          strongSelf.adjustContentSize(for: targetView, scrollView: scrollView, withAnimation: animation)
-        }
+        strongSelf.adjustContentSize(for: targetView, scrollView: scrollView, withAnimation: animation)
 
         if !strongSelf.isScrolling {
           strongSelf.setContentOffset(contentOffset, animated: false)
@@ -482,11 +485,10 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   public func addPadding(_ insets: Insets, for view: View) {
     guard insets != spaceManager.padding(for: view) else { return }
     spaceManager.addPadding(insets, for: view)
-    if let entry = cache.entry(for: view), !isFastScrolling {
+    if let entry = cache.entry(for: view) {
       adjustContentSize(for: view, scrollView: entry.scrollView, withAnimation: nil)
     } else {
       invalidateLayout()
-      layoutViews()
     }
   }
 
@@ -497,11 +499,10 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   public func addMargins(_ insets: Insets, for view: View) {
     guard insets != spaceManager.margins(for: view) else { return }
     spaceManager.addMargins(insets, for: view)
-    if let entry = cache.entry(for: view), !isFastScrolling {
+    if let entry = cache.entry(for: view) {
       adjustContentSize(for: view, scrollView: entry.scrollView, withAnimation: nil)
     } else {
       invalidateLayout()
-      layoutViews()
     }
   }
 
