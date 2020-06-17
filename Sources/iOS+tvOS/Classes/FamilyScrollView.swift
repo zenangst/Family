@@ -341,22 +341,23 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
   func adjustContentSize(for view: UIView, scrollView: UIScrollView, withAnimation animation: CAAnimation?) {
     guard let entry = cache.entry(for: view) else { return }
-    let margins = self.margins(for: view)
-
+    let margins = self.margins(for: entry.view)
     entry.contentSize = scrollView.contentSize
     entry.origin.y = entry.origin.y + margins.top
     entry.maxY = round(entry.contentSize.height + entry.origin.y) + margins.bottom + padding.top + padding.bottom
     var next = entry.nextAttributes
+    var previousAttributes: FamilyViewControllerAttributes?
     var bottomMargins: CGFloat = 0
     var bottomPadding: CGFloat = 0
     while next != nil {
-      if let previous = next?.previousAttributes, let next = next {
+      if let previous = next?.previousAttributes {
         let margins = self.margins(for: previous.view)
-        let padding = self.margins(for: next.view)
-        let newDelta = previous.maxY + margins.top
-        next.updateWithAbsolute(newDelta)
-        bottomMargins = margins.bottom
-        bottomPadding = padding.bottom
+        if let next = next {
+          let newDelta = previous.maxY + margins.bottom
+          next.origin.y = newDelta
+          next.maxY = round(next.contentSize.height + next.origin.y) + margins.bottom + padding.top + padding.bottom
+        }
+        previousAttributes = previous
       }
       next = next?.nextAttributes
     }
@@ -729,9 +730,8 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
           frame.size.height = 0
         }
 
-        if let attributes = FamilyViewControllerAttributes(view: view,
-                                                           origin: CGPoint(x: frame.origin.x,
-                                                                           y: round(yOffsetOfCurrentSubview + padding.top)),
+        let origin = CGPoint(x: frame.origin.x, y: round(yOffsetOfCurrentSubview + padding.top))
+        if let attributes = FamilyViewControllerAttributes(view: view, origin: origin,
                                                            contentSize: scrollView.contentSize) {
           cache.add(entry: attributes)
         } else {
@@ -773,10 +773,11 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     let validAttributes = getValidAttributes(in: discardableRect)
     for attributes in validAttributes where attributes.view.isHidden == false  {
       let scrollView = attributes.scrollView
-      let padding = spaceManager.padding(for: attributes)
+      let padding = spaceManager.padding(for: attributes.view)
+      let margins = spaceManager.margins(for: attributes.view)
+
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
-
       var newHeight: CGFloat = fmin(self.frame.height, scrollView.contentSize.height)
 
       if parentContentOffset.y < attributes.frame.origin.y {

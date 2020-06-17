@@ -86,7 +86,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
     if isChildViewController {
       scrollView.frame = view.bounds
-      view.frame.size.height = scrollView.contentSize.height
     }
   }
 
