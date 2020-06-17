@@ -347,8 +347,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     entry.maxY = round(entry.contentSize.height + entry.origin.y) + margins.bottom + padding.top + padding.bottom
     var next = entry.nextAttributes
     var previousAttributes: FamilyViewControllerAttributes?
-    var bottomMargins: CGFloat = 0
-    var bottomPadding: CGFloat = 0
+    var computedHeight: CGFloat = 0
     while next != nil {
       if let previous = next?.previousAttributes {
         let margins = self.margins(for: previous.view)
@@ -363,13 +362,19 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     }
 
     let minimumContentHeight = bounds.height - (contentInset.top + contentInset.bottom)
-    var computedContentSize: CGFloat = bottomMargins + bottomPadding
-    for entry in cache.collection {
-      computedContentSize += round(entry.contentSize.height)
+    let count = cache.collection.count
+    for (offset, entry) in cache.collection.enumerated() {
+      computedHeight += round(entry.contentSize.height)
+
+      if offset == count - 1 {
+        let margins = self.margins(for: entry.view)
+        computedHeight += margins.bottom + self.margins.bottom
+      }
     }
 
-    if contentSize.height != computedContentSize {
-      var newValue = max(computedContentSize, minimumContentHeight)
+
+    if contentSize.height != computedHeight {
+      var newValue = max(computedHeight, minimumContentHeight)
       if newValue > 0 {
         newValue += contentInset.top + contentInset.bottom
       }
