@@ -101,6 +101,8 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   }
 
   deinit {
+    // http://stackoverflow.com/questions/3686803/uiscrollview-exc-bad-access-crash-in-ios-sdk
+    delegate = nil
     subviewsInLayoutOrder.removeAll()
     observers.removeAll()
     spaceManager.removeAll()
