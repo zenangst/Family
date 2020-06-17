@@ -1,7 +1,9 @@
 import UIKit
 
 public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
-  public var isFastScrolling: Bool = false
+  public var isFastScrolling: Bool = false {
+    didSet { layoutViews() }
+  }
 
   /// The amount of insets that should be inserted inbetween views.
   public var margins: Insets {
@@ -22,10 +24,18 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
   internal var backgrounds = [UIView: UIView]()
 
+  public var scrollingDestination: CGPoint = .zero
+
   public override var contentOffset: CGPoint {
-    didSet {
-      if isFastScrolling {
-        layoutViews()
+    willSet {
+      if !isChildViewController {
+        if self.contentOffset != newValue {
+          scrollingDestination = newValue
+          layoutViews()
+          /// Swift.print("🚸 - \(self.contentOffset)")
+          /// Swift.print("🚸 - \(newValue)")
+          /// Swift.print("🚸 –––––––––––––")
+        }
       }
     }
   }
@@ -44,7 +54,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   internal var validRect: CGRect {
     var rect = documentVisibleRect
     let offset = bounds.size.height * 2
-    rect.origin.y = max(self.contentOffset.y - (offset / 2), 0)
+    rect.origin.y = max(contentOffset.y - (offset / 2), 0)
     rect.size.height = bounds.size.height + offset
     return rect
   }
@@ -86,17 +96,19 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   internal lazy var spaceManager = FamilySpaceManager()
   internal var isPerformingBatchUpdates: Bool = false
   lazy var cache = FamilyCache()
-  var isScrolling: Bool { return isTracking || isDragging || isDecelerating }
+  public var isScrolling: Bool { return isTracking || isDragging || isDecelerating }
 
   /// The custom distance that the content view is inset from the safe area or scroll view edges.
   open override var contentInset: UIEdgeInsets {
     willSet {
+      #if os(iOS)
       if self.isTracking {
         let diff = newValue.top - self.contentInset.top
         var translation = self.panGestureRecognizer.translation(in: self)
         translation.y -= diff * 3.0 / 2.0
         self.panGestureRecognizer.setTranslation(translation, in: self)
       }
+      #endif
     }
   }
 
@@ -109,6 +121,8 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   }
 
   deinit {
+    // http://stackoverflow.com/questions/3686803/uiscrollview-exc-bad-access-crash-in-ios-sdk
+    delegate = nil
     subviewsInLayoutOrder.removeAll()
     observers.removeAll()
     spaceManager.removeAll()
