@@ -341,10 +341,16 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
   func adjustContentSize(for view: UIView, scrollView: UIScrollView, withAnimation animation: CAAnimation?) {
     guard let entry = cache.entry(for: view) else { return }
+    let validAttributes = getValidAttributes(in: discardableRect)
     let margins = self.margins(for: entry.view)
     entry.contentSize = scrollView.contentSize
     entry.origin.y = entry.origin.y + margins.top
     entry.maxY = round(entry.contentSize.height + entry.origin.y) + margins.bottom + padding.top + padding.bottom
+
+    if entry.scrollView.frame.origin.y != entry.origin.y, !validAttributes.contains(entry) {
+      entry.scrollView.frame.origin.y = entry.frame.origin.y
+    }
+
     var next = entry.nextAttributes
     var previousAttributes: FamilyViewControllerAttributes?
     var computedHeight: CGFloat = 0
@@ -355,6 +361,10 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
           let newDelta = previous.maxY + margins.bottom
           next.origin.y = newDelta
           next.maxY = round(next.contentSize.height + next.origin.y) + margins.bottom + padding.top + padding.bottom
+
+          if next.scrollView.frame.origin.y != next.origin.y, !validAttributes.contains(next) {
+            next.scrollView.frame.origin.y = next.frame.origin.y
+          }
         }
         previousAttributes = previous
       }
@@ -371,7 +381,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
         computedHeight += margins.bottom + self.margins.bottom
       }
     }
-
 
     if contentSize.height != computedHeight {
       var newValue = max(computedHeight, minimumContentHeight)
