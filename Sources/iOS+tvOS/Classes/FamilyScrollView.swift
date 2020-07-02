@@ -184,7 +184,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     let subview = wrapViewIfNeeded(view)
     guard let scrollView = subview as? UIScrollView else { return }
 
-    if let previousIndex = subviewsInLayoutOrder.index(of: scrollView) {
+    if let previousIndex = subviewsInLayoutOrder.firstIndex(of: scrollView) {
       subviewsInLayoutOrder.remove(at: previousIndex)
     }
 
@@ -207,7 +207,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     let subview = wrapViewIfNeeded(view)
     guard let scrollView = subview as? UIScrollView else { return }
 
-    if let previousIndex = subviewsInLayoutOrder.index(of: scrollView) {
+    if let previousIndex = subviewsInLayoutOrder.firstIndex(of: scrollView) {
       subviewsInLayoutOrder.remove(at: previousIndex)
     }
 
@@ -352,7 +352,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     }
 
     var next = entry.nextAttributes
-    var previousAttributes: FamilyViewControllerAttributes?
     var computedHeight: CGFloat = 0
     while next != nil {
       if let previous = next?.previousAttributes {
@@ -366,7 +365,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
             next.scrollView.frame.origin.y = next.frame.origin.y
           }
         }
-        previousAttributes = previous
       }
       next = next?.nextAttributes
     }
@@ -788,7 +786,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     for attributes in validAttributes where attributes.view.isHidden == false  {
       let scrollView = attributes.scrollView
       let padding = spaceManager.padding(for: attributes.view)
-      let margins = spaceManager.margins(for: attributes.view)
 
       var frame = scrollView.frame
       var contentOffset = scrollView.contentOffset
