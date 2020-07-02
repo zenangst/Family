@@ -41,11 +41,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
   deinit {
     scrollView.isDeallocating = true
-    children.forEach {
-      $0.willMove(toParent: nil)
-      $0.removeFromParent()
-      $0.view.removeFromSuperview()
-    }
+    children.forEach(_removeChild(_:))
     purgeRemovedViews()
   }
 
@@ -208,7 +204,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
                                             height: CGFloat? = nil,
                                             view handler: ((T) -> UIView)? = nil) -> Self {
     if childController.parent != nil {
-      childController.removeFromParent()
+      _removeChild(childController)
     }
     purgeRemovedViews()
     childController.willMove(toParent: self)
@@ -249,7 +245,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   public func addChildren(_ childControllers: [UIViewController]) -> Self {
     performBatchUpdates({ _ in
       for childController in childControllers {
-        _ = addChild(childController)
+        addChild(childController)
       }
     })
     return self
@@ -421,6 +417,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   @discardableResult
   public func purgeRemovedViews() -> Self {
     for (controller, container) in registry where controller.parent == nil {
+      _removeChild(controller)
       if container.view.superview is FamilyWrapperView {
         container.view.superview?.removeFromSuperview()
       }
@@ -525,5 +522,12 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       self?.purgeRemovedViews()
     }
     return observer
+  }
+
+  private func _removeChild(_ viewController: UIViewController) {
+    viewController.willMove(toParent: nil)
+    viewController.removeFromParent()
+    viewController.view.removeFromSuperview()
+    viewController.didMove(toParent: nil)
   }
 }
