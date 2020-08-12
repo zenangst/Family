@@ -1,4 +1,5 @@
 import UIKit
+import Family_Shared
 
 /// This class is a `UIViewController` that adds some convenience methods
 /// when using child view controllers to render your UI. The convenience methods

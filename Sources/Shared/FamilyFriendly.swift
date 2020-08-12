@@ -1,7 +1,7 @@
 import CoreGraphics
 import Foundation
 
-protocol FamilyFriendly: class {
+public protocol FamilyFriendly: class {
   func addChild(_ childController: ViewController)
   func addChild<T: ViewController>(_ childController: T,
                                    at index: Int?,

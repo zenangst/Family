@@ -1,6 +1,6 @@
 import Cocoa
 
-class FamilyWrapperView: NSScrollView {
+class FamilyWrapperView: NSScrollView, ViewWrapper {
   override var isFlipped: Bool { return true }
   weak var parentDocumentView: FamilyDocumentView?
   var isScrolling: Bool = false

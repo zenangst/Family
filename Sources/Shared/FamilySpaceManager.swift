@@ -1,13 +1,20 @@
 import CoreGraphics
 
-class FamilySpaceManager {
+/// Describes a view that wrappes an other
+public protocol ViewWrapper {
+    var view: View { get }
+}
+
+public class FamilySpaceManager {
   /// A dictionary of the views and what margins they should use.
   private var margins = [View: Insets]()
   /// A dictionary of the views and what padding they should use.
   private var padding = [View: Insets]()
   /// The insets used between views.
-  var defaultMargins: Insets = .init(top: 0, left: 0, bottom: 0, right: 0)
-  var defaultPadding: Insets = .init(top: 0, left: 0, bottom: 0, right: 0)
+  public var defaultMargins: Insets = .init(top: 0, left: 0, bottom: 0, right: 0)
+  public var defaultPadding: Insets = .init(top: 0, left: 0, bottom: 0, right: 0)
+
+  public init() {}
 
   /// Get margins for the view, if the view does not have custom insets
   /// then the general spacing will be returned.
@@ -15,8 +22,8 @@ class FamilySpaceManager {
   /// - Parameter view: The view that should be used to resolve the value.
   /// - Returns: The amount of insets that should appear after the view, either
   ///            custom insets or the general insets.
-  func margins(for view: View) -> Insets {
-    let targetView = (view as? FamilyWrapperView)?.view ?? view
+  public func margins(for view: View) -> Insets {
+    let targetView = (view as? ViewWrapper)?.view ?? view
     return margins[targetView] ?? defaultMargins
   }
 
@@ -36,8 +43,8 @@ class FamilySpaceManager {
   /// - Parameter view: The view that should be used to resolve the value.
   /// - Returns: The amount of insets that should appear after the view, either
   ///            custom insets or the general insets.
-  func padding(for view: View) -> Insets {
-    let targetView = (view as? FamilyWrapperView)?.view ?? view
+  public func padding(for view: View) -> Insets {
+    let targetView = (view as? ViewWrapper)?.view ?? view
     return padding[targetView] ?? defaultPadding
   }
 
@@ -56,7 +63,7 @@ class FamilySpaceManager {
   /// - Parameters:
   ///   - insets: The insets that should be added after the view.
   ///   - view: The view that should get custom insets for the view.
-  func addMargins(_ insets: Insets, for view: View) {
+  public func addMargins(_ insets: Insets, for view: View) {
     margins[view] = insets
   }
 
@@ -65,27 +72,27 @@ class FamilySpaceManager {
   /// - Parameters:
   ///   - insets: The insets that should be added after the view.
   ///   - view: The view that should get custom insets for the view.
-  func addPadding(_ insets: Insets, for view: View) {
+  public func addPadding(_ insets: Insets, for view: View) {
     padding[view] = insets
   }
 
   /// Remove view from registry.
   ///
   /// - Parameter view: The view that should be removed from the registry.
-  func removeView(_ view: View) {
+  public func removeView(_ view: View) {
     margins.removeValue(forKey: view)
     padding.removeValue(forKey: view)
   }
 
   /// Remove all views, both from the heirarcy and the registry.
-  func removeAll() {
+  public func removeAll() {
     margins.forEach { $0.key.removeFromSuperview() }
     margins.removeAll()
     padding.forEach { $0.key.removeFromSuperview() }
     padding.removeAll()
   }
 
-  func removeViewsWithoutSuperview() {
+  public func removeViewsWithoutSuperview() {
     for (view, _) in margins where view.superview == nil {
       removeView(view)
     }

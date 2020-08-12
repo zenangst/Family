@@ -1,4 +1,5 @@
 import UIKit
+import Family_Shared
 
 public extension UIViewController {
   /// A shorthand computed value to resolve the parent `FamilyViewController`.

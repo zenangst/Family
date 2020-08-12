@@ -1,4 +1,5 @@
 import UIKit
+import Family_Shared
 
 public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   public static var signpostsEnabled: Bool = false

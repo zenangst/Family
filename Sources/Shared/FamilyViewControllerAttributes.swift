@@ -12,7 +12,7 @@ public class FamilyViewControllerAttributes: NSObject {
   }
   public let scrollView: ScrollView
 
-  init?(view: View, origin: CGPoint, contentSize: CGSize, nextAttributes: FamilyViewControllerAttributes? = nil) {
+  public init?(view: View, origin: CGPoint, contentSize: CGSize, nextAttributes: FamilyViewControllerAttributes? = nil) {
     self.view = view
     self.origin = origin
     self.contentSize = contentSize

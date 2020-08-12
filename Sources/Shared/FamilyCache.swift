@@ -1,28 +1,28 @@
 import CoreGraphics
 
-class FamilyCache: NSObject {
-  enum State {
+public class FamilyCache: NSObject {
+  public enum State {
     case empty, isRunning, isFinished
   }
 
-  var state: State = .empty
-  var contentSize: CGSize = .zero
+  public var state: State = .empty
+  public var contentSize: CGSize = .zero
   var storage = [View: FamilyViewControllerAttributes]()
-  var collection = [FamilyViewControllerAttributes]()
-  override init() {}
+  public var collection = [FamilyViewControllerAttributes]()
+  public override init() {}
 
-  func add(entry: FamilyViewControllerAttributes) {
+  public func add(entry: FamilyViewControllerAttributes) {
     storage[entry.view] = entry
     entry.previousAttributes = collection.last
     collection.append(entry)
     entry.previousAttributes?.nextAttributes = entry
   }
 
-  func entry(for view: View) -> FamilyViewControllerAttributes? {
+  public func entry(for view: View) -> FamilyViewControllerAttributes? {
     return storage[view]
   }
 
-  func invalidate() {
+  public func invalidate() {
     storage.removeAll()
     collection.removeAll()
     state = .empty
