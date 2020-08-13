@@ -325,7 +325,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
         scrollView.isScrollEnabled = false
       }
 
-      if #available(iOS 13.0,*) {
+      if #available(tvOS 13.0, iOS 13.0,*) {
         if let compositionalLayout = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewCompositionalLayout) {
           scrollView.isScrollEnabled = compositionalLayout.configuration.scrollDirection == .horizontal
         }
