@@ -128,6 +128,7 @@ class FamilyViewControllerTests: XCTestCase {
   func testViewControllerIsVisibleMethods() {
     let familyViewController = FamilyViewController()
     familyViewController.view.frame.size = CGSize(width: 375, height: 667)
+    familyViewController.scrollView.frame.size = familyViewController.view.frame.size
     familyViewController.prepareViewController()
 
     let controller1 = UIViewController()
