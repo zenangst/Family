@@ -321,6 +321,8 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     if let collectionView = scrollView as? UICollectionView {
       if (collectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal {
         scrollView.isScrollEnabled = true
+      } else {
+        scrollView.isScrollEnabled = false
       }
 
       if #available(iOS 13.0,*) {
@@ -343,7 +345,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// - Parameter scrollView: The target scroll view.
   /// - Returns: `true` if the scroll view as scroll direction set to horizontal.
   private func scrollViewIsHorizontal(_ scrollView: UIScrollView) -> Bool {
-    var result = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
+    let result = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewFlowLayout)?.scrollDirection == .horizontal
 
     if #available(tvOS 13.0, iOS 13.0,*) {
       if let compositionalLayout = ((scrollView as? UICollectionView)?.collectionViewLayout as? UICollectionViewCompositionalLayout) {
