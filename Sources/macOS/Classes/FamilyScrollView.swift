@@ -107,7 +107,7 @@ public class FamilyScrollView: NSScrollView {
     defer {
       // Clean up invalid views.
       if !isScrolling {
-        for (offset, scrollView) in subviewsInLayoutOrder.enumerated() where scrollView.frame.size.height != 0 && !scrollView.frame.intersects(discardableRect) {
+        for scrollView in subviewsInLayoutOrder where scrollView.frame.size.height != 0 && !scrollView.frame.intersects(discardableRect) {
           scrollView.frame.size.height = 0
         }
       }
