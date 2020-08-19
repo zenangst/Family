@@ -1,5 +1,5 @@
 import XCTest
-@testable import Family
+@testable import Family_Mobile
 
 class FamilyScrollViewTests: XCTestCase {
   static let mockFrame = CGRect(origin: .zero, size: CGSize(width: 500, height: 1000))

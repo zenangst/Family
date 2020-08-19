@@ -1,5 +1,5 @@
 import XCTest
-@testable import Family
+@testable import Family_Mobile
 
 class FamilyContentViewTests: XCTestCase {
   var scrollView: FamilyScrollView!

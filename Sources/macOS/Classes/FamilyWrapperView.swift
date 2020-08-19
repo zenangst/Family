@@ -1,4 +1,5 @@
 import Cocoa
+import Family_Shared
 
 class FamilyWrapperView: NSScrollView, ViewWrapper {
   override var isFlipped: Bool { return true }

@@ -1,4 +1,5 @@
 import Cocoa
+import Family_Shared
 
 open class FamilyViewController: NSViewController, FamilyFriendly {
   public lazy var baseView = NSView()
@@ -386,7 +387,7 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
 
   /// Remove stray views from view hierarchy.
   @discardableResult
-  func purgeRemovedViews() -> Self {
+  public func purgeRemovedViews() -> Self {
     for (controller, view) in registry where controller.parent == nil {
       view.enclosingScrollView?.removeFromSuperview()
       registry.removeValue(forKey: controller)

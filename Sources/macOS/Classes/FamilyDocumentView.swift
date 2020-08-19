@@ -1,4 +1,5 @@
 import Cocoa
+import Family_Shared
 
 public class FamilyDocumentView: NSView {
   public override var isFlipped: Bool { return true }

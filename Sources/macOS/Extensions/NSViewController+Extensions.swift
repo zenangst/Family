@@ -3,6 +3,7 @@ import Cocoa
 #else
 import UIKit
 #endif
+import Family_Shared
 
 public extension ViewController {
   /// A shorthand computed value to resolve the parent `FamilyViewController`.

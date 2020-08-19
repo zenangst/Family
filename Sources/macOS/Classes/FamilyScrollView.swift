@@ -1,4 +1,5 @@
 import Cocoa
+import Family_Shared
 
 public protocol FamilyScrollViewDelegate: class {
   func familyScrollView(_ scrollView: FamilyScrollView, didScrollToPoint point: CGPoint, isScrolling: Bool)

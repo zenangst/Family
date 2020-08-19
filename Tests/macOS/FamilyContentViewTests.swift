@@ -1,5 +1,5 @@
 import XCTest
-@testable import Family
+@testable import Family_macOS
 
 class FamilyContentViewTests: XCTestCase {
   class FamilyScrollViewMock: FamilyScrollView {

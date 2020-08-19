@@ -1,5 +1,7 @@
 import XCTest
-@testable import Family
+
+@testable import Family_Mobile
+@testable import Family_Shared
 
 class FamilyViewControllerSharedTests: XCTestCase {
   func testMarginsAndPadding() {
