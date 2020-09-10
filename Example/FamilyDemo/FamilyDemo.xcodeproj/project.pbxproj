@@ -3,13 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9B3B6A2C9F23EE43005B57CA /* Pods_FamilyDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C86CBFC710F745C235E46A7 /* Pods_FamilyDemo.framework */; };
 		BD4515BA22FDA3EB00731DF6 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4515B922FDA3EB00731DF6 /* CollectionViewController.swift */; };
 		BD4515BC22FDA41900731DF6 /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4515BB22FDA41900731DF6 /* Cell.swift */; };
+		C607FBC9250A96C80003210D /* Family-Mobile in Frameworks */ = {isa = PBXBuildFile; productRef = C607FBC8250A96C80003210D /* Family-Mobile */; };
 		D5C7F74E1C3BC9CE008CDDBA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D5C7F74C1C3BC9CE008CDDBA /* LaunchScreen.storyboard */; };
 		D5C7F75B1C3BCA1E008CDDBA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5C7F7571C3BCA1E008CDDBA /* Assets.xcassets */; };
 		D5C7F75C1C3BCA1E008CDDBA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C7F7591C3BCA1E008CDDBA /* AppDelegate.swift */; };
@@ -17,11 +17,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0C86CBFC710F745C235E46A7 /* Pods_FamilyDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FamilyDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		20205134A50AAF695BC87348 /* Pods-FamilyDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyDemo/Pods-FamilyDemo.release.xcconfig"; sourceTree = "<group>"; };
 		BD4515B922FDA3EB00731DF6 /* CollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		BD4515BB22FDA41900731DF6 /* Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
-		D1AFDB456D23A46ADFEA057E /* Pods-FamilyDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FamilyDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FamilyDemo/Pods-FamilyDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		C607FBC2250A96910003210D /* Family */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Family; path = ../..; sourceTree = "<group>"; };
 		D5C7F7401C3BC9CE008CDDBA /* FamilyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FamilyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C7F74D1C3BC9CE008CDDBA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D5C7F74F1C3BC9CE008CDDBA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -35,37 +33,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B3B6A2C9F23EE43005B57CA /* Pods_FamilyDemo.framework in Frameworks */,
+				C607FBC9250A96C80003210D /* Family-Mobile in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0F6746668A62AF040D5444DC /* Frameworks */ = {
+		C607FBC7250A96C80003210D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0C86CBFC710F745C235E46A7 /* Pods_FamilyDemo.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		CABCF03D143F71E4147F34C0 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				D1AFDB456D23A46ADFEA057E /* Pods-FamilyDemo.debug.xcconfig */,
-				20205134A50AAF695BC87348 /* Pods-FamilyDemo.release.xcconfig */,
-			);
-			name = Pods;
 			sourceTree = "<group>";
 		};
 		D5C7F7371C3BC9CE008CDDBA = {
 			isa = PBXGroup;
 			children = (
+				C607FBC2250A96910003210D /* Family */,
 				D5C7F7421C3BC9CE008CDDBA /* FamilyDemo */,
 				D5C7F7411C3BC9CE008CDDBA /* Products */,
-				CABCF03D143F71E4147F34C0 /* Pods */,
-				0F6746668A62AF040D5444DC /* Frameworks */,
+				C607FBC7250A96C80003210D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -122,17 +110,19 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D5C7F7521C3BC9CE008CDDBA /* Build configuration list for PBXNativeTarget "FamilyDemo" */;
 			buildPhases = (
-				DD9EC8FE4BB09ADD0F110FB8 /* [CP] Check Pods Manifest.lock */,
 				D5C7F73C1C3BC9CE008CDDBA /* Sources */,
 				D5C7F73D1C3BC9CE008CDDBA /* Frameworks */,
 				D5C7F73E1C3BC9CE008CDDBA /* Resources */,
-				C8D573C8F1F8DDAB63B3F691 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C607FBC4250A96C10003210D /* PBXTargetDependency */,
 			);
 			name = FamilyDemo;
+			packageProductDependencies = (
+				C607FBC8250A96C80003210D /* Family-Mobile */,
+			);
 			productName = FamilyDemo;
 			productReference = D5C7F7401C3BC9CE008CDDBA /* FamilyDemo.app */;
 			productType = "com.apple.product-type.application";
@@ -184,45 +174,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		C8D573C8F1F8DDAB63B3F691 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FamilyDemo/Pods-FamilyDemo-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Family/Family.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Family.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FamilyDemo/Pods-FamilyDemo-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		DD9EC8FE4BB09ADD0F110FB8 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FamilyDemo-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		D5C7F73C1C3BC9CE008CDDBA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -236,6 +187,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C607FBC4250A96C10003210D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = C607FBC3250A96C10003210D /* Family-Mobile */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		D5C7F74C1C3BC9CE008CDDBA /* LaunchScreen.storyboard */ = {
@@ -343,7 +301,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -351,12 +310,14 @@
 		};
 		D5C7F7531C3BC9CE008CDDBA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D1AFDB456D23A46ADFEA057E /* Pods-FamilyDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = FamilyDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.zenangst.FamilyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -365,12 +326,14 @@
 		};
 		D5C7F7541C3BC9CE008CDDBA /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 20205134A50AAF695BC87348 /* Pods-FamilyDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = FamilyDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.zenangst.FamilyDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -399,6 +362,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C607FBC3250A96C10003210D /* Family-Mobile */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "Family-Mobile";
+		};
+		C607FBC8250A96C80003210D /* Family-Mobile */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = "Family-Mobile";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D5C7F7381C3BC9CE008CDDBA /* Project object */;
 }

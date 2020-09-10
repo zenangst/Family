@@ -1,5 +1,5 @@
 import UIKit
-import Family
+import Family_Mobile
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

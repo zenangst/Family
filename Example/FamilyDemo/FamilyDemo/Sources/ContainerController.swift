@@ -1,5 +1,5 @@
 import UIKit
-import Family
+import Family_Mobile
 
 class ContainerController: FamilyViewController {
 
@@ -29,7 +29,7 @@ class ContainerController: FamilyViewController {
         add(viewController)
         title = "Loaded \(x)"
       }
-    }) { (_) in
+    }) { (_, _) in
       self.title = "All done!"
     }
   }
