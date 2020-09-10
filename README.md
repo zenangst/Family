@@ -36,6 +36,10 @@ If you are interested in the origin story behind Family, then you can read this 
 - [x] 💻macOS support.
 - [x] 📺tvOS support.
 
+## Supporting the project
+
+If you want to support the development of this framework, you can do so by becoming a [sponsor](https://github.com/sponsors/zenangst). ❤️
+
 ## Usage
 
 The new public API:
