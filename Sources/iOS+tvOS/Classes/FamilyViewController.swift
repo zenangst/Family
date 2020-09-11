@@ -503,6 +503,13 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     switch childController {
     case let collectionViewController as UICollectionViewController:
       if let collectionView = collectionViewController.collectionView {
+        collectionViewController.collectionView.isUserInteractionEnabled = false
+        // Because `UICollectionViewController`'s view is an internal class
+        // (`UICollectionViewControllerWrapperView`), we need to cherry-pick
+        // by adding the collection view as the view that goes into `FamilyScrollView`
+        // and prepend the view controllers view (the internal class) to the bottom
+        // of the hierarchy so that it doesn't cover up the `FamilyScrollView`.
+        self.view.insertSubview(collectionViewController.view, at: 0)
         view = collectionView
       } else {
         assertionFailure("Unable to resolve collection view from controller.")
