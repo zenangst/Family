@@ -511,7 +511,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     switch childController {
     case let collectionViewController as UICollectionViewController:
       if let collectionView = collectionViewController.collectionView {
-        collectionViewController.collectionView.isUserInteractionEnabled = false
         // Because `UICollectionViewController`'s view is an internal class
         // (`UICollectionViewControllerWrapperView`), we need to cherry-pick
         // by adding the collection view as the view that goes into `FamilyScrollView`
