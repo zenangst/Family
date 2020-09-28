@@ -435,6 +435,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       registry.removeValue(forKey: controller)
     }
 
+    scrollView.purgeWrapperViews()
+
     return self
   }
 
