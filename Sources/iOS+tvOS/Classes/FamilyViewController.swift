@@ -22,9 +22,17 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       scrollView.isScrollEnabled = !isChildViewController
     }
   }
-  public var safeAreaLayoutConstraints: Bool = true {
+
+  /// Constrain the top to the safe area. `true` by default.
+  public var topSafeAreaLayoutConstraints: Bool = true {
     didSet { configureConstraints() }
   }
+
+  /// Constrain the bottom to the safe area. `true` by default
+  public var bottomSafeAreaLayoutConstraints: Bool = true {
+    didSet { configureConstraints() }
+  }
+
 
   public convenience init(isChildViewController: Bool) {
     self.init(nibName: nil, bundle: nil)
@@ -438,11 +446,11 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     NSLayoutConstraint.deactivate(constraints)
     constraints.removeAll()
     if #available(iOS 11.0, tvOS 11.0, *) {
-      let topAnchor = safeAreaLayoutConstraints
+      let topAnchor = topSafeAreaLayoutConstraints
         ? view.safeAreaLayoutGuide.topAnchor
         : view.topAnchor
 
-      let bottomAnchor = safeAreaLayoutConstraints
+      let bottomAnchor = bottomSafeAreaLayoutConstraints
         ? view.safeAreaLayoutGuide.bottomAnchor
         : view.bottomAnchor
 
