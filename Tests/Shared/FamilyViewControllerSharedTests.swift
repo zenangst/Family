@@ -20,8 +20,6 @@ class FamilyViewControllerSharedTests: XCTestCase {
     #if os(macOS)
     let window = NSWindow(contentViewController: container)
     container.scrollView.layoutViews(withDuration: nil, force: true, completion: nil)
-    window.setFrame(CGRect(origin: .zero, size: CGSize(width: 500, height: 1028)),
-                    display: true)
     window.makeKeyAndOrderFront(nil)
     #else
     container.loadViewIfNeeded()
@@ -41,9 +39,6 @@ class FamilyViewControllerSharedTests: XCTestCase {
     XCTAssertEqual(padding.left, insets.left)
     XCTAssertEqual(padding.right, insets.right)
     XCTAssertEqual(padding.bottom, insets.bottom)
-
-    XCTAssertEqual(container.scrollView.bounds, CGRect(origin: .zero, size: CGSize(width: 500, height: 1000)))
-
 
     #if os(macOS)
     XCTAssertEqual(childViewController.view.frame, CGRect(origin: .init(x: 10, y: 10),
