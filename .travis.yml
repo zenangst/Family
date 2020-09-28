@@ -7,7 +7,7 @@ script:
   - bash <(curl -s https://codecov.io/bash) -c -F macOS
   - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-tvOS" -destination 'name=Apple TV,OS=13.4' -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F tvOS
-  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-iOS" -sdk iphonesimulator -destination name="iPhone 8,OS=13.4" -enableCodeCoverage YES clean build test | xcpretty
+  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-iOS" -sdk iphonesimulator -destination name="iPhone 8,OS=13.5" -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F iOS
 
 notifications:
