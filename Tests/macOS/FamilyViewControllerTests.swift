@@ -99,6 +99,14 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(viewController.view.frame.size.height, 200)
   }
 
+  func testRemovingChildViewController() {
+    let viewController = MockViewController()
+    familyViewController.addChild(viewController)
+    viewController.removeFromParent()
+
+    XCTAssertTrue(familyViewController.children.isEmpty)
+  }
+
   func testViewControllersInLayoutOrder() {
     let familyViewController = FamilyViewController()
     let controller1 = MockViewController()

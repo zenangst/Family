@@ -95,6 +95,14 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertEqual(viewController.view.frame.size.height, 200)
   }
 
+  func testRemovingChildViewController() {
+    let viewController = UIViewController()
+    familyViewController.addChild(viewController)
+    viewController.removeFromParent()
+
+    XCTAssertTrue(familyViewController.children.isEmpty)
+  }
+
   func testFamilyControllerWithTabBar() {
     let tabBarController = UITabBarController()
     tabBarController.setViewControllers([familyViewController], animated: false)

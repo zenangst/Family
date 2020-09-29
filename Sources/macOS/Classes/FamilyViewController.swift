@@ -391,6 +391,9 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
       view.enclosingScrollView?.removeFromSuperview()
       registry.removeValue(forKey: controller)
     }
+
+    scrollView.purgeWrapperViews()
+
     return self
   }
 
