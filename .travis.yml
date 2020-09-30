@@ -1,13 +1,14 @@
 os: osx
+i
 osx_image: xcode12
 language: swift
 
 script:
   - set -o pipefail && xcodebuild -project Example/FamilyDemo/FamilyDemo.xcodeproj -scheme "Family-macOS" -sdk macosx -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F macOS
-  - set -o pipefail && xcodebuild -project Example/FamilyDemo/FamilyDemo.xcodeproj -scheme "Family-Mobile" -destination 'platform=tvOS Simulator,name=Apple TV,OS=13.4' -enableCodeCoverage YES clean build test | xcpretty
+  - set -o pipefail && xcodebuild -project Example/FamilyDemo/FamilyDemo.xcodeproj -scheme "Family-Mobile" -destination 'platform=tvOS Simulator,name=Apple TV,OS=14.0' -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F tvOS
-  - set -o pipefail && xcodebuild -project Example/FamilyDemo/FamilyDemo.xcodeproj -scheme "Family-Mobile" -sdk iphonesimulator -destination name="iPhone 8,OS=13.5" -enableCodeCoverage YES clean build test | xcpretty
+  - set -o pipefail && xcodebuild -project Example/FamilyDemo/FamilyDemo.xcodeproj -scheme "Family-Mobile" -sdk iphonesimulator -destination name="iPhone 8,OS=14.0" -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F iOS
 
 notifications:
