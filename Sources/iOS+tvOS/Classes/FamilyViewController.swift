@@ -516,9 +516,12 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
         // Because `UICollectionViewController`'s view is an internal class
         // (`UICollectionViewControllerWrapperView`), we need to cherry-pick
         // by adding the collection view as the view that goes into `FamilyScrollView`
-        // and prepend the view controllers view (the internal class) to the bottom
-        // of the hierarchy so that it doesn't cover up the `FamilyScrollView`.
-        self.view.insertSubview(collectionViewController.view, at: 0)
+        // and append the view controllers view (the internal class) to the view controller
+        // hierarchy, set the background color to `.clear` and disable all user interactions
+        // so that it doesn't cover up the `FamilyScrollView`.
+        collectionViewController.view.backgroundColor = .clear
+        collectionViewController.view.isUserInteractionEnabled = false
+        self.view.addSubview(collectionViewController.view)
         view = collectionView
       } else {
         assertionFailure("Unable to resolve collection view from controller.")
