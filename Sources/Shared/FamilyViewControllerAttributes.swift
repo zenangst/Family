@@ -5,8 +5,8 @@ public class FamilyViewControllerAttributes: NSObject {
   public var origin: CGPoint
   public var contentSize: CGSize
   public var maxY: CGFloat
-  public var nextAttributes: FamilyViewControllerAttributes?
-  public var previousAttributes: FamilyViewControllerAttributes?
+  public weak var nextAttributes: FamilyViewControllerAttributes?
+  public weak var previousAttributes: FamilyViewControllerAttributes?
   public var frame: CGRect {
     return CGRect(origin: origin, size: contentSize)
   }
