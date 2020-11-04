@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name             = "Family"
   s.summary          = "A child view controller framework that makes setting up your parent controllers as easy as pie."
-  s.version          = "2.0.1"
+  s.version          = "2.1.0"
   s.homepage         = "https://github.com/zenangst/Family"
   s.license          = 'MIT'
   s.author           = { "Christoffer Winterkvist" => "christoffer@winterkvist.com" }
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
 
   s.swift_version = '5.0'
   s.ios.deployment_target = '8.0'
-  s.osx.deployment_target = '10.11'
+  s.osx.deployment_target = '10.12'
   s.tvos.deployment_target = '9.2'
 
   s.requires_arc = true

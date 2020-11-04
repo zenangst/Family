@@ -57,6 +57,9 @@
 		BDAC587021B9916E00412766 /* FamilyViewControllerAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD02F56821B43E7F006ECE48 /* FamilyViewControllerAttributes.swift */; };
 		BDAC587121B9916E00412766 /* FamilyViewControllerAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD02F56821B43E7F006ECE48 /* FamilyViewControllerAttributes.swift */; };
 		BDAC588921BA63B800412766 /* FamilyScrollViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAC588821BA63B800412766 /* FamilyScrollViewTests.swift */; };
+		BDB3978425531A7E00709EA7 /* OSSignpostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB3978325531A7E00709EA7 /* OSSignpostController.swift */; };
+		BDB3978525531A7E00709EA7 /* OSSignpostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB3978325531A7E00709EA7 /* OSSignpostController.swift */; };
+		BDB3978625531A7E00709EA7 /* OSSignpostController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB3978325531A7E00709EA7 /* OSSignpostController.swift */; };
 		BDD272AD233148F9009175FD /* FamilyDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD272AC233148F9009175FD /* FamilyDocumentView.swift */; };
 		BDEE36352043394E00120E35 /* FamilyWrapperViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEE36342043394E00120E35 /* FamilyWrapperViewTests.swift */; };
 		BDEE3637204369F200120E35 /* FamilyContentViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEE3636204369F200120E35 /* FamilyContentViewTests.swift */; };
@@ -124,6 +127,7 @@
 		BDAA8EED22D271C800ECF0B1 /* NSViewController+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSViewController+Extensions.swift"; sourceTree = "<group>"; };
 		BDAA8EEF22D27DA900ECF0B1 /* FamilyViewControllerSharedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyViewControllerSharedTests.swift; sourceTree = "<group>"; };
 		BDAC588821BA63B800412766 /* FamilyScrollViewTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyScrollViewTests.swift; sourceTree = "<group>"; };
+		BDB3978325531A7E00709EA7 /* OSSignpostController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OSSignpostController.swift; sourceTree = "<group>"; };
 		BDD272AC233148F9009175FD /* FamilyDocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FamilyDocumentView.swift; sourceTree = "<group>"; };
 		BDEE36342043394E00120E35 /* FamilyWrapperViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyWrapperViewTests.swift; sourceTree = "<group>"; };
 		BDEE3636204369F200120E35 /* FamilyContentViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyContentViewTests.swift; sourceTree = "<group>"; };
@@ -199,13 +203,14 @@
 		BD2236DD2034A81500C465E4 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				BD02F56621B43E5E006ECE48 /* FamilyCache.swift */,
-				BD02F56821B43E7F006ECE48 /* FamilyViewControllerAttributes.swift */,
-				BD7629B920349C2500C917BB /* TypeAlias.swift */,
-				BD7629BD20349CA300C917BB /* FamilyFriendly.swift */,
-				BD535E152079269200AA2EC4 /* FamilySpaceManager.swift */,
 				BDAA8EE922D270ED00ECF0B1 /* BackgroundKind.swift */,
 				BD4515BD22FDAC4500731DF6 /* BinarySearch.swift */,
+				BD02F56621B43E5E006ECE48 /* FamilyCache.swift */,
+				BD7629BD20349CA300C917BB /* FamilyFriendly.swift */,
+				BD535E152079269200AA2EC4 /* FamilySpaceManager.swift */,
+				BD02F56821B43E7F006ECE48 /* FamilyViewControllerAttributes.swift */,
+				BDB3978325531A7E00709EA7 /* OSSignpostController.swift */,
+				BD7629B920349C2500C917BB /* TypeAlias.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -630,6 +635,7 @@
 			files = (
 				BD7629BC20349C2C00C917BB /* TypeAlias.swift in Sources */,
 				BD5A80412030A9D9006A5EBB /* FamilyWrapperView.swift in Sources */,
+				BDB3978625531A7E00709EA7 /* OSSignpostController.swift in Sources */,
 				BDAA8EEC22D2711100ECF0B1 /* BackgroundKind.swift in Sources */,
 				BD5A80432030A9D9006A5EBB /* FamilyScrollView.swift in Sources */,
 				BD4515C022FDAC4500731DF6 /* BinarySearch.swift in Sources */,
@@ -662,6 +668,7 @@
 			files = (
 				BD7629BA20349C2500C917BB /* TypeAlias.swift in Sources */,
 				BDAA8EEA22D270ED00ECF0B1 /* BackgroundKind.swift in Sources */,
+				BDB3978425531A7E00709EA7 /* OSSignpostController.swift in Sources */,
 				BD5A80402030A9D9006A5EBB /* FamilyWrapperView.swift in Sources */,
 				BD7C17B422CD57BC001D3615 /* UIViewController+Extensions.swift in Sources */,
 				BD5A80422030A9D9006A5EBB /* FamilyScrollView.swift in Sources */,
@@ -696,6 +703,7 @@
 				BDAA8EEE22D271C800ECF0B1 /* NSViewController+Extensions.swift in Sources */,
 				BDAA8EEB22D2711100ECF0B1 /* BackgroundKind.swift in Sources */,
 				BD44980E2034A09700ED83D4 /* FamilyWrapperView.swift in Sources */,
+				BDB3978525531A7E00709EA7 /* OSSignpostController.swift in Sources */,
 				BD4515BF22FDAC4500731DF6 /* BinarySearch.swift in Sources */,
 				BDD272AD233148F9009175FD /* FamilyDocumentView.swift in Sources */,
 				BD7629BF20349CA300C917BB /* FamilyFriendly.swift in Sources */,
@@ -1051,7 +1059,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Info/Info-macOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.zenangst.Family-macOS";
 				PRODUCT_NAME = Family;
@@ -1076,7 +1084,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/Info/Info-macOS.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.zenangst.Family-macOS";
 				PRODUCT_NAME = Family;
 				SDKROOT = macosx;
@@ -1094,7 +1102,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info-macOS-Tests.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks $(FRAMEWORK_SEARCH_PATHS)";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "no.hyper.Family-MacTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -1111,7 +1119,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Tests/Info-macOS-Tests.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks $(FRAMEWORK_SEARCH_PATHS)";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "no.hyper.Family-MacTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
