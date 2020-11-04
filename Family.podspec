@@ -12,9 +12,9 @@ Pod::Spec.new do |s|
   s.social_media_url = 'https://twitter.com/zenangst'
 
   s.swift_version = '5.0'
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '10.0'
   s.osx.deployment_target = '10.12'
-  s.tvos.deployment_target = '9.2'
+  s.tvos.deployment_target = '10.0'
 
   s.requires_arc = true
   s.ios.source_files = 'Sources/{iOS+tvOS,Shared}/**/*'
