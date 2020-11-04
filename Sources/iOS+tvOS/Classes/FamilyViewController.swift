@@ -420,6 +420,7 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
     _viewControllersInLayoutOrder = []
     scrollView.isPerformingBatchUpdates = false
+    purgeRemovedViews()
 
     if duration == 0 {
         scrollView.setNeedsLayout()
@@ -618,5 +619,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     viewController.removeFromParent()
     viewController.view.removeFromSuperview()
     viewController.didMove(toParent: nil)
+    registry.removeValue(forKey: viewController)
   }
 }
