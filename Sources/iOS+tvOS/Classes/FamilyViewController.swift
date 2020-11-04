@@ -1,4 +1,5 @@
 import UIKit
+import OSLog
 
 /// This class is a `UIViewController` that adds some convenience methods
 /// when using child view controllers to render your UI. The convenience methods
@@ -6,6 +7,9 @@ import UIKit
 /// adds the controllers view or custom view to view heirarcy inside the
 /// content view of the `FamilyScrollView`.
 open class FamilyViewController: UIViewController, FamilyFriendly {
+  fileprivate lazy var osLog = OSLog(subsystem: "com.zenangst.Family",
+                                     category: String(describing: FamilyViewController.self))
+  public static var signpostsEnabled: Bool = false
   var registry = [ViewController: (view: View, observer: NSKeyValueObservation)]()
 
   /// A custom implementation of a `UIScrollView` that handles continious scrolling
@@ -181,6 +185,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///
   /// - Parameter childController: The view controller to be added as a child.
   open override func addChild(_ childController: UIViewController) {
+    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    log.signpost(.begin, #function)
+    defer { log.signpost(.end, #function) }
+
     if childController.parent != nil {
       childController.removeFromParent()
     }
@@ -214,6 +222,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     if childController.parent != nil {
       _removeChild(childController)
     }
+    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    log.signpost(.begin, #function)
+    defer { log.signpost(.end, #function) }
+
     purgeRemovedViews()
     childController.willMove(toParent: self)
     super.addChild(childController)
@@ -271,6 +283,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
                       at index: Int? = nil,
                       insets: Insets? = nil,
                       height: CGFloat? = nil) -> Self {
+    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    log.signpost(.begin, #function)
+    defer { log.signpost(.end, #function) }
+
     var newWidth = view.bounds.size.width
 
     if let insets = insets {
@@ -307,6 +323,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///
   /// - Returns: A collection of view controllers.
   public func viewControllersInLayoutOrder() -> [ViewController] {
+    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    log.signpost(.begin, #function)
+    defer { log.signpost(.end, #function) }
+
     var viewControllers = [ViewController]()
     var temporaryContainer = [View: ViewController]()
 
@@ -373,8 +393,16 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
                                 animation: CAAnimation? = nil,
                                 _ handler: (FamilyViewController) -> Void,
                                 completion: ((FamilyViewController, Bool) -> Void)? = nil) -> Self {
+    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    log.signpost(.begin, #function)
+    defer { log.signpost(.end, #function) }
     scrollView.isPerformingBatchUpdates = true
+    let handlerLog = OSLogController(osLog, name: "performBatchupdates.handler",
+                                     signpostsEnabled: Self.signpostsEnabled)
+    handlerLog.signpost(.begin, "performBatchupdates.handler")
     handler(self)
+    handlerLog.signpost(.end, "performBatchupdates.handler")
+
     scrollView.isPerformingBatchUpdates = false
     scrollView.layoutViews(withDuration: duration, animation: animation) { completed in
       completion?(self, completed)
@@ -424,6 +452,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// Remove stray views from view hierarchy.
   @discardableResult
   public func purgeRemovedViews() -> Self {
+    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    log.signpost(.begin, #function)
+    defer { log.signpost(.end, #function) }
+
     for (controller, container) in registry where controller.parent == nil {
       _removeChild(controller)
       if container.view.superview is FamilyWrapperView {
@@ -490,6 +522,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///           on if an index is provided.
   ///   - index: An optional index for where the view should appear.
   private func addOrInsertView(_ view: UIView, at index: Int? = nil) {
+    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    log.signpost(.begin, #function)
+    defer { log.signpost(.end, #function) }
+
     if let index = index, index < scrollView.subviews.count {
       scrollView.insertSubview(view, at: index)
     } else {
@@ -508,6 +544,10 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Returns: A view that matches the criteria depending on the
   ///            view controllers type.
   private func viewToAdd(from childController: UIViewController) -> View {
+    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    log.signpost(.begin, #function)
+    defer { log.signpost(.end, #function) }
+
     let view: UIView
 
     switch childController {
