@@ -1,9 +1,6 @@
 import UIKit
-import OSLog
 
 public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
-  fileprivate lazy var osLog = OSLog(subsystem: "com.zenangst.Family",
-                                     category: String(describing: FamilyScrollView.self))
   public static var signpostsEnabled: Bool = false
   public var isFastScrolling: Bool = false
 
@@ -66,7 +63,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// Observer is a simple struct wrapper that holds the view that gets observed
   /// together with the key value observeration object. This is used to resolve
   /// and remove the correct observeration when views get add to the view hierarcy.
-  private struct Observer: Equatable {
+  private struct Observer: Equatable, Hashable {
     let view: UIView
     let keyValueObservation: NSKeyValueObservation
 
@@ -78,7 +75,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// A collection of observers connected to the observed views.
   /// See `observeView` methods for more information about which
   /// properties that get observed.
-  private var observers = [Observer]()
+  private var observers = Set<Observer>()
   internal lazy var spaceManager = FamilySpaceManager()
   internal var isPerformingBatchUpdates: Bool = false
   lazy var cache = FamilyCache()
@@ -160,13 +157,16 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   ///                   After being added, this view appears on top of any other subviews.
   open override func addSubview(_ view: UIView) {
     defer {
-      invalidateLayout()
-      if !isPerformingBatchUpdates && !isDeallocating { layoutIfNeeded() }
+      if !isPerformingBatchUpdates && !isDeallocating {
+        invalidateLayout()
+        layoutIfNeeded()
+      }
     }
 
-    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    let log = OSSignpostController(category: String(describing: FamilyScrollView.self), signpostsEnabled: Self.signpostsEnabled)
     log.signpost(.begin, #function)
     defer { log.signpost(.end, #function) }
+
     if backgrounds.values.contains(view) {
       super.addSubview(view)
       return
@@ -191,7 +191,8 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     let subview = wrapViewIfNeeded(view)
     guard let scrollView = subview as? UIScrollView else { return }
 
-    if let previousIndex = subviewsInLayoutOrder.firstIndex(of: scrollView) {
+    if scrollView.superview == self,
+       let previousIndex = subviewsInLayoutOrder.firstIndex(of: scrollView) {
       subviewsInLayoutOrder.remove(at: previousIndex)
     }
 
@@ -203,11 +204,13 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
   public override func insertSubview(_ view: UIView, at index: Int) {
     defer {
-      invalidateLayout()
-      if !isPerformingBatchUpdates && !isDeallocating { layoutIfNeeded() }
+      if !isPerformingBatchUpdates && !isDeallocating {
+        invalidateLayout()
+        layoutIfNeeded()
+      }
     }
 
-    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    let log = OSSignpostController(category: String(describing: FamilyScrollView.self), signpostsEnabled: Self.signpostsEnabled)
     log.signpost(.begin, #function)
     defer { log.signpost(.end, #function) }
 
@@ -215,7 +218,9 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       super.addSubview(view)
       return
     }
+
     let subview = wrapViewIfNeeded(view)
+
     guard let scrollView = subview as? UIScrollView else { return }
 
     if let previousIndex = subviewsInLayoutOrder.firstIndex(of: scrollView) {
@@ -245,7 +250,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   }
 
   private func addSubviewsInLayoutOrder() {
-    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    let log = OSSignpostController(category: String(describing: FamilyScrollView.self), signpostsEnabled: Self.signpostsEnabled)
     log.signpost(.begin, #function)
     defer { log.signpost(.end, #function) }
     for (index, view) in subviewsInLayoutOrder.reversed().enumerated() {
@@ -278,12 +283,12 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// - Parameter scrollView: The scroll view that should be configured
   ///                         and observed.
   func didAddScrollViewToContainer(_ scrollView: UIScrollView) {
-    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    let log = OSSignpostController(category: String(describing: FamilyScrollView.self), signpostsEnabled: Self.signpostsEnabled)
     log.signpost(.begin, #function)
     defer { log.signpost(.end, #function) }
     scrollView.autoresizingMask = [.flexibleWidth]
 
-    guard subviewsInLayoutOrder.firstIndex(of: scrollView) != nil else {
+    guard subviewsInLayoutOrder.contains(scrollView) else {
       return
     }
 
@@ -295,7 +300,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   ///
   /// - Parameter subview: The subview that got removed from the view heirarcy.
   open override func willRemoveSubview(_ subview: UIView) {
-    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    let log = OSSignpostController(category: String(describing: FamilyScrollView.self), signpostsEnabled: Self.signpostsEnabled)
     log.signpost(.begin, #function)
     defer { log.signpost(.end, #function) }
 
@@ -312,10 +317,6 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
       if let index = observers.firstIndex(where: { $0 == observer }) {
         observers.remove(at: index)
       }
-    }
-
-    for scrollView in subviewsInLayoutOrder {
-      configureScrollView(scrollView)
     }
 
     if let wrapperView = subview as? FamilyWrapperView,
@@ -378,7 +379,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   }
 
   func adjustContentSize(for view: UIView, scrollView: UIScrollView, withAnimation animation: CAAnimation?) {
-    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    let log = OSSignpostController(category: String(describing: FamilyScrollView.self), signpostsEnabled: Self.signpostsEnabled)
     log.signpost(.begin, #function)
     defer { log.signpost(.end, #function) }
 
@@ -440,11 +441,13 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   ///
   /// - Parameter view: The view that should be observered.
   private func observeView(view: UIScrollView) {
-    for observer in observers.filter({ $0.view === view }) {
-      if let index = observers.firstIndex(where: { $0 == observer }) {
-        observers.remove(at: index)
-      }
-    }
+    let log = OSSignpostController(category: String(describing: FamilyScrollView.self), signpostsEnabled: Self.signpostsEnabled)
+    log.signpost(.begin, #function)
+    defer { log.signpost(.end, #function) }
+
+    observers.filter({ $0.view === view }).forEach({
+        observers.remove($0)
+    })
 
     let contentSizeObserver = view.observe(\.contentSize, options: [.initial, .new, .old], changeHandler: { [weak self] (scrollView, value) in
       guard let strongSelf = self,
@@ -466,7 +469,8 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
         }
       }
     })
-    observers.append(Observer(view: view, keyValueObservation: contentSizeObserver))
+    
+    observers.insert(Observer(view: view, keyValueObservation: contentSizeObserver))
 
     let hiddenObserver = view.observe(\.isHidden, options: [.new, .old], changeHandler: { [weak self] (scrollView, value) in
       guard let newValue = value.newValue, let oldValue = value.oldValue,
@@ -482,7 +486,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
         self?.layoutViews(animation: animation)
       }
     })
-    observers.append(Observer(view: view, keyValueObservation: hiddenObserver))
+    observers.insert(Observer(view: view, keyValueObservation: hiddenObserver))
 
     let contentOffsetObserver = view.observe(\.contentOffset, options: [.new], changeHandler: { [weak self] (scrollView, value) in
       guard let strongSelf = self,
@@ -497,7 +501,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
         strongSelf.layoutViews()
       }
     })
-    observers.append(Observer(view: view, keyValueObservation: contentOffsetObserver))
+    observers.insert(Observer(view: view, keyValueObservation: contentOffsetObserver))
   }
 
   func positionBackgroundView(_ scrollView: UIScrollView, _ frame: CGRect, _ margins: Insets, _ padding: Insets, _ backgroundView: UIView, _ view: UIView) {
@@ -561,7 +565,9 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
   /// Remove wrapper views that don't own their underlaying views.
   func purgeWrapperViews() {
-    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    if isPerformingBatchUpdates { return }
+
+    let log = OSSignpostController(category: String(describing: FamilyScrollView.self), signpostsEnabled: Self.signpostsEnabled)
     log.signpost(.begin, #function)
     defer { log.signpost(.end, #function) }
 
@@ -738,7 +744,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   /// when a view changes size or origin. It also scales the frame of scroll views
   /// in order to keep dequeuing for table and collection views.
   internal func runLayoutSubviewsAlgorithm() {
-    let log = OSLogController(osLog, name: #function, signpostsEnabled: Self.signpostsEnabled)
+    let log = OSSignpostController(category: String(describing: FamilyScrollView.self), signpostsEnabled: Self.signpostsEnabled)
     log.signpost(.begin, #function)
     defer { log.signpost(.end, #function) }
 
@@ -746,9 +752,12 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
 
     let parentContentOffset = CGPoint(x: self.contentOffset.x,
                                       y: self.contentOffset.y)
+    var newContentSize: CGSize = .zero
 
     if cache.state == .empty {
-      let log = OSLogController(osLog, name: "runLayoutSubviewsAlgorithm.caching", signpostsEnabled: Self.signpostsEnabled)
+      let log = OSSignpostController(category: String(describing: FamilyScrollView.self),
+                                     name: "runLayoutSubviewsAlgorithm.caching",
+                                     signpostsEnabled: Self.signpostsEnabled)
       log.signpost(.begin, "runLayoutSubviewsAlgorithm.caching")
       cache.state = .isRunning
       var yOffsetOfCurrentSubview: CGFloat = 0.0
@@ -827,12 +836,13 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
         superview?.frame.size.height = cache.contentSize.height
       }
 
-      cache.state = .isFinished
-      let newContentSize = CGSize(width: cache.contentSize.width, height: round(height))
-      if newContentSize != contentSize {
-        contentSize = newContentSize
-      }
+      newContentSize = CGSize(width: cache.contentSize.width, height: round(height))
       log.signpost(.end, "runLayoutSubviewsAlgorithm.caching")
+    }
+
+    if cache.state == .isRunning {
+        contentSize = newContentSize
+        cache.state = .isFinished
     }
 
     let validAttributes = getValidAttributes(in: discardableRect)

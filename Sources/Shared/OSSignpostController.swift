@@ -1,12 +1,15 @@
-import OSLog
+import os.signpost
 
-final public class OSLogController {
+final public class OSSignpostController {
     private let log: OSLog
     private let name: StaticString
     public var signpostsEnabled: Bool = false
 
-    init(_ log: OSLog, name: StaticString, signpostsEnabled: Bool) {
-        self.log = log
+    init(subsystem: String = "com.zenangst.Family",
+         category: String,
+         name: StaticString = #function,
+         signpostsEnabled: Bool) {
+        self.log = OSLog(subsystem: subsystem, category: category)
         self.name = name
         self.signpostsEnabled = signpostsEnabled
     }
@@ -27,13 +30,6 @@ final public class OSLogController {
         let message = "\(message())\(suffix)"
 
         signpost(type, "%{public}s", message)
-    }
-
-    func signpost(_ type: SignpostType) {
-        guard signpostsEnabled else { return }
-        if #available(OSX 10.14, iOS 12.0, watchOS 5.0, tvOS 12.0, *) {
-            os_signpost(type.os, log: log, name: name, signpostID: signpostID)
-        }
     }
 
     func signpost(_ type: SignpostType, _ format: StaticString, _ argument: CVarArg) {
