@@ -405,9 +405,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
         CATransaction.begin()
         CATransaction.setAnimationDuration(0.0)
         CATransaction.setDisableActions(true)
-        defer {
-            CATransaction.commit()
-        }
     }
 
     scrollView.isPerformingBatchUpdates = true
@@ -420,15 +417,19 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
     _viewControllersInLayoutOrder = []
     scrollView.isPerformingBatchUpdates = false
-    purgeRemovedViews()
 
     if duration == 0 {
-        scrollView.setNeedsLayout()
-        completion?(self, true)
+      scrollView.setNeedsLayout()
+      scrollView.layoutIfNeeded()
+      completion?(self, true)
+      CATransaction.commit()
     } else {
-        scrollView.layoutViews(withDuration: duration, animation: animation) { completed in
+      scrollView.layoutViews(
+        withDuration: duration,
+        animation: animation,
+        completion: { completed in
           completion?(self, completed)
-        }
+        })
     }
 
     return self
@@ -494,8 +495,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
       registry.removeValue(forKey: controller)
     }
 
-    scrollView.purgeWrapperViews()
-
     return self
   }
 
@@ -522,14 +521,12 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
         scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     } else {
-      if #available(iOS 9.0, *) {
-        constraints.append(contentsOf: [
-          scrollView.topAnchor.constraint(equalTo: topLayoutGuide.topAnchor),
-          scrollView.bottomAnchor.constraint(equalTo: bottomLayoutGuide.topAnchor),
-          scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-          scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-          ])
-      }
+      constraints.append(contentsOf: [
+        scrollView.topAnchor.constraint(equalTo: topLayoutGuide.topAnchor),
+        scrollView.bottomAnchor.constraint(equalTo: bottomLayoutGuide.topAnchor),
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+      ])
     }
     NSLayoutConstraint.activate(constraints)
   }

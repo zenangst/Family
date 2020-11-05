@@ -27,6 +27,11 @@ class FamilyViewControllerTests: XCTestCase {
     familyViewController.prepareViewController()
   }
 
+  override func tearDown() {
+    super.tearDown()
+    familyViewController = nil
+  }
+
   func testAddingChildViewController() {
     let viewController = UIViewController()
     familyViewController.addChild(viewController)
@@ -100,6 +105,15 @@ class FamilyViewControllerTests: XCTestCase {
     familyViewController.addChild(viewController)
     viewController.removeFromParent()
 
+    XCTAssertTrue(familyViewController.children.isEmpty)
+  }
+
+  func testRemovingChildViewControllersWithPatchUpdating() {
+    let viewController = UIViewController()
+    familyViewController.addChild(viewController)
+    familyViewController.performBatchUpdates({ _ in
+        viewController.removeFromParent()
+    }, completion: { _, _  in })
     XCTAssertTrue(familyViewController.children.isEmpty)
   }
 
