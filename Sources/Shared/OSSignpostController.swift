@@ -5,7 +5,7 @@ final public class OSSignpostController {
     private let name: StaticString
     public var signpostsEnabled: Bool = false
 
-    init(subsystem: String = "com.zenangst.Family",
+    public init(subsystem: String = "com.zenangst.Family",
          category: String,
          name: StaticString = #function,
          signpostsEnabled: Bool) {
@@ -14,7 +14,7 @@ final public class OSSignpostController {
         self.signpostsEnabled = signpostsEnabled
     }
 
-    func signpost(_ type: SignpostType, _ message: @autoclosure () -> String) {
+    public func signpost(_ type: SignpostType, _ message: @autoclosure () -> String) {
         guard signpostsEnabled else { return }
         let suffix: String
 
@@ -45,11 +45,11 @@ final public class OSSignpostController {
     }
 }
 
-enum SignpostType {
+public enum SignpostType {
     case begin, event, end
 
     @available(OSX 10.14, iOS 12.0, watchOS 5.0, tvOS 12.0, *)
-    var os: OSSignpostType {
+    public var os: OSSignpostType {
         switch self {
         case .begin: return .begin
         case .event: return .event
