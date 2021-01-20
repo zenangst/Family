@@ -34,3 +34,4 @@ Carthage
 
 # SPM
 .build/
+*.xcodeproj
