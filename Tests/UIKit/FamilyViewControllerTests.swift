@@ -1,89 +1,91 @@
 import XCTest
 @testable import Family
 
+#if canImport(UIKit)
+private extension UIViewController {
+  func prepareViewController() {
+    let _ = view
+    viewWillAppear(false)
+    viewDidAppear(false)
+    viewWillLayoutSubviews()
+  }
+}
+
 class FamilyViewControllerTests: XCTestCase {
-  var window: NSWindow!
   var familyViewController: FamilyViewController!
 
-  class MockScrollViewController: MockViewController {
-    lazy var scrollView: NSScrollView = {
-      let scrollView = NSScrollView()
-      let view = NSView()
-      view.frame.size = CGSize(width: 200, height: 200)
-      scrollView.documentView = view
+  class MockViewController: UIViewController {
+    lazy var scrollView: UIScrollView = {
+      let scrollView = UIScrollView()
+      scrollView.contentSize = CGSize(width: 200, height: 200)
       return scrollView
     }()
-  }
-
-  class MockViewController: NSViewController {
-    override func loadView() {
-      self.view = NSView()
-    }
   }
 
   override func setUp() {
     super.setUp()
     familyViewController = FamilyViewController()
-    familyViewController.view.frame.size = CGSize(width: 375, height: 667)
-    window = NSWindow(contentViewController: familyViewController)
-    window.makeKeyAndOrderFront(nil)
-    NSAnimationContext.current.duration = 0.0
+    familyViewController.prepareViewController()
+  }
+
+  override func tearDown() {
+    super.tearDown()
+    familyViewController = nil
   }
 
   func testAddingChildViewController() {
-    let viewController = MockViewController()
-    viewController.view.frame.size.height = 667
+    let viewController = UIViewController()
     familyViewController.addChild(viewController)
     XCTAssertEqual(viewController.parent, familyViewController)
     XCTAssertEqual(viewController.view.frame, familyViewController.view.frame)
   }
 
   func testAddingMultipleChildViewControllers() {
-    let firstViewController = MockViewController()
-    let secondViewController = MockViewController()
-    let thirdViewController = MockViewController()
+    let firstViewController = UIViewController()
+    let secondViewController = UIViewController()
+    let thirdViewController = UIViewController()
 
     firstViewController.view.frame.size.height = 500
     secondViewController.view.frame.size.height = 500
     thirdViewController.view.frame.size.height = 500
 
     familyViewController.addChildren(firstViewController,
-                                                 secondViewController,
-                                                 thirdViewController)
+                                     secondViewController,
+                                     thirdViewController)
     XCTAssertEqual(familyViewController.children.count, 3)
     XCTAssertEqual(firstViewController.parent, familyViewController)
     XCTAssertEqual(secondViewController.parent, familyViewController)
     XCTAssertEqual(thirdViewController.parent, familyViewController)
 
-    let subviews = familyViewController.scrollView.contentView.documentView!.subviews
+    var wrapperView = (familyViewController.scrollView.subviews[2] as? FamilyWrapperView)
+    XCTAssertEqual(wrapperView, firstViewController.view.superview)
+    wrapperView = (familyViewController.scrollView.subviews[1] as? FamilyWrapperView)
+    XCTAssertEqual(wrapperView, secondViewController.view.superview)
+    wrapperView = (familyViewController.scrollView.subviews[0] as? FamilyWrapperView)
+    XCTAssertEqual(wrapperView, thirdViewController.view.superview)
 
-    var wrapperView = (subviews[0] as? FamilyWrapperView)
-    XCTAssertEqual(wrapperView?.documentView, firstViewController.view)
-    wrapperView = (subviews[1] as? FamilyWrapperView)
-    XCTAssertEqual(wrapperView?.documentView, secondViewController.view)
-    wrapperView = (subviews[2] as? FamilyWrapperView)
-    XCTAssertEqual(wrapperView?.documentView, thirdViewController.view)
-
-    familyViewController.scrollView.layout()
-    familyViewController.scrollView.layoutViews(withDuration: 0, force: false, completion: nil)
-    XCTAssertEqual(familyViewController.scrollView.documentView?.frame.size.height, 1500)
+    XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1500)
     secondViewController.view.isHidden = true
-    familyViewController.scrollView.layout()
-    XCTAssertEqual(familyViewController.scrollView.documentView?.frame.size.height, 1000)
+
+    #if os(iOS)
+    XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1000)
+    #else
+    XCTAssertEqual(familyViewController.scrollView.contentSize.height, 1080)
+    #endif
   }
 
   func testAddingCustomViewFromController() {
-    let mockedViewController1 = MockScrollViewController()
-    let mockedViewController2 = MockScrollViewController()
+    let mockedViewController1 = MockViewController()
+    let mockedViewController2 = MockViewController()
     familyViewController.addChild(mockedViewController1, view: { $0.scrollView })
     familyViewController.addChild(mockedViewController2, view: { $0.scrollView })
-    
+
     XCTAssertEqual(mockedViewController1.parent, familyViewController)
     XCTAssertEqual(mockedViewController2.parent, familyViewController)
     XCTAssertEqual(familyViewController.children.count, 2)
-    XCTAssertEqual(familyViewController.scrollView.documentView, mockedViewController1.scrollView.superview)
-    XCTAssertEqual(familyViewController.scrollView.documentView, mockedViewController2.scrollView.superview)
-    
+    XCTAssertEqual(familyViewController.scrollView, mockedViewController1.scrollView.superview)
+    XCTAssertEqual(familyViewController.scrollView, mockedViewController2.scrollView.superview)
+
     XCTAssertEqual(familyViewController.registry.count, 2)
     mockedViewController1.removeFromParent()
     XCTAssertEqual(familyViewController.registry.count, 1)
@@ -92,7 +94,7 @@ class FamilyViewControllerTests: XCTestCase {
   }
 
   func testAddingChildViewControllerWithConstraintedHeight() {
-    let viewController = MockViewController()
+    let viewController = UIViewController()
     familyViewController.addChild(viewController, height: 200)
     XCTAssertEqual(viewController.parent, familyViewController)
     XCTAssertEqual(viewController.view.frame.size.width, familyViewController.view.frame.width)
@@ -100,48 +102,70 @@ class FamilyViewControllerTests: XCTestCase {
   }
 
   func testRemovingChildViewController() {
-    let viewController = MockViewController()
+    let viewController = UIViewController()
     familyViewController.addChild(viewController)
     viewController.removeFromParent()
 
     XCTAssertTrue(familyViewController.children.isEmpty)
   }
 
+  func testRemovingChildViewControllersWithPatchUpdating() {
+    let viewController = UIViewController()
+    familyViewController.addChild(viewController)
+    familyViewController.performBatchUpdates({ _ in
+        viewController.removeFromParent()
+    }, completion: { _, _  in })
+    XCTAssertTrue(familyViewController.children.isEmpty)
+  }
+
+  func testFamilyControllerWithTabBar() {
+    let tabBarController = UITabBarController()
+    tabBarController.setViewControllers([familyViewController], animated: false)
+    XCTAssertEqual(familyViewController.scrollView.contentInset, .zero)
+
+    familyViewController.viewWillAppear(false)
+
+    if #available(iOS 11.0, *) {} else {
+      XCTAssertEqual(familyViewController.scrollView.contentInset.bottom,
+                     tabBarController.tabBar.frame.size.height)
+    }
+    XCTAssertEqual(familyViewController.scrollView.contentInset.bottom,
+                   familyViewController.scrollView.scrollIndicatorInsets.bottom)
+  }
+
   func testViewControllersInLayoutOrder() {
     let familyViewController = FamilyViewController()
-    let controller1 = MockViewController()
-    let controller2 = MockViewController()
-    let controller3 = MockViewController()
+
+    let controller1 = UIViewController()
+    let controller2 = UIViewController()
+    let controller3 = UIViewController()
 
     familyViewController.addChild(controller1, at: 0)
     familyViewController.addChild(controller3, at: 1)
     familyViewController.addChild(controller2, at: 0)
 
-    let expected = [controller2, controller1, controller3]
-    let result = familyViewController.viewControllersInLayoutOrder()
-
-    XCTAssertEqual(result, expected)
+    XCTAssertEqual(familyViewController.viewControllersInLayoutOrder(),
+                   [controller2, controller1, controller3])
   }
 
   func testViewControllerIsVisibleMethods() {
     let familyViewController = FamilyViewController()
     familyViewController.view.frame.size = CGSize(width: 375, height: 667)
+    familyViewController.scrollView.frame.size = familyViewController.view.frame.size
+    familyViewController.prepareViewController()
 
-    let window = NSWindow(contentViewController: familyViewController)
-    window.makeKeyAndOrderFront(nil)
+    let controller1 = UIViewController()
+    let controller2 = UIViewController()
+    let controller3 = UIViewController()
+    let controller4 = UIViewController()
 
-    let controller1 = MockViewController()
-    let controller2 = MockViewController()
-    let controller3 = MockViewController()
-    let controller4 = MockViewController()
-
-    [controller1, controller2, controller3, controller4].forEach {
+    [controller1, controller2, controller3].forEach {
       $0.view.frame.size = CGSize(width: 375, height: 667)
     }
 
     familyViewController.addChildren([
-      controller1, controller2, controller3, controller4
-      ])
+      controller1, controller2, controller3
+    ])
 
     XCTAssertTrue(familyViewController.viewControllerIsVisible(controller1))
     XCTAssertTrue(familyViewController.viewControllerIsFullyVisible(controller1))
@@ -152,10 +176,7 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertFalse(familyViewController.viewControllerIsVisible(controller3))
     XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller3))
 
-    XCTAssertFalse(familyViewController.viewControllerIsVisible(controller4))
-    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller4))
-
-    familyViewController.scrollView.contentOffset = .init(x: 0, y: 667 / 2)
+    familyViewController.scrollView.setContentOffset(.init(x: 0, y: 667 / 2), animated: false)
 
     XCTAssertTrue(familyViewController.viewControllerIsVisible(controller1))
     XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller1))
@@ -166,10 +187,7 @@ class FamilyViewControllerTests: XCTestCase {
     XCTAssertFalse(familyViewController.viewControllerIsVisible(controller3))
     XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller3))
 
-    XCTAssertFalse(familyViewController.viewControllerIsVisible(controller4))
-    XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller4))
-
-    familyViewController.scrollView.contentOffset = .init(x: 0, y: 667)
+    familyViewController.scrollView.setContentOffset(.init(x: 0, y: 667), animated: false)
 
     XCTAssertFalse(familyViewController.viewControllerIsVisible(controller1))
     XCTAssertFalse(familyViewController.viewControllerIsFullyVisible(controller1))
@@ -187,10 +205,9 @@ class FamilyViewControllerTests: XCTestCase {
   func testAttributesForViewController() {
     let familyViewController = FamilyViewController()
     familyViewController.view.frame.size = CGSize(width: 375, height: 667)
-    let window = NSWindow(contentViewController: familyViewController)
-    window.makeKeyAndOrderFront(nil)
+    familyViewController.prepareViewController()
 
-    let controller1 = MockViewController()
+    let controller1 = UIViewController()
     controller1.view.frame.size = CGSize(width: 375, height: 667)
 
     familyViewController.addChild(controller1)
@@ -206,12 +223,13 @@ class FamilyViewControllerTests: XCTestCase {
   func testBatchUpdates() {
     let familyViewController = FamilyViewController()
     familyViewController.view.frame.size = CGSize(width: 375, height: 667)
+    familyViewController.prepareViewController()
 
-    let controller1 = MockViewController()
+    let controller1 = UIViewController()
     controller1.title = "Controller 1"
-    let controller2 = MockViewController()
+    let controller2 = UIViewController()
     controller2.title = "Controller 2"
-    let controller3 = MockViewController()
+    let controller3 = UIViewController()
     controller3.title = "Controller 3"
 
     familyViewController.performBatchUpdates({ controller in
@@ -221,29 +239,30 @@ class FamilyViewControllerTests: XCTestCase {
       controller.moveChild(controller3, to: 0)
     }, completion: nil)
 
-    familyViewController.view.layoutSubtreeIfNeeded()
+    familyViewController.view.layoutIfNeeded()
 
     XCTAssertEqual(familyViewController.viewControllersInLayoutOrder().compactMap({ $0.title }),
                    ["Controller 3", "Controller 1", "Controller 2"])
   }
 
   func testChangingViewSize() {
+    let window = UIWindow(frame: .init(origin: .zero, size: CGSize(width: 375, height: 667)))
     let familyViewController = FamilyViewController()
-    let window = NSWindow(contentViewController: familyViewController)
-    window.setFrame(NSRect.init(origin: .zero, size: CGSize(width: 375, height: 667)), display: false)
+    window.rootViewController = familyViewController
     familyViewController.view.frame.size = CGSize(width: 375, height: 667)
+    familyViewController.prepareViewController()
 
-    let controller1 = MockViewController()
+    let controller1 = UIViewController()
     controller1.title = "Controller 1"
     controller1.view.frame.size = CGSize(width: 375, height: 200)
 
     familyViewController.addChild(controller1)
-    familyViewController.scrollView.layoutViews(withDuration: nil, force: false, completion: nil)
 
-    let wrapperView = controller1.view.enclosingScrollView
-    XCTAssertEqual(controller1.view.frame.size.height, wrapperView?.frame.size.height)
+    let wrapperView = controller1.view.superview
+    XCTAssertEqual(controller1.view.frame.size, wrapperView?.frame.size)
 
     controller1.view.frame.size.height = 400
-    XCTAssertEqual(controller1.view.frame.size.height, wrapperView?.frame.size.height)
+    XCTAssertEqual(controller1.view.frame.size, wrapperView?.frame.size)
   }
 }
+#endif

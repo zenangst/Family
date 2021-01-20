@@ -1,3 +1,4 @@
+#if canImport(Cocoa)
 import Cocoa
 
 class FamilyWrapperView: NSScrollView {
@@ -103,3 +104,4 @@ class FamilyWrapperView: NSScrollView {
     familyScrollView?.wrapperViewDidChangeFrame(view, from: oldValue, to: newValue)
   }
 }
+#endif

@@ -1,6 +1,7 @@
 import XCTest
 @testable import Family
 
+#if canImport(UIKit)
 class CALayerExtensionTests: XCTestCase {
   func testResolvingAnimationFromCALayer() {
     let layer = CALayer()
@@ -15,3 +16,4 @@ class CALayerExtensionTests: XCTestCase {
     XCTAssertNotNil(layer.resolveAnimationDuration)
   }
 }
+#endif

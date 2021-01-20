@@ -1,3 +1,4 @@
+#if canImport(Cocoa)
 import Cocoa
 
 class FamilyClipView: NSClipView {
@@ -25,3 +26,4 @@ fileprivate extension NSScrollView {
     return (documentView as? NSCollectionView)?.isHorizontal ?? false
   }
 }
+#endif

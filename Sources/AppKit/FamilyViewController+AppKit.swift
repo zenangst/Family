@@ -1,3 +1,4 @@
+#if canImport(Cocoa)
 import Cocoa
 
 open class FamilyViewController: NSViewController, FamilyFriendly {
@@ -436,3 +437,4 @@ open class FamilyViewController: NSViewController, FamilyFriendly {
     }
   }
 }
+#endif

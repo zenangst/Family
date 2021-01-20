@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import UIKit
 
 public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
@@ -924,3 +925,4 @@ private extension UIView {
     return result
   }
 }
+#endif

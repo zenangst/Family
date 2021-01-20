@@ -1,6 +1,8 @@
 import XCTest
 @testable import Family
 
+#if canImport(Cocoa)
+
 class FamilyWrapperViewTests: XCTestCase {
   class MockMouseWheelEvent: NSEvent {
     enum Direction {
@@ -104,3 +106,4 @@ class FamilyWrapperViewTests: XCTestCase {
 //    XCTAssertFalse(mockedScrollView.didScroll)
 //  }
 }
+#endif

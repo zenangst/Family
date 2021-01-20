@@ -1,6 +1,7 @@
 import XCTest
 @testable import Family
 
+#if canImport(UIKit)
 class FamilyWrapperViewTests: XCTestCase {
   func testFamilyWrapperView() {
     let frame = CGRect(origin: .zero, size: CGSize(width: 100, height: 100))
@@ -16,3 +17,4 @@ class FamilyWrapperViewTests: XCTestCase {
     XCTAssertEqual(wrapperView.frame, mockedView.frame)
   }
 }
+#endif

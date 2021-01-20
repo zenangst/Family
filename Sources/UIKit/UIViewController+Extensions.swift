@@ -1,10 +1,7 @@
-#if os(macOS)
-import Cocoa
-#else
+#if canImport(UIKit)
 import UIKit
-#endif
 
-public extension ViewController {
+public extension UIViewController {
   /// A shorthand computed value to resolve the parent `FamilyViewController`.
   private var familyViewController: FamilyViewController? {
     guard let familyViewController = parent as? FamilyViewController else {
@@ -22,8 +19,8 @@ public extension ViewController {
   @discardableResult
   func background(_ kind: BackgroundKind) -> Self {
     guard let familyViewController = familyViewController else {
-      assertionFailure("Unable to find view controller.")
-      return self
+        assertionFailure("Unable to find view controller.")
+        return self
     }
     familyViewController.addBackground(kind, to: self)
     return self
@@ -34,7 +31,7 @@ public extension ViewController {
   /// - Parameter insets: The amount of padding that should be used.
   /// - Returns: Returns an instance of `Self`.
   @discardableResult
-  func padding(_ insets: Insets) -> Self {
+  func padding(_ insets: UIEdgeInsets) -> Self {
     guard let familyViewController = familyViewController else {
       assertionFailure("Unable to find view controller.")
       return self
@@ -48,13 +45,14 @@ public extension ViewController {
   /// - Parameter insets: The amount of margins that should be used.
   /// - Returns: Returns an instance of `Self`.
   @discardableResult
-  func margin(_ insets: Insets) -> Self {
+  func margin(_ insets: UIEdgeInsets) -> Self {
     guard let familyViewController = familyViewController,
-      let view = familyViewController.registry[self] else {
-        assertionFailure("Unable to find view controller.")
-        return self
+      let entry = familyViewController.registry[self] else {
+      assertionFailure("Unable to find view controller.")
+      return self
     }
-    familyViewController.addMargins(insets, for: view)
+    familyViewController.addMargins(insets, for: entry.view)
     return self
   }
 }
+#endif

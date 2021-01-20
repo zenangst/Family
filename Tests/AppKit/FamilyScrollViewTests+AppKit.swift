@@ -1,6 +1,8 @@
 import XCTest
 @testable import Family
 
+#if canImport(Cocoa)
+
 class MockedViewController: NSViewController {
   override func loadView() {
     view = NSView()
@@ -123,3 +125,4 @@ class FamilyScrollViewTests: XCTestCase {
   }
 }
 
+#endif

@@ -1,3 +1,4 @@
+#if canImport(Cocoa)
 import Cocoa
 
 public class FamilyDocumentView: NSView {
@@ -91,3 +92,4 @@ public class FamilyDocumentView: NSView {
     subviewsInLayoutOrder = filteredSubviews
   }
 }
+#endif

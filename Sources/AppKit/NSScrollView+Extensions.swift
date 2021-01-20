@@ -1,3 +1,4 @@
+#if canImport(Cocoa)
 import Cocoa
 
 extension NSScrollView {
@@ -16,4 +17,4 @@ extension NSScrollView {
     }
   }
 }
-
+#endif

@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import UIKit
 
 /// This class is a `UIViewController` that adds some convenience methods
@@ -619,3 +620,4 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     registry.removeValue(forKey: viewController)
   }
 }
+#endif

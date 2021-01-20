@@ -1,6 +1,7 @@
 import XCTest
 @testable import Family
 
+#if canImport(UIKit)
 class FamilyScrollViewTests: XCTestCase {
   static let mockFrame = CGRect(origin: .zero, size: CGSize(width: 500, height: 1000))
   let superview = UIView(frame: FamilyScrollViewTests.mockFrame)
@@ -149,3 +150,4 @@ class FamilyScrollViewTests: XCTestCase {
     XCTAssertEqual(mockedScrollView4.frame, CGRect(origin: CGPoint(x: 0, y: 750), size: size))
   }
 }
+#endif

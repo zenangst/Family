@@ -1,6 +1,7 @@
 import XCTest
 @testable import Family
 
+#if canImport(UIKit)
 class FamilyContentViewTests: XCTestCase {
   var scrollView: FamilyScrollView!
 
@@ -49,3 +50,4 @@ class FamilyContentViewTests: XCTestCase {
     XCTAssertTrue(scrollView.subviews.isEmpty)
   }
 }
+#endif

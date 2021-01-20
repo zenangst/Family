@@ -1,6 +1,7 @@
 import XCTest
 @testable import Family
 
+#if canImport(Cocoa)
 class NSScrollViewExtensionsTests: XCTestCase {
   func testInitializer() {
     let documentView = NSView()
@@ -9,3 +10,4 @@ class NSScrollViewExtensionsTests: XCTestCase {
     XCTAssertEqual(documentView, scrollView.documentView)
   }
 }
+#endif

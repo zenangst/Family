@@ -1,3 +1,4 @@
+#if canImport(Cocoa)
 import Cocoa
 
 public protocol FamilyScrollViewDelegate: class {
@@ -584,3 +585,4 @@ fileprivate extension NSScrollView {
     return (documentView as? NSCollectionView)?.isHorizontal ?? false
   }
 }
+#endif

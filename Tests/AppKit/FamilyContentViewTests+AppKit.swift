@@ -1,6 +1,8 @@
 import XCTest
 @testable import Family
 
+#if canImport(Cocoa)
+
 class FamilyContentViewTests: XCTestCase {
   class FamilyScrollViewMock: FamilyScrollView {
     var didLayout: Bool = false
@@ -84,3 +86,4 @@ class FamilyContentViewTests: XCTestCase {
     XCTAssertTrue(scrollView.didLayout)
   }
 }
+#endif

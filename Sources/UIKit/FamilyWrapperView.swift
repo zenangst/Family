@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import UIKit
 
 /// This class is used to wrap views in `FamilyContentView` that don't inherit
@@ -71,3 +72,4 @@ class FamilyWrapperView: UIScrollView {
     contentSize = rect.size
   }
 }
+#endif

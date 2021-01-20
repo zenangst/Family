@@ -1,6 +1,6 @@
 import XCTest
 @testable import Family
-
+#if canImport(UIKit)
 class FamilyViewControllerSharedTests: XCTestCase {
   func testMarginsAndPadding() {
     let childViewController = ChildViewController()
@@ -92,3 +92,4 @@ fileprivate class ContainerViewController: FamilyViewController {
     builder(self)
   }
 }
+#endif
