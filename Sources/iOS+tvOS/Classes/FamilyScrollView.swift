@@ -157,7 +157,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
   ///                   After being added, this view appears on top of any other subviews.
   open override func addSubview(_ view: UIView) {
     defer {
-      if !isPerformingBatchUpdates && !isDeallocating {
+      if !isPerformingBatchUpdates && !isDeallocating && !view.isSystemView {
         invalidateLayout()
         layoutIfNeeded()
       }

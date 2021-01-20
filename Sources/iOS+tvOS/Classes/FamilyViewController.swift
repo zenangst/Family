@@ -401,12 +401,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
     log.signpost(.begin, #function)
     defer { log.signpost(.end, #function) }
 
-    if duration == 0.0 {
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(0.0)
-        CATransaction.setDisableActions(true)
-    }
-
     scrollView.isPerformingBatchUpdates = true
     let handlerLog = OSSignpostController(category: String(describing: FamilyViewController.self),
                                           name: "performBatchupdates.handler",
@@ -417,19 +411,22 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
 
     _viewControllersInLayoutOrder = []
     scrollView.isPerformingBatchUpdates = false
+    scrollView.setNeedsLayout()
 
-    if duration == 0 {
-      scrollView.setNeedsLayout()
-      scrollView.layoutIfNeeded()
-      completion?(self, true)
-      CATransaction.commit()
-    } else {
+    if duration > 0 {
       scrollView.layoutViews(
         withDuration: duration,
         animation: animation,
         completion: { completed in
           completion?(self, completed)
         })
+    } else {
+      CATransaction.begin()
+      CATransaction.setAnimationDuration(0.0)
+      CATransaction.setDisableActions(true)
+
+      completion?(self, true)
+      CATransaction.commit()
     }
 
     return self
