@@ -9,9 +9,9 @@ script:
   - set -o pipefail && swift package generate-xcodeproj
   - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-Package" -sdk macosx -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F macOS
-  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-Package" -destination 'name=Apple TV,OS=14.0' -enableCodeCoverage YES clean build test | xcpretty
+  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-Package" -destination 'name=Apple TV,OS=14.2' -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F tvOS
-  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-Package" -sdk iphonesimulator -destination name="iPhone 8,OS=14.0" -enableCodeCoverage YES clean build test | xcpretty
+  - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-Package" -sdk iphonesimulator -destination name="iPhone 8,OS=14.2" -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F iOS
 
 notifications:
