@@ -3,9 +3,10 @@ osx_image: xcode12.0
 language: swift
 
 script:
-  - swift package tools-version --set-current
-  - swift build
-  - swift package generate-xcodeproj
+  - set -o pipefail && swift --version
+  - set -o pipefail && swift package tools-version --set-current
+  - set -o pipefail && swift build
+  - set -o pipefail && swift package generate-xcodeproj
   - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-Package" -sdk macosx -enableCodeCoverage YES clean build test | xcpretty
   - bash <(curl -s https://codecov.io/bash) -c -F macOS
   - set -o pipefail && xcodebuild -project Family.xcodeproj -scheme "Family-Package" -destination 'name=Apple TV,OS=14.0' -enableCodeCoverage YES clean build test | xcpretty
