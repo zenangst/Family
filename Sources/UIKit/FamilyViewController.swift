@@ -7,7 +7,6 @@ import UIKit
 /// adds the controllers view or custom view to view heirarcy inside the
 /// content view of the `FamilyScrollView`.
 open class FamilyViewController: UIViewController, FamilyFriendly {
-  public static var signpostsEnabled: Bool = false
   var registry = [ViewController: (view: View, observer: NSKeyValueObservation)]()
 
   /// A custom implementation of a `UIScrollView` that handles continious scrolling
@@ -185,13 +184,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///
   /// - Parameter childController: The view controller to be added as a child.
   open override func addChild(_ childController: UIViewController) {
-    if Self.signpostsEnabled {
-      let log = OSSignpostController(category: String(describing: FamilyViewController.self),
-                                     signpostsEnabled: Self.signpostsEnabled)
-      log.signpost(.begin, #function)
-      defer { log.signpost(.end, #function) }
-    }
-
     if childController.parent != nil {
       childController.removeFromParent()
     }
@@ -222,13 +214,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
                                             insets: Insets? = nil,
                                             height: CGFloat? = nil,
                                             view handler: ((T) -> UIView)? = nil) -> Self {
-    if Self.signpostsEnabled {
-      let log = OSSignpostController(category: String(describing: FamilyViewController.self),
-                                     signpostsEnabled: Self.signpostsEnabled)
-      log.signpost(.begin, #function)
-      defer { log.signpost(.end, #function) }
-    }
-
     purgeRemovedViews()
     childController.willMove(toParent: self)
     super.addChild(childController)
@@ -286,13 +271,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
                       at index: Int? = nil,
                       insets: Insets? = nil,
                       height: CGFloat? = nil) -> Self {
-    if Self.signpostsEnabled {
-      let log = OSSignpostController(category: String(describing: FamilyViewController.self),
-                                     signpostsEnabled: Self.signpostsEnabled)
-      log.signpost(.begin, #function)
-      defer { log.signpost(.end, #function) }
-    }
-
     var newWidth = view.bounds.size.width
 
     if let insets = insets {
@@ -326,13 +304,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///
   /// - Returns: A collection of view controllers.
   public func viewControllersInLayoutOrder() -> [ViewController] {
-    if Self.signpostsEnabled {
-      let log = OSSignpostController(category: String(describing: FamilyViewController.self),
-                                     signpostsEnabled: Self.signpostsEnabled)
-      log.signpost(.begin, #function)
-      defer { log.signpost(.end, #function) }
-    }
-
     if !_viewControllersInLayoutOrder.isEmpty {
       return _viewControllersInLayoutOrder
     }
@@ -405,25 +376,8 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
                                 animation: CAAnimation? = nil,
                                 _ handler: (FamilyViewController) -> Void,
                                 completion: ((FamilyViewController, Bool) -> Void)? = nil) -> Self {
-    if Self.signpostsEnabled {
-      let log = OSSignpostController(category: String(describing: FamilyViewController.self),
-                                     signpostsEnabled: Self.signpostsEnabled)
-      log.signpost(.begin, #function)
-      defer { log.signpost(.end, #function) }
-    }
-
     scrollView.isPerformingBatchUpdates = true
-    if Self.signpostsEnabled {
-      let handlerLog = OSSignpostController(category: String(describing: FamilyViewController.self),
-                                            name: "performBatchupdates.handler",
-                                            signpostsEnabled: Self.signpostsEnabled)
-      handlerLog.signpost(.begin, "performBatchupdates.handler")
-      handler(self)
-      handlerLog.signpost(.end, "performBatchupdates.handler")
-    } else {
-      handler(self)
-    }
-
+    handler(self)
     _viewControllersInLayoutOrder = []
     scrollView.isPerformingBatchUpdates = false
 
@@ -489,13 +443,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   public func purgeRemovedViews() -> Self {
     if scrollView.isPerformingBatchUpdates { return self }
 
-    if Self.signpostsEnabled {
-      let log = OSSignpostController(category: String(describing: FamilyViewController.self),
-                                     signpostsEnabled: Self.signpostsEnabled)
-      log.signpost(.begin, #function)
-      defer { log.signpost(.end, #function) }
-    }
-
     for (controller, container) in registry where controller.parent == nil {
       _removeChild(controller)
       if container.view.superview is FamilyWrapperView {
@@ -558,13 +505,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   ///           on if an index is provided.
   ///   - index: An optional index for where the view should appear.
   private func addOrInsertView(_ view: UIView, at index: Int? = nil) {
-    if Self.signpostsEnabled {
-      let log = OSSignpostController(category: String(describing: FamilyViewController.self),
-                                     signpostsEnabled: Self.signpostsEnabled)
-      log.signpost(.begin, #function)
-      defer { log.signpost(.end, #function) }
-    }
-
     if let index = index, index < scrollView.subviews.count {
       scrollView.insertSubview(view, at: index)
     } else {
@@ -585,13 +525,6 @@ open class FamilyViewController: UIViewController, FamilyFriendly {
   /// - Returns: A view that matches the criteria depending on the
   ///            view controllers type.
   private func viewToAdd(from childController: UIViewController) -> View {
-    if Self.signpostsEnabled {
-      let log = OSSignpostController(category: String(describing: FamilyViewController.self),
-                                     signpostsEnabled: Self.signpostsEnabled)
-      log.signpost(.begin, #function)
-      defer { log.signpost(.end, #function) }
-    }
-
     let view: UIView
 
     switch childController {
