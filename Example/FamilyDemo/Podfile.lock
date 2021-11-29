@@ -1,5 +1,5 @@
 PODS:
-  - Family (0.19.3)
+  - Family (2.2.3)
 
 DEPENDENCIES:
   - Family (from `../../`)
@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :path: "../../"
 
 SPEC CHECKSUMS:
-  Family: d6bd1e3455a87206302138ba01451d6d7f2a39a6
+  Family: 560b85f6c3e28c9a273353223684c2dcd068ef66
 
 PODFILE CHECKSUM: ea1cf231165085455498ab2cfdabed6954efbee7
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.10.1

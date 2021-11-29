@@ -712,7 +712,7 @@ public class FamilyScrollView: UIScrollView, UIGestureRecognizerDelegate {
     // has a non-positive height. To work around this issue, we try and bump the collection views
     // height to at least one pixel if the collection view has items and the height is 0.
     // This will kick-off a re-render and the view will now show up in the hierarchy.
-    if #available(tvOS 13.0, *) {
+      if #available(iOS 13.0, tvOS 13.0, *) {
       if collectionView.numberOfItems(inSection: 0) > 0,
          collectionView.frame.size.height == 0,
          (collectionView.collectionViewLayout is UICollectionViewCompositionalLayout)
